@@ -124,4 +124,67 @@ namespace BST {
         insResult.executionTime = duration.count()/1000;
         return insResult;
     }
+
+
+    //  Jaime
+
+
+
+SearchResult search(BinarySearchTree* tree, const std::string& word) {
+    SearchResult result;
+    result.found = 0;
+    result.executionTime = 0.0;
+    result.numComparisons = 0;
+    result.documentIds.clear();
+
+    if (tree == nullptr || tree->root == nullptr) {
+        return result;
+    }
+
+    auto start = high_resolution_clock::now();
+
+    Node* current = tree->root;
+
+    while (current != nullptr) {
+        result.numComparisons++;
+        if (word == current->word) {
+            result.found = 1;
+            result.documentIds = current->documentIds;
+            break;
+        } else if (word < current->word) {
+            current = current->left;
+        } else {
+            current = current->right;
+        }
+    }
+
+    auto end = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(end - start);
+    result.executionTime = duration.count() / 1000.0; // milissegundos
+
+    return result;
+    }
+
+    void destroyNode(Node* node) {
+        if (node == nullptr) return;
+        destroyNode(node->left);
+        destroyNode(node->right);
+        delete node;
+    }
+
+    void destroy(BinarySearchTree* tree) {
+        if (tree == nullptr) return;
+        destroyNode(tree->root);
+        tree->root = nullptr;
+        delete tree;
+    }
+
+
+
+
+
+    
+
+    
+
 }

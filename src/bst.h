@@ -56,7 +56,15 @@ namespace BST {
      */
     InsertResult insert(BinarySearchTree* tree, const string& word, int documentId);
 
+
+    /**
+    * @brief Busca uma palavra na BST
+    * @param tree Ponteiro para a árvore
+    * @param word Palavra a ser buscada
+    * @return SearchResult com resultados da busca
+    */
     SearchResult search(BinarySearchTree* tree, const string& word);
+    
     void destroy(BinarySearchTree* tree); // liberar memória
 }
 
