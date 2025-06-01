@@ -37,7 +37,6 @@ namespace BST {
         preOrderPrint(node->left, height+1);
         preOrderPrint(node->right, height+1);
     }
-
     // Implements pre-order transverse recursive to print Tree
     void printTree(BinarySearchTree* tree) {
         if (tree == nullptr) {
@@ -46,5 +45,83 @@ namespace BST {
 
         preOrderPrint(tree->root, 0);
     }
-    
+
+    int binarySearch(vector<int> documentIds, int docId, int start, int end) {
+        // Stop condition.
+        if (start > end) {
+            return start;
+        }
+
+        int mid = (start + end) / 2;
+        if (docId == documentIds[mid]) {
+            return -1;
+        }else if (docId > documentIds[mid]) {
+            return binarySearch(documentIds, docId, mid+1, end);
+        } else {
+            return binarySearch(documentIds, docId, start, mid-1);
+        }
+    }
+
+    InsertResult insert(BinarySearchTree* tree, const string& word, int documentId) {
+        InsertResult insResult = InsertResult{0, 0.0};
+        auto start = high_resolution_clock::now();
+        if (tree == nullptr) {
+            auto end = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(end - start);
+            insResult.executionTime = duration.count()/1000;
+            return insResult;
+        }
+
+        // Tree haven't root
+        Node* newNode = initializeNode();
+        newNode->word = word;
+        newNode->documentIds.push_back(documentId);
+        if (tree->root == nullptr) {
+            tree->root = newNode;
+            auto end = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(end - start);
+            insResult.executionTime = duration.count()/1000;
+            return insResult;
+        }
+
+        // Apply binary search in bst until find the correct position to word.
+        Node* parent = tree->root;
+        Node* nextParent;
+        while (parent != nullptr) {
+            insResult.numComparisons++;
+            // Just update list of docs if newNodw already exists
+            if (word == parent->word) {
+                int indexDocId = binarySearch(parent->documentIds, documentId, 0, parent->documentIds.size());
+                if (indexDocId >= 0) {
+                    parent->documentIds.insert(parent->documentIds.begin() + indexDocId, documentId);
+                }
+                auto end = high_resolution_clock::now();
+                auto duration = duration_cast<microseconds>(end - start);
+                insResult.executionTime = duration.count()/1000;
+                return insResult;
+            } else if (word > parent->word) {
+                nextParent = parent->right;
+            } else {
+                nextParent = parent->left;
+            }
+            // Break when find the correct leaf.
+            if (nextParent == nullptr) {
+                break;
+            }
+            parent = nextParent;
+        }
+
+        // Insert new node in correct position
+        if (newNode->word > parent->word) {
+            parent->right = newNode;
+        } else {
+            parent->left = newNode;
+        }
+        newNode->parent = parent;
+
+        auto end = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(end - start);
+        insResult.executionTime = duration.count()/1000;
+        return insResult;
+    }
 }
