@@ -10,17 +10,21 @@ using std::cin, std::cout, std::endl, std::string, std::vector;
 using namespace TREE_UTILS;
 
 namespace BST {
-    struct Node {
-        string word;
-        vector<int> documentIds;
-        Node* parent;
-        Node* left;
-        Node* right;
-    };
+    // struct Node {
+    //     string word;
+    //     vector<int> documentIds;
+    //     Node* parent;
+    //     Node* left;
+    //     Node* right;
+    // };
 
-    struct BinarySearchTree {
-        Node* root;
-    };
+    using Node = TREE_UTILS::Node;
+    using BinaryTree = TREE_UTILS::BinaryTree;
+    
+    // struct BinarySearchTree {
+    //     Node* root;
+    // };
+
 
     /**
      * @brief Initialize a empty node.
@@ -29,10 +33,12 @@ namespace BST {
     Node* initializeNode();
 
     /**
-     * @brief Initialize a binary search tree.
+     * @brief Initialize a binary  tree.
      * @return BST created.
      */
-    BinarySearchTree* create();
+    BinaryTree* create();
+    // BinarySearchTree* create();
+
 
     /**
      * @brief Recursive Pre-Order traversal to print the node and its sons in directory format.
@@ -45,7 +51,8 @@ namespace BST {
      * @brief Print Tree in directory format.
      * @param tree BST to be printed.
      */
-    void printTree(BinarySearchTree* tree);
+    void printTree(BinaryTree* tree);
+    // void printTree(BinarySearchTree* tree);
 
     /**
      * @brief Insert a word in BST and update or create a list of documents where this word appears.
@@ -54,7 +61,8 @@ namespace BST {
      * @param documentId Id of the document where the word was found.
      * @return Benchmark datas to analyse the complexity of BST.
      */
-    InsertResult insert(BinarySearchTree* tree, const string& word, int documentId);
+    InsertResult insert(BinaryTree* tree, const string& word, int documentId);  
+    // InsertResult insert(BinarySearchTree* tree, const string& word, int documentId);
 
 
     /**
@@ -63,9 +71,11 @@ namespace BST {
     * @param word Palavra a ser buscada
     * @return SearchResult com resultados da busca
     */
-    SearchResult search(BinarySearchTree* tree, const string& word);
+   SearchResult search(BinaryTree* tree, const string& word);
+    // SearchResult search(BinarySearchTree* tree, const string& word);
     
-    void destroy(BinarySearchTree* tree); // liberar memória
+    void destroy(BinaryTree* tree);
+    // void destroy(BinarySearchTree* tree); // liberar memória
 }
 
 #endif

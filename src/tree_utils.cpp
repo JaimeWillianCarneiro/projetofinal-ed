@@ -37,4 +37,28 @@ namespace TREE_UTILS {
         printIndexInOrder(tree->root);
     }
 
+
+
+    int binarySearch(vector<int> documentIds, int docId, int start, int end) {
+        // Stop condition.
+        if (start > end) {
+            return start;
+        }
+
+        int mid = (start + end) / 2;
+        if (docId == documentIds[mid]) {
+            return -1;
+        }else if (docId > documentIds[mid]) {
+            return binarySearch(documentIds, docId, mid+1, end);
+        } else {
+            return binarySearch(documentIds, docId, start, mid-1);
+        }
+    }
+
+     void freeTree(Node* node) {
+        if (node == nullptr) return;
+        freeTree(node->left);
+        freeTree(node->right);
+        delete node;
+    }
 }

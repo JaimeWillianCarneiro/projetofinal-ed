@@ -17,12 +17,19 @@ namespace BST {
         return node;
     }
 
-    BinarySearchTree* create() {
-        // Create bst with null root node
-        BinarySearchTree* bst = new BinarySearchTree;
-        bst->root = nullptr;
-        return bst;
+    // BinarySearchTree* create() {
+    //     // Create bst with null root node
+    //     BinarySearchTree* bst = new BinarySearchTree;
+    //     bst->root = nullptr;
+    //     return bst;
+    // }
+    BinaryTree* create() {
+        BinaryTree* tree = new BinaryTree;
+        tree->root = nullptr;
+        tree->NIL = nullptr;
+        return tree;
     }
+
 
     void preOrderPrint(Node* node, int height) {
         // Stop condition
@@ -37,32 +44,24 @@ namespace BST {
         preOrderPrint(node->left, height+1);
         preOrderPrint(node->right, height+1);
     }
+    
     // Implements pre-order transverse recursive to print Tree
-    void printTree(BinarySearchTree* tree) {
-        if (tree == nullptr) {
-            return;
-        }
-
+    void printTree(BinaryTree* tree) {
+        if (tree == nullptr) return;
         preOrderPrint(tree->root, 0);
     }
 
-    int binarySearch(vector<int> documentIds, int docId, int start, int end) {
-        // Stop condition.
-        if (start > end) {
-            return start;
-        }
+    // void printTree(BinarySearchTree* tree) {
+    //     if (tree == nullptr) {
+    //         return;
+    //     }
 
-        int mid = (start + end) / 2;
-        if (docId == documentIds[mid]) {
-            return -1;
-        }else if (docId > documentIds[mid]) {
-            return binarySearch(documentIds, docId, mid+1, end);
-        } else {
-            return binarySearch(documentIds, docId, start, mid-1);
-        }
-    }
+    //     preOrderPrint(tree->root, 0);
+    // }
 
-    InsertResult insert(BinarySearchTree* tree, const string& word, int documentId) {
+    
+
+    InsertResult insert(BinaryTree* tree, const string& word, int documentId) {
         InsertResult insResult = InsertResult{0, 0.0};
         auto start = high_resolution_clock::now();
         if (tree == nullptr) {
@@ -126,43 +125,73 @@ namespace BST {
     }
 
 
+
     //  Jaime
 
 
 
-SearchResult search(BinarySearchTree* tree, const std::string& word) {
-    SearchResult result;
-    result.found = 0;
-    result.executionTime = 0.0;
-    result.numComparisons = 0;
-    result.documentIds.clear();
+// SearchResult search(BinarySearchTree* tree, const std::string& word) {
+//     SearchResult result;
+//     result.found = 0;
+//     result.executionTime = 0.0;
+//     result.numComparisons = 0;
+//     result.documentIds.clear();
 
-    if (tree == nullptr || tree->root == nullptr) {
-        return result;
-    }
+//     if (tree == nullptr || tree->root == nullptr) {
+//         return result;
+//     }
 
-    auto start = high_resolution_clock::now();
+//     auto start = high_resolution_clock::now();
 
-    Node* current = tree->root;
+//     Node* current = tree->root;
 
-    while (current != nullptr) {
-        result.numComparisons++;
-        if (word == current->word) {
-            result.found = 1;
-            result.documentIds = current->documentIds;
-            break;
-        } else if (word < current->word) {
-            current = current->left;
-        } else {
-            current = current->right;
+//     while (current != nullptr) {
+//         result.numComparisons++;
+//         if (word == current->word) {
+//             result.found = 1;
+//             result.documentIds = current->documentIds;
+//             break;
+//         } else if (word < current->word) {
+//             current = current->left;
+//         } else {
+//             current = current->right;
+//         }
+//     }
+
+//     auto end = high_resolution_clock::now();
+//     auto duration = duration_cast<microseconds>(end - start);
+//     result.executionTime = duration.count() / 1000.0; // milissegundos
+
+//     return result;
+//     }
+
+
+    SearchResult search(BinaryTree* tree, const std::string& word) {
+        SearchResult result{0, {}, 0.0, 0};
+        
+        if (tree == nullptr || tree->root == nullptr) {
+            return result;
         }
-    }
 
-    auto end = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(end - start);
-    result.executionTime = duration.count() / 1000.0; // milissegundos
+        auto start = high_resolution_clock::now();
+        Node* current = tree->root;
 
-    return result;
+        while (current != nullptr) {
+            result.numComparisons++;
+            if (word == current->word) {
+                result.found = 1;
+                result.documentIds = current->documentIds;
+                break;
+            } else if (word < current->word) {
+                current = current->left;
+            } else {
+                current = current->right;
+            }
+        }
+
+        auto end = high_resolution_clock::now();
+        result.executionTime = duration_cast<microseconds>(end - start).count() / 1000.0;
+        return result;
     }
 
     void destroyNode(Node* node) {
@@ -172,7 +201,7 @@ SearchResult search(BinarySearchTree* tree, const std::string& word) {
         delete node;
     }
 
-    void destroy(BinarySearchTree* tree) {
+    void destroy(BinaryTree* tree) {
         if (tree == nullptr) return;
         destroyNode(tree->root);
         tree->root = nullptr;
