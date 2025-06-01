@@ -23,6 +23,14 @@ namespace BST {
         Node* root;
     };
 
+
+    /**
+     * @brief Initialize a empty node.
+     * @return Created node.
+     */
+    Node* initializeNode();
+
+    
     /**
      * @brief Initialize a binary search tree.
      * @return BST created.
