@@ -16,4 +16,11 @@ namespace BST {
         node->right = nullptr;
         return node;
     }
+
+    BinarySearchTree* create() {
+        // Create bst with null root node
+        BinarySearchTree* bst = new BinarySearchTree;
+        bst->root = nullptr;
+        return bst;
+    }
 }
