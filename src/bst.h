@@ -30,12 +30,23 @@ namespace BST {
      */
     Node* initializeNode();
 
-    
+
     /**
      * @brief Initialize a binary search tree.
      * @return BST created.
      */
     BinarySearchTree* create();
+
+    /**
+     * @brief Recursive Pre-Order traversal to print the node and its sons in directory format.
+     */
+    void preOrderPrint(Node* node, int height);
+
+    /**
+     * @brief Print Tree in directory format.
+     */
+    void printTree(BinarySearchTree* tree);
+
 
     InsertResult insert(BinaryTree* tree, const string& word, int documentId);
 

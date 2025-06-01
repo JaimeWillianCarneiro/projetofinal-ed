@@ -23,4 +23,28 @@ namespace BST {
         bst->root = nullptr;
         return bst;
     }
+
+    void preOrderPrint(Node* node, int height) {
+        // Stop condition
+        if (node == nullptr) {
+            return;
+        }
+
+        // Process father
+        cout << string(height*2, ' ')<< "|-- " << node->word << endl;
+
+        // Process sons
+        preOrderPrint(node->left, height+1);
+        preOrderPrint(node->right, height+1);
+    }
+
+    // Implements pre-order transverse recursive to print Tree
+    void printTree(BinarySearchTree* tree) {
+        if (tree == nullptr) {
+            return;
+        }
+
+        preOrderPrint(tree->root, 0);
+    }
+    
 }
