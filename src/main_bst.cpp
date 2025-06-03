@@ -38,5 +38,48 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    // Create an empty Binary Search Tree (BST)
+    BinaryTree* tree = BST::create();
+
+    // Read files from the specified directory and insert data into the BST
+    DATA::readFilesFromDirectory(n_docs, tree);
+
+    // If command is "search", allow user to query words
+    if (command == "search") {
+        string word;
+        cout << "Digite uma palavra para buscar (ou 'sair' para encerrar): ";
+        
+        // Loop until user enters "sair" to exit
+        while (cin >> word) {
+            if (word == "sair") break;
+
+            // Search the BST for the given word
+            SearchResult result = BST::search(tree, word);
+
+            // Print search results
+            if (result.found) {
+                cout << "Palavra '" << word << "' encontrada nos documentos: ";
+                for (int id : result.documentIds) {
+                    cout << id << " ";
+                }
+                cout << endl;
+            } else {
+                cout << "Palavra '" << word << "' não encontrada em nenhum documento." << endl;
+            }
+
+            // Print performance metrics
+            cout << "Comparações feitas: " << result.numComparisons << endl;
+            cout << "Tempo de execução (ms): " << result.executionTime << endl;
+
+            cout << "\nDigite outra palavra (ou 'sair'): ";
+        }
+    } else {
+        // Placeholder for future stats functionality
+        cout << "Ainda não implementado: stats" << endl;
+    }
+
+    // Clean up memory allocated for the BST
+    BST::destroy(tree);
+
     return 0; 
 }
