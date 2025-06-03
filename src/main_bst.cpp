@@ -3,7 +3,6 @@
 #include <vector>
 #include <chrono>
 #include <fstream>
-#include <algorithm>
 
 #include "bst.h"
 #include "tree_utils.h"
