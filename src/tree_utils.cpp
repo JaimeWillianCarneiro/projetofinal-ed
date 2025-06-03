@@ -87,10 +87,4 @@ namespace TREE_UTILS {
         }
     }
 
-     void freeTree(Node* node) {
-        if (node == nullptr) return;
-        freeTree(node->left);
-        freeTree(node->right);
-        delete node;
-    }
 }
