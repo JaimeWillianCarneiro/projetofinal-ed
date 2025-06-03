@@ -91,69 +91,34 @@ namespace BST {
     }
 
 
-
-    //  Jaime
-
-
-
-// SearchResult search(BinarySearchTree* tree, const std::string& word) {
-//     SearchResult result;
-//     result.found = 0;
-//     result.executionTime = 0.0;
-//     result.numComparisons = 0;
-//     result.documentIds.clear();
-
-//     if (tree == nullptr || tree->root == nullptr) {
-//         return result;
-//     }
-
-//     auto start = high_resolution_clock::now();
-
-//     Node* current = tree->root;
-
-//     while (current != nullptr) {
-//         result.numComparisons++;
-//         if (word == current->word) {
-//             result.found = 1;
-//             result.documentIds = current->documentIds;
-//             break;
-//         } else if (word < current->word) {
-//             current = current->left;
-//         } else {
-//             current = current->right;
-//         }
-//     }
-
-//     auto end = high_resolution_clock::now();
-//     auto duration = duration_cast<microseconds>(end - start);
-//     result.executionTime = duration.count() / 1000.0; // milissegundos
-
-//     return result;
-//     }
-
-
     SearchResult search(BinaryTree* tree, const std::string& word) {
-        SearchResult result{0, {}, 0.0, 0};
+        SearchResult result{0, {}, 0.0, 0}; // Inicializa resultado vazio
         
+        // Verifica árvore vazia
         if (tree == nullptr || tree->root == nullptr) {
             return result;
         }
 
-        auto start = high_resolution_clock::now();
+        auto start = high_resolution_clock::now(); // Inicia contagem de tempo
         Node* current = tree->root;
 
         while (current != nullptr) {
-            result.numComparisons++;
+            result.numComparisons++; // Conta cada comparação
             if (word == current->word) {
+                // Palavra encontrada
                 result.found = 1;
                 result.documentIds = current->documentIds;
                 break;
             } else if (word < current->word) {
+                // Busca na subárvore esquerda
                 current = current->left;
             } else {
+                // Busca na subárvore direita
                 current = current->right;
             }
         }
+        
+    // Finaliza cálculo do tempo
 
         auto end = high_resolution_clock::now();
         result.executionTime = duration_cast<microseconds>(end - start).count() / 1000.0;
@@ -161,16 +126,24 @@ namespace BST {
     }
 
     void destroyNode(Node* node) {
-        if (node == nullptr) return;
+        if (node == nullptr) return;// Caso base da recursão
+
+        // Destroi recursivamente subárvores
         destroyNode(node->left);
         destroyNode(node->right);
+        // Libera memória do nó atual
         delete node;
     }
 
     void destroy(BinaryTree* tree) {
-        if (tree == nullptr) return;
+        if (tree == nullptr) return; // Verificação de segurança
+
+
+        // Destrói todos os nós recursivamente
         destroyNode(tree->root);
+        // Limpa ponteiros para evitar acesso acidental
         tree->root = nullptr;
+        // Libera a estrutura principal da árvore
         delete tree;
     }
 
