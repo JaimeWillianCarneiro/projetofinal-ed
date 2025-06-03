@@ -1,10 +1,10 @@
 all: programa
 
-programa: main.o bst.o tree_utils.o data.o
-	g++ main.o bst.o tree_utils.o data.o -o programa
+programa: main_bst.o bst.o tree_utils.o data.o
+	g++ main_bst.o bst.o tree_utils.o data.o -o programa
 
-main.o: main.cpp .\src\bst.h .\src\tree_utils.h .\src\data.h
-	g++ -c main.cpp -o main.o
+main_bst.o: .\src\main_bst.cpp .\src\bst.h .\src\tree_utils.h .\src\data.h
+	g++ -c .\src\main_bst.cpp -o main_bst.o
 
 bst.o: .\src\bst.cpp .\src\bst.h
 	g++ -c .\src\bst.cpp -o bst.o
