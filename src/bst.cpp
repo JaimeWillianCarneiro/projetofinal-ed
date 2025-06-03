@@ -51,11 +51,12 @@ namespace BST {
         // Apply binary search in bst until find the correct position to word.
         Node* parent = tree->root;
         Node* nextParent;
+
         while (parent != nullptr) {
             insResult.numComparisons++;
             // Just update list of docs if newNodw already exists
             if (word == parent->word) {
-                int indexDocId = binarySearch(parent->documentIds, documentId, 0, parent->documentIds.size());
+                int indexDocId = binarySearch(parent->documentIds, documentId, 0, parent->documentIds.size()-1);
                 if (indexDocId >= 0) {
                     parent->documentIds.insert(parent->documentIds.begin() + indexDocId, documentId);
                 }

@@ -23,25 +23,24 @@ namespace DATA{
         {
             while (getline(myfile,word,' '))
             {
-               
+                // Check for invalid characters
+                word.erase(remove_if(word.begin(), word.end(),
+                [](unsigned char c) { return !isalnum(c); }), word.end());
+                
                 // Check for capital letters
-                cout << word << endl;
                 transform(word.begin(), word.end(), word.begin(), ::tolower);
 
                 // Add the word to the tree
-                cout << word << endl;
                 InsertResult new_insert = insert(tree, word, documentId);
-                cout << "Inseri" << endl;
             }
             myfile.close();
-            cout << "fechei" << endl;
             return;
         }
     }
     
-    void readFilesFromDirectory(int number_files, BinaryTree* tree){
+    void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree){
         for (int i = 0; i < number_files; i++){
-            string address ("./data/");
+            string address (directory);
             address += to_string(i);
             address += ".txt";
             

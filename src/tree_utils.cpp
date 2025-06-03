@@ -71,7 +71,9 @@ namespace TREE_UTILS {
 
     int binarySearch(vector<int> documentIds, int docId, int start, int end) {
         // Stop condition.
+
         if (start > end) {
+            cout << start;
             return start;
         }
 
