@@ -14,6 +14,8 @@ namespace BST {
         node->parent = nullptr;
         node->left = nullptr;
         node->right = nullptr;
+        node->height = -1;
+        node->isRed = 0;
         return node;
     }
 
