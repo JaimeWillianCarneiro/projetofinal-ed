@@ -17,49 +17,12 @@ namespace BST {
         return node;
     }
 
-    // BinarySearchTree* create() {
-    //     // Create bst with null root node
-    //     BinarySearchTree* bst = new BinarySearchTree;
-    //     bst->root = nullptr;
-    //     return bst;
-    // }
     BinaryTree* create() {
         BinaryTree* tree = new BinaryTree;
         tree->root = nullptr;
         tree->NIL = nullptr;
         return tree;
     }
-
-
-    void preOrderPrint(Node* node, int height) {
-        // Stop condition
-        if (node == nullptr) {
-            return;
-        }
-
-        // Process father
-        cout << string(height*2, ' ')<< "|-- " << node->word << endl;
-
-        // Process sons
-        preOrderPrint(node->left, height+1);
-        preOrderPrint(node->right, height+1);
-    }
-    
-    // Implements pre-order transverse recursive to print Tree
-    void printTree(BinaryTree* tree) {
-        if (tree == nullptr) return;
-        preOrderPrint(tree->root, 0);
-    }
-
-    // void printTree(BinarySearchTree* tree) {
-    //     if (tree == nullptr) {
-    //         return;
-    //     }
-
-    //     preOrderPrint(tree->root, 0);
-    // }
-
-    
 
     InsertResult insert(BinaryTree* tree, const string& word, int documentId) {
         InsertResult insResult = InsertResult{0, 0.0};

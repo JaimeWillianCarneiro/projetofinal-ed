@@ -17,11 +17,23 @@ namespace TREE_UTILS {
         int isRed;    // Usado na RBT
     };
 
-
     struct BinaryTree {
         Node* root;
         Node* NIL; // Usado na RBT (não necessário para BST)
     };
+
+    /**
+     * @brief Recursive Pre-Order traversal to print the node and its sons in directory format.
+     * @param node Node to be processed.
+     * @param height Height of the node.
+     */
+    void preOrderPrint(Node* node, int height);
+
+    /**
+     * @brief Print Tree in directory format.
+     * @param tree BST to be printed.
+     */
+    void printTree(BinaryTree* tree);
 
     struct InsertResult {
         int numComparisons;

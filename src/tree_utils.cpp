@@ -37,7 +37,37 @@ namespace TREE_UTILS {
         printIndexInOrder(tree->root);
     }
 
+    void preOrderPrint(Node* node, int height, string paths, string prefix) {
+        // Stop condition
+        if (node == nullptr) {
+            return;
+        }
 
+        // Process father
+        cout << paths << prefix << node->word << endl;
+        if (prefix == "|-- ") {
+            paths += "|   ";
+        } else if (prefix == "*-- ") {
+            paths += "    ";
+        }
+
+        prefix = "*-- ";
+        // Process sons
+        if (node->left != nullptr) {
+            if (node->right != nullptr) {
+                prefix = "|-- ";
+            }
+            preOrderPrint(node->left, height+1, paths, prefix);
+            prefix = "*-- ";
+        }
+        preOrderPrint(node->right, height+1, paths, prefix);
+    }
+    
+    // Implements pre-order transverse recursive to print Tree
+    void printTree(BinaryTree* tree) {
+        if (tree == nullptr) return;
+        preOrderPrint(tree->root, 0, "", "");
+    }
 
     int binarySearch(vector<int> documentIds, int docId, int start, int end) {
         // Stop condition.

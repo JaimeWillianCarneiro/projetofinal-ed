@@ -10,22 +10,6 @@ using std::cin, std::cout, std::endl, std::string, std::vector;
 using namespace TREE_UTILS;
 
 namespace BST {
-    // struct Node {
-    //     string word;
-    //     vector<int> documentIds;
-    //     Node* parent;
-    //     Node* left;
-    //     Node* right;
-    // };
-
-    using Node = TREE_UTILS::Node;
-    using BinaryTree = TREE_UTILS::BinaryTree;
-    
-    // struct BinarySearchTree {
-    //     Node* root;
-    // };
-
-
     /**
      * @brief Initialize a empty node.
      * @return Created node.
@@ -37,22 +21,6 @@ namespace BST {
      * @return BST created.
      */
     BinaryTree* create();
-    // BinarySearchTree* create();
-
-
-    /**
-     * @brief Recursive Pre-Order traversal to print the node and its sons in directory format.
-     * @param node Node to be processed.
-     * @param height Height of the node.
-     */
-    void preOrderPrint(Node* node, int height);
-
-    /**
-     * @brief Print Tree in directory format.
-     * @param tree BST to be printed.
-     */
-    void printTree(BinaryTree* tree);
-    // void printTree(BinarySearchTree* tree);
 
     /**
      * @brief Insert a word in BST and update or create a list of documents where this word appears.
@@ -61,9 +29,7 @@ namespace BST {
      * @param documentId Id of the document where the word was found.
      * @return Benchmark datas to analyse the complexity of BST.
      */
-    InsertResult insert(BinaryTree* tree, const string& word, int documentId);  
-    // InsertResult insert(BinarySearchTree* tree, const string& word, int documentId);
-
+    InsertResult insert(BinaryTree* tree, const string& word, int documentId);
 
     /**
     * @brief Busca uma palavra na BST
@@ -72,10 +38,8 @@ namespace BST {
     * @return SearchResult com resultados da busca
     */
    SearchResult search(BinaryTree* tree, const string& word);
-    // SearchResult search(BinarySearchTree* tree, const string& word);
     
-    void destroy(BinaryTree* tree);
-    // void destroy(BinarySearchTree* tree); // liberar memória
+    void destroy(BinaryTree* tree); // liberar memória
 }
 
 #endif
