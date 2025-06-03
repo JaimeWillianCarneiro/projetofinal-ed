@@ -1,43 +1,60 @@
 #ifndef TREE_UTILS_H
 #define TREE_UTILS_H
 
-#include <string>
+#include <iostream>
 #include <vector>
 
-struct Node {
-    std::string word;
-    std::vector<int> documentIds;
-    Node* parent;
-    Node* left;
-    Node* right;
-    int height;   // Usado na AVL
-    int isRed;    // Usado na RBT
-};
+using std::cin, std::cout, std::endl, std::string, std::vector;
+
+namespace TREE_UTILS {
+    struct Node {
+        std::string word;
+        std::vector<int> documentIds;
+        Node* parent;
+        Node* left;
+        Node* right;
+        int height;   // Usado na AVL
+        int isRed;    // Usado na RBT
+    };
+
+    struct BinaryTree {
+        Node* root;
+        Node* NIL; // Usado na RBT (não necessário para BST)
+    };
+
+    /**
+     * @brief Recursive Pre-Order traversal to print the node and its sons in directory format.
+     * @param node Node to be processed.
+     * @param height Height of the node.
+     */
+    void preOrderPrint(Node* node, int height);
+
+    /**
+     * @brief Print Tree in directory format.
+     * @param tree BST to be printed.
+     */
+    void printTree(BinaryTree* tree);
+
+    struct InsertResult {
+        int numComparisons;
+        double executionTime;
+        // <Possíveis outras variáveis>
+    };
 
 
-struct BinaryTree {
-    Node* root;
-    Node* NIL; // Usado na RBT (não necessário para BST)
-};
+    
+    struct SearchResult {
+        int found;
+        std::vector<int> documentIds;
+        double executionTime;
+        int numComparisons;
+        // <Possíveis outras variáveis>
+    };
 
+    int binarySearch(vector<int> documentIds, int docId, int start, int end);
+    void printIndex(BinaryTree* tree);
 
-struct InsertResult {
-    int numComparisons;
-    double executionTime;
-};
-
-struct SearchResult {
-    int found;
-    std::vector<int> documentIds;
-    double executionTime;
-    int numComparisons;
-};
-
-
-
-void printIndex(BinaryTree* tree);
-void printTree(BinaryTree* tree);
-void freeTree(Node* node); // usad
-
+    void freeTree(Node* node); // usad
+}
 
 #endif // TREE_UTILS_H
