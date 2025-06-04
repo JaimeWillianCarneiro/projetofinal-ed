@@ -18,29 +18,54 @@ A implementação utiliza as seguintes bibliotecas:
 - `<string>` – Manipulação de strings.
 - `<fstream>` – Auxilia na leitura dos arquivos.
 - `<algorithm>` – Utilizada (indiretamente) para busca binária, se necessário.
+- `<cstring>` – Manipulação de strings.
+- `<cctype>` – Auxília na formatação das palavras.
 
 ---
 
 ## Instruções para Compilar e Executar
-- Para compilar, utilize o Makefile:
+### Para compilar você pode utilizar o Makefile (no `Windows`):
 
+ - Para compilar
 ```bash
-make
+mingw32-make
 ```
 
 - Para limpar os arquivos .o
 
 ```bash
-make clean
+mingw32-make clean
 ```
+
+#### Para compilar manualmente
+-  Para compilar:
+
+```bash
+g++ -c .\src\main_bst.cpp -o main_bst.o
+g++ -c .\src\bst.cpp -o bst.o
+g++ -c .\src\tree_utils.cpp -o tree_utils.o
+g++ -c .\src\data.cpp -o data.o
+```
+> Se estiver no Linux/macOS, troque `.\src\` por `./src/`
+
+
+Linke todos os `.o` para criar o executável `bst.exe` (no Windows):
+
+```bash
+g++ main_bst.o bst.o tree_utils.o data.o -o bst.exe
+```
+
+> No Linux/macOS, apenas use `bst` ao invés de `bst.exe`
+
+
 ### Modo de busca:
 
 ```bash
-./programa search <n_docs> <diretorio>
+./bst search <n_docs> <diretorio>
 ```
 Exemplo:
 ```bash
-./programa search 5 <./data>
+./bst search 5 "./data/"
 ```
 O programa carregará os arquivos 0.txt até 4.txt e permitirá buscar palavras. Digite "sair" para encerrar.
 
@@ -56,9 +81,9 @@ g++ src/test_bst.cpp src/bst.cpp src/tree_utils.cpp -o test_bst
 ```
 ### Passo a passo:
 
-1. **Abra o terminal na pasta do projeto (projetofinal-ed\src).**
+1. Abra o terminal na pasta do projeto (projetofinal-ed\src).
 
-2. **Compile o projeto com o comando:**
+2. Compile o projeto com o comando:
 
 ```bash
 g++ -o test_bst test_bst.cpp bst.cpp tree_utils.cpp

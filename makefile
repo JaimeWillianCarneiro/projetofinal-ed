@@ -16,4 +16,4 @@ data.o: .\src\data.cpp .\src\data.h
 	g++ -c .\src\data.cpp -o data.o
 
 clean:
-	rm -f *.o bst
+	del /Q *.o bst.exe
