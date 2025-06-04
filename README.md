@@ -4,7 +4,7 @@ Integrantes: Carlos Daniel de Souza Lima, Gabriela Barbosa Souza, Gabrielly Este
 
 ## Introdução
 
-Este projeto implementa uma árvore binária de busca (BST) para indexar palavras de vários documentos de texto. O sistema permite inserir palavras associadas aos documentos onde aparecer e realizar buscas por essas palavras
+Este projeto implementa uma árvore binária de busca (BST) para indexar palavras de vários documentos de texto. O sistema permite inserir palavras associadas aos documentos onde aparecer e realizar buscas por essas palavras.
 
 ---
 
@@ -42,7 +42,7 @@ Exemplo:
 ```bash
 ./programa search 5 <./data>
 ```
-O programa carregará os arquivos 0.txt até 4.txt e permitirá buscar palavras. Digite <sair> para encerrar.
+O programa carregará os arquivos 0.txt até 4.txt e permitirá buscar palavras. Digite "sair" para encerrar.
 
 ---
 
