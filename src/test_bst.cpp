@@ -22,6 +22,7 @@ void printSearchResult(const SearchResult& result, const string& word) {
 }
 
 int main() {
+    cout << "\n Criando arvore..." << endl;
     BinaryTree* tree = create(); // cria a arvore inicial vazia
 
     // insercao das palavras. peguei uma lista de frases aleatorias e citacoes famosas
@@ -98,6 +99,9 @@ int main() {
     insert(tree, "guia", 9);
     insert(tree, "o", 9);
     insert(tree, "passo", 9);
+
+    cout << "\n Impressao dos indices das palavras:" << endl; 
+    printIndex(tree); // imprime a lista das palavras inseridas em ordem alfabetica e seus respectivos indices
 
     cout << "\n Impressao da arvore:" << endl; 
     printTree(tree);  // mostra a arvore completa
