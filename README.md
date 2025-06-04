@@ -79,12 +79,4 @@ Execute o arquivo test_bst.cpp separadamente para validar o funcionamento da ár
 g++ src/test_bst.cpp src/bst.cpp src/tree_utils.cpp -o test_bst
 ./test_bst
 ```
-### Passo a passo:
-
-1. Abra o terminal na pasta do projeto (projetofinal-ed\src).
-
-2. Compile o projeto com o comando:
-
-```bash
-g++ -o test_bst test_bst.cpp bst.cpp tree_utils.cpp
-```
+Aqui as funções são testadas com algumas frases aleaórias.
