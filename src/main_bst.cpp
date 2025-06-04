@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 
     // Validate command argument
     if (command != "search" && command != "stats") {
-        cerr << "Erro: Comando inválido!" << endl;
+        cerr << "Erro: Comando invalido!" << endl;
         printUsage();
         return 1;
     }
@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
     BinaryTree* tree = BST::create();
 
     // Read files from the specified directory and insert data into the BST
-    DATA::readFilesFromDirectory(n_docs, tree);
+    DATA::readFilesFromDirectory(n_docs, directory, tree);
 
     // If command is "search", allow user to query words
     if (command == "search") {
@@ -63,18 +63,18 @@ int main(int argc, char* argv[]) {
                 }
                 cout << endl;
             } else {
-                cout << "Palavra '" << word << "' não encontrada em nenhum documento." << endl;
+                cout << "Palavra '" << word << "' nao encontrada em nenhum documento." << endl;
             }
 
             // Print performance metrics
-            cout << "Comparações feitas: " << result.numComparisons << endl;
-            cout << "Tempo de execução (ms): " << result.executionTime << endl;
+            cout << "Comparacoes feitas: " << result.numComparisons << endl;
+            cout << "Tempo de execucao (ms): " << result.executionTime << endl;
 
             cout << "\nDigite outra palavra (ou 'sair'): ";
         }
     } else {
         // Placeholder for future stats functionality
-        cout << "Ainda não implementado: stats" << endl;
+        cout << "Ainda nao implementado: stats" << endl;
     }
 
     // Clean up memory allocated for the BST

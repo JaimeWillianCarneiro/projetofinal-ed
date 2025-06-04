@@ -73,7 +73,6 @@ namespace TREE_UTILS {
         // Stop condition.
 
         if (start > end) {
-            cout << start;
             return start;
         }
 

@@ -44,7 +44,6 @@ namespace DATA{
             address += to_string(i);
             address += ".txt";
             
-            cout << address << endl;
             readDataFromFile(address, i, tree);
         }
         return;
