@@ -10,12 +10,23 @@
 
 using namespace std;
 using namespace std::chrono;
-
+using namespace DATA;
+using namespace TREE_UTILS;
+using namespace BST;
 // Prints usage instructions
 void printUsage() {
     cout << "Uso correto:" << endl;
     cout << "./bst search <n_docs> <diretorio>" << endl;
     cout << "./bst stats <n_docs> <diretorio>" << endl;
+}
+
+// Prints menu options
+void printMenu() {
+    cout << "\nSelecione uma das opcoes (digite '\\o_<num_option>'):" << endl;
+    cout << "1. Pesquisar uma palavra." << endl;
+    cout << "2. Printar a arvore." << endl;
+    cout << "3. Printar Indice Invertido." << endl;
+    cout << "Ou digite '\\q' para sair (ou ctrl + c)." << endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -38,22 +49,35 @@ int main(int argc, char* argv[]) {
     }
 
     // Create an empty Binary Search Tree (BST)
-    BinaryTree* tree = BST::create();
+    BinaryTree* tree = create();
 
     // Read files from the specified directory and insert data into the BST
-    DATA::readFilesFromDirectory(n_docs, directory, tree);
+    readFilesFromDirectory(n_docs, directory, tree);
 
     // If command is "search", allow user to query words
     if (command == "search") {
         string word;
-        cout << "Digite uma palavra para buscar (ou 'sair' para encerrar): ";
+        printMenu();
         
         // Loop until user enters "sair" to exit
         while (cin >> word) {
-            if (word == "sair") break;
+            if (word == "\\o_1") {
+                cout << "Digite uma palavra para buscar: ";
+                cin >> word;
+            } else if (word == "\\o_2") {
+                printTree(tree);
+            } else if (word == "\\o_3") {
+                printIndex(tree);
+            } else if (word == "\\q") {
+                break;
+            } else {
+                cout << "Opcao invalida." << endl;
+                printMenu();
+                continue;
+            }
 
             // Search the BST for the given word
-            SearchResult result = BST::search(tree, word);
+            SearchResult result = search(tree, word);
 
             // Print search results
             if (result.found) {
@@ -70,7 +94,7 @@ int main(int argc, char* argv[]) {
             cout << "Comparacoes feitas: " << result.numComparisons << endl;
             cout << "Tempo de execucao (ms): " << result.executionTime << endl;
 
-            cout << "\nDigite outra palavra (ou 'sair'): ";
+            printMenu();
         }
     } else {
         // Placeholder for future stats functionality
@@ -78,7 +102,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Clean up memory allocated for the BST
-    BST::destroy(tree);
+    destroy(tree);
 
     return 0; 
 }
