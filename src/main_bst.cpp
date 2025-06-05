@@ -22,7 +22,7 @@ void printUsage() {
 
 // Prints menu options
 void printMenu() {
-    cout << "\nSelecione uma das opcoes (digite '\\<num_option>'):" << endl;
+    cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
     cout << "1. Pesquisar uma palavra." << endl;
     cout << "2. Printar a arvore." << endl;
     cout << "3. Printar Indice Invertido." << endl;
