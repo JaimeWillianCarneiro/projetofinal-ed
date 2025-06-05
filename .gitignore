@@ -1,32 +1,58 @@
+### C/C++ ###
 # Prerequisites
 *.d
 
-# Compiled Object files
-*.slo
-*.lo
+# Object files
 *.o
 *.obj
+*.slo
+*.lo
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
+# Libraries
+*.a
+*.lib
+*.la
+*.lai
 *.so
 *.dylib
 *.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
 
 # Executables
 *.exe
 *.out
 *.app
+
+# Debug files
+*.pdb
+*.idb
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Fortran (se aplicável)
+*.mod
+*.smod
+
+
+### Build directories ###
+bin/
+build/
+out/
+Debug/
+Release/
+
+
+### VS Code ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/tasks.json       # Útil para configurações de build compartilhadas
+
+
+### Temporários/Editors ###
+*~
+*.swp
+*.swo
+.DS_Store                # MacOS
+Thumbs.db                # Windows
