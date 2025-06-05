@@ -93,7 +93,7 @@ del src/test_bst.exe
 #### (Linux/macOS)
 
 ```bash
-g++ src/test_bst.cpp src/bst.cpp src/tree_utils.cpp -o src/test_bst -I./src
+g++ src/test_bst.cpp src/bst.cpp src/tree_utils.cpp -o src/test_bst -I./src -std=c++17
 ./src/test_bst
 ```
 Para deletar o executável:
