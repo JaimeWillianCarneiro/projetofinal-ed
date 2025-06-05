@@ -55,54 +55,53 @@ int main(int argc, char* argv[]) {
     readFilesFromDirectory(n_docs, directory, tree);
 
     // If command is "search", allow user to query words
-    if (command == "search") {
-        string word;
+  if (command == "search") {
+        string input;
         printMenu();
         
-        // Loop until user enters "sair" to exit
-        while (cin >> word) {
-            if (word == "1") {
+        while (true) {
+            cout << "\nOpcao: ";
+            cin >> input;
+
+            if (input == "1") {
                 cout << "Digite uma palavra para buscar: ";
+                string word;
                 cin >> word;
-            } else if (word == "2") {
+                
+                SearchResult result = search(tree, word);
+                
+                if (result.found) {
+                    cout << "Palavra '" << word << "' encontrada nos documentos: ";
+                    for (int id : result.documentIds) {
+                        cout << id << " ";
+                    }
+                    cout << endl;
+                } else {
+                    cout << "Palavra '" << word << "' nao encontrada." << endl;
+                }
+                cout << "Comparacoes: " << result.numComparisons << endl;
+                cout << "Tempo (ms): " << result.executionTime << endl;
+                
+            } else if (input == "2") {
                 printTree(tree);
-            } else if (word == "3") {
+                
+            } else if (input == "3") {
                 printIndex(tree);
-            } else if (word == "\\q") {
+                
+            } else if (input == "\\q") {
                 break;
+                
             } else {
                 cout << "Opcao invalida." << endl;
-                printMenu();
-                continue;
             }
-
-            // Search the BST for the given word
-            SearchResult result = search(tree, word);
-
-            // Print search results
-            if (result.found) {
-                cout << "Palavra '" << word << "' encontrada nos documentos: ";
-                for (int id : result.documentIds) {
-                    cout << id << " ";
-                }
-                cout << endl;
-            } else {
-                cout << "Palavra '" << word << "' nao encontrada em nenhum documento." << endl;
-            }
-
-            // Print performance metrics
-            cout << "Comparacoes feitas: " << result.numComparisons << endl;
-            cout << "Tempo de execucao (ms): " << result.executionTime << endl;
-
+            
             printMenu();
         }
     } else {
-        // Placeholder for future stats functionality
         cout << "Ainda nao implementado: stats" << endl;
     }
 
-    // Clean up memory allocated for the BST
     destroy(tree);
-
-    return 0; 
+    return 0;
+ 
 }
