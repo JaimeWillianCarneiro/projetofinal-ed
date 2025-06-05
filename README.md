@@ -79,4 +79,4 @@ Execute o arquivo test_bst.cpp separadamente para validar o funcionamento da ár
 g++ src/test_bst.cpp src/bst.cpp src/tree_utils.cpp -o test_bst
 ./test_bst
 ```
-Aqui as funções são testadas com algumas frases aleaórias.
+Aqui as funções são testadas com algumas frases aleatórias.

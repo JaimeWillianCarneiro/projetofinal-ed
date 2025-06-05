@@ -22,11 +22,11 @@ void printUsage() {
 
 // Prints menu options
 void printMenu() {
-    cout << "\nSelecione uma das opcoes (digite '\\o_<num_option>'):" << endl;
+    cout << "\nSelecione uma das opcoes (digite '\\<num_option>'):" << endl;
     cout << "1. Pesquisar uma palavra." << endl;
     cout << "2. Printar a arvore." << endl;
     cout << "3. Printar Indice Invertido." << endl;
-    cout << "Ou digite '\\q' para sair (ou ctrl + c)." << endl;
+    cout << "Ou digite '\\q' para sair. (ou ctrl + c)" << endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -61,12 +61,12 @@ int main(int argc, char* argv[]) {
         
         // Loop until user enters "sair" to exit
         while (cin >> word) {
-            if (word == "\\o_1") {
+            if (word == "1") {
                 cout << "Digite uma palavra para buscar: ";
                 cin >> word;
-            } else if (word == "\\o_2") {
+            } else if (word == "2") {
                 printTree(tree);
-            } else if (word == "\\o_3") {
+            } else if (word == "3") {
                 printIndex(tree);
             } else if (word == "\\q") {
                 break;
