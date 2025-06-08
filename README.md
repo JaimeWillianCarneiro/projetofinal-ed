@@ -67,16 +67,37 @@ Exemplo:
 ```bash
 ./bst search 5 "./data/"
 ```
-O programa carregará os arquivos 0.txt até 4.txt e permitirá buscar palavras. Digite "sair" para encerrar.
+O programa carregará os arquivos 0.txt até 4.txt e permitirá buscar palavras. Digite "\q" ou use Ctrl + C para encerrar.
 
 ---
 
 ## Testes
 
+Aqui as funções foram testadas com algumas frases aleatórias.
+
+### Execução
+
 Execute o arquivo test_bst.cpp separadamente para validar o funcionamento da árvore:
+#### (Windows)
 
 ```bash
-g++ src/test_bst.cpp src/bst.cpp src/tree_utils.cpp -o test_bst
+g++ src/test_bst.cpp src/bst.cpp src/tree_utils.cpp -o src/test_bst
 ./test_bst
 ```
-Aqui as funções são testadas com algumas frases aleatórias.
+Para deletar o executável:
+
+```bash
+del src/test_bst.exe
+```
+
+#### (Linux/macOS)
+
+```bash
+g++ src/test_bst.cpp src/bst.cpp src/tree_utils.cpp -o src/test_bst -I./src -std=c++17
+./src/test_bst
+```
+Para deletar o executável:
+
+```bash
+rm -f src\test_bst
+```
