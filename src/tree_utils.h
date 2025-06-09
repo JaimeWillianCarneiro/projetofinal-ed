@@ -40,8 +40,6 @@ namespace TREE_UTILS {
         double executionTime;
         // <Possíveis outras variáveis>
     };
-
-
     
     struct SearchResult {
         int found;

@@ -50,7 +50,7 @@ namespace BST {
 
         // Apply binary search in bst until find the correct position to word.
         Node* parent = tree->root;
-        Node* nextParent;
+        Node* nextParent = nullptr;
 
         while (parent != nullptr) {
             insResult.numComparisons++;
@@ -146,13 +146,4 @@ namespace BST {
         // Libera a estrutura principal da árvore
         delete tree;
     }
-
-
-
-
-
-    
-
-    
-
 }

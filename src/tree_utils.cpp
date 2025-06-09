@@ -6,7 +6,6 @@
 using std::cout, std::endl;
 
 namespace TREE_UTILS {
-
     // Função auxiliar para fazer in-order traversal e imprimir cada nó
     void printIndexInOrder(Node* node) {
         if (node == nullptr) return;
@@ -71,7 +70,6 @@ namespace TREE_UTILS {
 
     int binarySearch(vector<int> documentIds, int docId, int start, int end) {
         // Stop condition.
-
         if (start > end) {
             return start;
         }

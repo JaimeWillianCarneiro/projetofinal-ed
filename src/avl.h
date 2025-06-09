@@ -8,19 +8,24 @@ using std::string;
 using namespace TREE_UTILS;
 
 namespace AVL {
+    /**
+     * @brief Initialize a empty node.
+     * @return Created node.
+     */
+    Node* initializeNode();
 
     /**
-     * @brief Cria uma árvore AVL vazia.
-     * @return Ponteiro para a árvore criada.
+     * @brief Initialize a binary tree.
+     * @return AVL created.
      */
     BinaryTree* create();
 
     /**
-     * @brief Insere uma palavra na árvore AVL e atualiza ou cria a lista de documentos onde essa palavra aparece.
-     * @param tree Árvore AVL onde a palavra será inserida.
-     * @param word Palavra a ser inserida.
-     * @param documentId ID do documento onde a palavra foi encontrada.
-     * @return Dados de benchmark para análise de desempenho.
+     * @brief Insert a word in AVL and update or create a list of documents where this word appears.
+     * @param tree BST where to insert the word.
+     * @param word Alias for the word to be inserted.
+     * @param documentId Id of the document where the word was found.
+     * @return Benchmark datas to analyse the complexity of AVL.
      */
     InsertResult insert(BinaryTree* tree, const string& word, int documentId);
 
@@ -37,7 +42,6 @@ namespace AVL {
      * @param tree Ponteiro para a árvore.
      */
     void destroy(BinaryTree* tree);
-
 }
 
 #endif
