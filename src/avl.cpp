@@ -55,9 +55,9 @@ namespace AVL {
         // Tree haven't root
         Node* newNode = initializeNode();
         newNode->word = word;
+        newNode->height = 0;
         newNode->documentIds.push_back(documentId);
         if (tree->root == nullptr) {
-            newNode->height = 0;
             tree->root = newNode;
             auto end = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(end - start);
@@ -92,14 +92,23 @@ namespace AVL {
             parent = nextParent;
         }
 
-        // Insert new node in correct position
+        // Insert new node in correct position.
         if (newNode->word > parent->word) {
             parent->right = newNode;
         } else {
             parent->left = newNode;
         }
         newNode->parent = parent;
-        newNode->height = 0;
+
+        // Update height until find first imbalance Node.
+        Node* nodeUpdate = parent;
+        int balanceFactor = getBalanceFactor(nodeUpdate);
+        while (balanceFactor != 0) { // When balanceFactor is zero, the add of newNode doesn't alter the height of nodeUpdate and it's parents.
+            nodeUpdate->height++;
+            nodeUpdate = nodeUpdate->parent;
+            if (nodeUpdate == nullptr) break; // Find root -> stop.
+            balanceFactor = getBalanceFactor(nodeUpdate);
+        }
 
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start);

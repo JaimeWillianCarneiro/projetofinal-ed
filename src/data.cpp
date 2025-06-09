@@ -1,6 +1,6 @@
 #include "data.h"
 #include "tree_utils.h"
-#include "bst.h"
+#include "avl.h"
 
 #include <iostream>
 #include <cstring>
@@ -12,7 +12,7 @@
 
 using namespace std;
 using namespace TREE_UTILS;
-using namespace BST;
+using namespace AVL;
 
 namespace DATA{
 
