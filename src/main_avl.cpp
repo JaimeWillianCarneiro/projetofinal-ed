@@ -16,18 +16,18 @@ void bfsPrintHeight(Node* root) {
     if (root == nullptr) return;
     int height = -1;
     vector<Node*> q;
-    vector<vector<int>> p;
+    vector<vector<string>> p;
     q.push_back(root);
     bool again = true;
     int maxWord = 0;
     while (again) {
         again = false;
         height++;
-        vector<int> nivel;
+        vector<string> nivel;
         int temp = q.size();
         for (int each_item_q = 0; each_item_q < temp; each_item_q++) {
             if (q[0] == nullptr) {
-                nivel.push_back(0);
+                nivel.push_back("-1");
                 q.push_back(nullptr);
                 q.push_back(nullptr);
                 q.erase(q.begin());
@@ -35,7 +35,7 @@ void bfsPrintHeight(Node* root) {
             }
             again = true;
             maxWord = maxWord < q[0]->word.size() ? q[0]->word.size() : maxWord;
-            nivel.push_back(q[0]->height);
+            nivel.push_back(to_string(q[0]->height));
             q.push_back(q[0]->left);
             q.push_back(q[0]->right);
             q.erase(q.begin());
@@ -50,10 +50,15 @@ void bfsPrintHeight(Node* root) {
     for (int n = 0; n <= height-1; n++) {
         gap /= 2;
         for (int i = 0; i < pow(2, n); i++) {
+            if (p[n][i] == "-1") {
+                cout << string((2 * gap + maxWord - 1), ' ');
+                continue;
+            }
+            
             cout << string((gap/2 + 1), ' ');
             cout << string(gap/2 - maxWord/2, '_');
             if (i < p[n].size()) {
-                complete = maxWord - 1; //p[n][i].size();
+                complete = maxWord - p[n][i].size();
                 cout << string(complete/2, ' ');
                 cout << p[n][i];
                 cout << string((complete + 1) / 2, ' ');
@@ -109,6 +114,10 @@ void bfsPrint(Node* root) {
     for (int n = 0; n <= height-1; n++) {
         gap /= 2;
         for (int i = 0; i < pow(2, n); i++) {
+            if (p[n][i] == "*") {
+                cout << string((2 * gap + maxWord - 1), ' ');
+                continue;
+            }
             cout << string((gap/2 + 1), ' ');
             cout << string(gap/2 - maxWord/2, '_');
             if (i < p[n].size()) {
