@@ -42,6 +42,30 @@ namespace AVL {
         return node ? getHeight(node->left) - getHeight(node->right) : 0;
     }
 
+    void sideRotate(Node* parent, Node* son, int grandSide, int rotateSide) {
+        // Swap son and parent, making the parent inherit the grandchildren on the opposite side of the rotation.
+        if (rotateSide == 0) {
+            parent->right = son->left;
+            if (parent->right != nullptr) parent->right->parent = parent;
+            son->left = parent;
+        } else {
+            parent->left = son->right;
+            if (parent->left != nullptr) parent->left->parent = parent;
+            son->right = parent;
+        }
+        // The parent's parent inherit the son as his son.
+        son->parent = parent->parent;
+        if (grandSide == 0) {
+            son->parent->right = son;
+        } else if (grandSide == 1) {
+            son->parent->left = son;
+        }
+        parent->parent = son;
+        // Update height of nodes.
+        updateHeight(parent);
+        updateHeight(son);
+    }
+
     InsertResult insert(BinaryTree* tree, const string& word, int documentId) {
         InsertResult insResult = InsertResult{0, 0.0};
         auto start = high_resolution_clock::now();
@@ -101,13 +125,55 @@ namespace AVL {
         newNode->parent = parent;
 
         // Update height until find first imbalance Node.
-        Node* nodeUpdate = parent;
-        int balanceFactor = getBalanceFactor(nodeUpdate);
-        while (balanceFactor != 0) { // When balanceFactor is zero, the add of newNode doesn't alter the height of nodeUpdate and it's parents.
-            nodeUpdate->height++;
-            nodeUpdate = nodeUpdate->parent;
-            if (nodeUpdate == nullptr) break; // Find root -> stop.
-            balanceFactor = getBalanceFactor(nodeUpdate);
+        Node* nodeUpdateHeight = parent;
+        Node* firstImbalanceNode = nullptr;
+        int balanceFactor = getBalanceFactor(nodeUpdateHeight);
+        while (balanceFactor != 0 && firstImbalanceNode == nullptr) { // When balanceFactor is zero, the add of newNode doesn't alter the height of nodeUpdateHeight and it's parents.
+            // When find the first imbalance, the height of its parents doesnt change after rotate.
+            if ((balanceFactor) / 2 != 0) {  // Balance factors(0 or 1) / 2 = round(x), with x < 1, them round(x) = 0.
+                firstImbalanceNode = nodeUpdateHeight;
+                break;
+            }
+            nodeUpdateHeight->height++;
+            nodeUpdateHeight = nodeUpdateHeight->parent;
+            if (nodeUpdateHeight == nullptr) break; // Find root -> stop.
+            balanceFactor = getBalanceFactor(nodeUpdateHeight);
+        }
+
+        // Apply rotate if necessary
+        if (firstImbalanceNode != nullptr) {
+            int grandSide = 0, firstSide = 0, secondSide = 0; // 0 - left, 1 - right (default left).
+            
+            // firstImbalanceNode father there is, for default, on it's left.
+            if (firstImbalanceNode->parent != nullptr) {
+                if (firstImbalanceNode->parent->left == firstImbalanceNode) grandSide = 1;
+            } else { //firstImbalanceNode is the root.
+                grandSide = -1;
+            }
+
+            // Define the side of firsImbalance subtree where newNode was added (default is left).
+            Node* sonToRotate = firstImbalanceNode->left;
+            if (getBalanceFactor(firstImbalanceNode) < 0) { 
+                firstSide = 1;
+                sonToRotate = firstImbalanceNode->right;
+            }
+
+            // Define the side of the newNode was added in firstImbalanceNode subtree (default is left).
+            Node* grandChildToRotate = sonToRotate->left;
+            if (getBalanceFactor(sonToRotate) < 0) {
+                secondSide = 1;
+                grandChildToRotate = sonToRotate->right;
+            }
+
+            // If necessary, apply a second rotate.
+            if (firstSide != secondSide) {
+                sideRotate(sonToRotate, grandChildToRotate, static_cast<int>(!firstSide), static_cast<int>(!secondSide));
+                Node* temp = sonToRotate;
+                sonToRotate = grandChildToRotate;
+                grandChildToRotate = temp;
+            }
+            sideRotate(firstImbalanceNode, sonToRotate, grandSide, static_cast<int>(!firstSide));
+            if (grandSide == -1) tree->root = sonToRotate; // Update tree's root if firstImbalanceNode is the root.
         }
 
         auto end = high_resolution_clock::now();
@@ -121,39 +187,37 @@ namespace AVL {
     SearchResult search(BinaryTree* tree, const string& word) {
          SearchResult result{0, {}, 0.0, 0};
 
-    if (tree == nullptr || tree->root == nullptr) {
-            return result;
-    
-    }
-    auto start = high_resolution_clock::now(); // Inicia contagem de tempo
-
-    Node* current = tree->root;
-    while (current) {
+        if (tree == nullptr || tree->root == nullptr) {
+                return result;
         
-        result.numComparisons++; // Conta cada comparação
-
-        if (word == current->word) {
-            // Palavra encontrada
-            result.found = 1;
-            result.documentIds = current->documentIds;
-            break;
-        } else if (word < current->word) {
-             // Busca na subárvore esquerda
-            current = current->left;
-        } else {
-            //  Busca na subárvore direita
-            current = current->right;
         }
+        auto start = high_resolution_clock::now(); // Inicia contagem de tempo
+
+        Node* current = tree->root;
+        while (current) {
+            
+            result.numComparisons++; // Conta cada comparação
+
+            if (word == current->word) {
+                // Palavra encontrada
+                result.found = 1;
+                result.documentIds = current->documentIds;
+                break;
+            } else if (word < current->word) {
+                // Busca na subárvore esquerda
+                current = current->left;
+            } else {
+                //  Busca na subárvore direita
+                current = current->right;
+            }
+        }
+
+        // Finaliza cálculo do tempo
+        auto end = high_resolution_clock::now();
+        result.executionTime = duration_cast<microseconds>(end - start).count() / 1000.0;
+
+        return result;
     }
-
-     // Finaliza cálculo do tempo
-    auto end = high_resolution_clock::now();
-    result.executionTime = duration_cast<microseconds>(end - start).count() / 1000.0;
-
-    return result;
-}
-
-
 
     // Libera recursivamente os nós da árvore
      void destroyNode(Node* node) {
