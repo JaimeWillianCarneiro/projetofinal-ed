@@ -1,43 +1,83 @@
-#ifndef AVL_H
-#define AVL_H
+#include "avl.h"
+#include <chrono>
+#include <algorithm>
 
-#include <string>
-#include "tree_utils.h"
-
-using std::string;
+using namespace std::chrono;
 using namespace TREE_UTILS;
+
 
 namespace AVL {
 
-    /**
-     * @brief Cria uma árvore AVL vazia.
-     * @return Ponteiro para a árvore criada.
-     */
-    BinaryTree* create();
+    // Retorna a altura de um nó (ou -1 se for nulo)
+    int getHeight(Node* node) {
+        return node ? node->height : -1;
+    }
 
-    /**
-     * @brief Insere uma palavra na árvore AVL e atualiza ou cria a lista de documentos onde essa palavra aparece.
-     * @param tree Árvore AVL onde a palavra será inserida.
-     * @param word Palavra a ser inserida.
-     * @param documentId ID do documento onde a palavra foi encontrada.
-     * @return Dados de benchmark para análise de desempenho.
-     */
-    InsertResult insert(BinaryTree* tree, const string& word, int documentId);
+    // Atualiza a altura de um nó com base nas alturas dos filhos
+    void updateHeight(Node* node) {
+        node->height = std::max(getHeight(node->left), getHeight(node->right)) + 1;
+    }
+    
+    // Retorna o fator de balanceamento de um nó (esq - dir)
+     int getBalanceFactor(Node* node) {
+        return node ? getHeight(node->left) - getHeight(node->right) : 0;
+    }
 
-    /**
-     * @brief Busca uma palavra na AVL.
-     * @param tree Ponteiro para a árvore.
-     * @param word Palavra a ser buscada.
-     * @return SearchResult com os resultados da busca.
-     */
-    SearchResult search(BinaryTree* tree, const string& word);
 
-    /**
-     * @brief Libera toda a memória da árvore AVL.
-     * @param tree Ponteiro para a árvore.
-     */
-    void destroy(BinaryTree* tree);
 
+    // Busca uma palavra na AVL e retorna se foi encontrada e em quais documentos
+    SearchResult search(BinaryTree* tree, const string& word) {
+         SearchResult result{0, {}, 0.0, 0};
+
+    if (tree == nullptr || tree->root == nullptr) {
+            return result;
+    
+    }
+    auto start = high_resolution_clock::now(); // Inicia contagem de tempo
+
+    Node* current = tree->root;
+    while (current) {
+        
+        result.numComparisons++; // Conta cada comparação
+
+        if (word == current->word) {
+            // Palavra encontrada
+            result.found = 1;
+            result.documentIds = current->documentIds;
+            break;
+        } else if (word < current->word) {
+             // Busca na subárvore esquerda
+            current = current->left;
+        } else {
+            //  Busca na subárvore direita
+            current = current->right;
+        }
+    }
+
+     // Finaliza cálculo do tempo
+    auto end = high_resolution_clock::now();
+    result.executionTime = duration_cast<microseconds>(end - start).count() / 1000.0;
+
+    return result;
 }
 
-#endif
+
+
+    // Libera recursivamente os nós da árvore
+     void destroyNode(Node* node) {
+        if (!node) return;
+        destroyNode(node->left);
+        destroyNode(node->right);
+        delete node;
+    }
+
+    // Libera toda a árvore AVL
+    void destroy(BinaryTree* tree) {
+        if (!tree) return;
+        destroyNode(tree->root);
+        delete tree;
+    }
+}
+
+
+
