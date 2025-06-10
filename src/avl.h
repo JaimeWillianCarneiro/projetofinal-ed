@@ -51,6 +51,9 @@ namespace AVL {
      * @param tree Ponteiro para a árvore.
      */
     void destroy(BinaryTree* tree);
+
+    int getHeight(Node* node);
+    int getBalanceFactor(Node* node);
 }
 
 #endif

@@ -138,6 +138,50 @@ void printTreeAlt(BinaryTree* tree) {
 }
 
 
+// Função para coletar estatísticas avançadas da árvore
+void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance) {
+    if (!node) return;
+    
+    nodeCount++;
+    totalDepth += currentDepth;
+    minDepth = min(minDepth, currentDepth);
+    
+    int balance = getBalanceFactor(node);
+    maxImbalance = max(maxImbalance, abs(balance));
+    
+    collectTreeStats(node->left, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
+    collectTreeStats(node->right, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
+}
+
+void printStatistics(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
+    if (!tree || !tree->root) {
+        cout << "Arvore vazia!" << endl;
+        return;
+    }
+
+    int totalDepth = 0, nodeCount = 0, minDepth = INT_MAX, maxImbalance = 0;
+    collectTreeStats(tree->root, 0, totalDepth, nodeCount, minDepth, maxImbalance);
+
+    cout << "\n=== ESTATISTICAS AVL ===" << endl;
+    cout << "------ Estruturais ------" << endl;
+    cout << "Altura da arvore: " << getHeight(tree->root) << endl;
+    cout << "Nos totais: " << nodeCount << endl;
+    cout << "Profundidade media: " << fixed << (double)totalDepth/nodeCount << endl;
+    cout << "Fator de balanceamento maximo: " << maxImbalance << endl;
+    
+    cout << "\n------ Desempenho ------" << endl;
+    cout << "Documentos indexados: " << n_docs << endl;
+    cout << "Tempo total indexacao: " << totalTime << " ms" << endl;
+    cout << "Ultima insercao:" << endl;
+    cout << "  • Comparacoes: " << lastInsert.numComparisons << endl;
+    cout << "  • Tempo: " << lastInsert.executionTime << " ms" << endl;
+    cout << "=========================" << endl;
+}
+
+
+
+
+
 int main() {
     BinaryTree* avl = create();
 
