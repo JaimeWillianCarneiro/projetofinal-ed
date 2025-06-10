@@ -16,7 +16,7 @@ using namespace AVL;
 
 namespace DATA{
 
-    void readDataFromFile(string address, int documentId, BinaryTree* tree){
+    void readDataFromFile(string address, int documentId, BinaryTree* tree, InsertResult& stats){
         string word;
         ifstream myfile(address);
         if (myfile.is_open())
@@ -31,20 +31,31 @@ namespace DATA{
                 transform(word.begin(), word.end(), word.begin(), ::tolower);
 
                 // Add the word to the tree
-                InsertResult new_insert = insert(tree, word, documentId);
-            }
+
+            if (!word.empty()) {
+                auto start = high_resolution_clock::now();
+                InsertResult result = insert(tree, word, documentId);
+                auto end = high_resolution_clock::now();
+                
+                // Acumula estatísticas
+                stats.numComparisons += result.numComparisons;
+                stats.executionTime += duration_cast<microseconds>(end - start).count() / 1000.0;
+            }            }
             myfile.close();
             return;
         }
     }
     
-    void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree){
+    void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree,InsertResult& stats ){
+        
+        stats = {0, 0.0}; // reset das estatisticas
+
         for (int i = 0; i < number_files; i++){
             string address (directory);
             address += to_string(i);
             address += ".txt";
             
-            readDataFromFile(address, i, tree);
+            readDataFromFile(address, i, tree, stats);
         }
         return;
     }
