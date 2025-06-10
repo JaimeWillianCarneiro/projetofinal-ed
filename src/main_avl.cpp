@@ -10,12 +10,29 @@
 using namespace std;
 using namespace TREE_UTILS;
 using namespace AVL;
+using namespace DATA;
 
-// Prints usage instructions
 void printUsage() {
     cout << "Uso correto:" << endl;
     cout << "./bst search <n_docs> <diretorio>" << endl;
     cout << "./bst stats <n_docs> <diretorio>" << endl;
+}
+
+void printMenuSearch() {
+    cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
+    cout << "1. Pesquisar uma palavra." << endl;
+    cout << "2. Printar a arvore." << endl;
+    cout << "3. Printar Indice Invertido." << endl;
+    cout << "Ou digite '\\q' para sair. (ou ctrl + c)" << endl;
+}
+
+// Prints menu options
+void printMenuStats() {
+    cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
+    cout << "1. Ver todas as stats." << endl;
+    cout << "2. Tempo de inserção." << endl;
+    cout << "3. Número de comparações por operação" << endl;
+    cout << "Ou digite '\\q' para sair. (ou ctrl + c)" << endl;
 }
 
 void bfsPrintHeight(Node* root) {
@@ -191,8 +208,6 @@ void printStatistics(BinaryTree* tree, const InsertResult& lastInsert, double to
 
 
 int main() {
-
-
     BinaryTree* avl = create();
 
     string nodes[6] = {"3", "1", "5", "2", "4", "6"};
@@ -234,6 +249,8 @@ int main() {
     printTreeAlt(avl);
     printTreeHeight(avl);
     cout << "Comparacoes: " << insResult.numComparisons << "\nTempo: " << insResult.executionTime << "\n\n";
+
+    */
 }
 
 
