@@ -10,11 +10,20 @@
 using namespace std;
 using namespace TREE_UTILS;
 using namespace AVL;
+using namespace DATA;
 
 void printUsage() {
     cout << "Uso correto:" << endl;
     cout << "./bst search <n_docs> <diretorio>" << endl;
     cout << "./bst stats <n_docs> <diretorio>" << endl;
+}
+
+void printMenuSearch() {
+    cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
+    cout << "1. Pesquisar uma palavra." << endl;
+    cout << "2. Printar a arvore." << endl;
+    cout << "3. Printar Indice Invertido." << endl;
+    cout << "Ou digite '\\q' para sair. (ou ctrl + c)" << endl;
 }
 
 // Prints menu options
@@ -196,9 +205,122 @@ void printStatistics(BinaryTree* tree, const InsertResult& lastInsert, double to
 
 
 
-int main() {
+int main(int argc, char* argv[]) {
 
-    
+    // Check if the correct number of arguments is provided
+    if (argc != 4) {
+        printUsage();
+        return 1;
+    }
+
+    // Parse command line arguments
+    string command   = argv[1];       // Either "search" or "stats"
+    int n_docs       = stoi(argv[2]); // Number of documents to process
+    string directory = argv[3];       // Directory containing the documents
+
+    // Validate command argument
+    if (command != "search" && command != "stats") {
+        cerr << "Erro: Comando invalido!" << endl;
+        printUsage();
+        return 1;
+    }
+
+    // Create an empty Binary Search Tree (BST)
+    BinaryTree* tree = create();
+
+    // Read files from the specified directory and insert data into the BST
+    readFilesFromDirectory(n_docs, directory, tree);
+
+    if (command == "search") {
+        string input;
+        printMenuSearch();
+        
+        while (true) {
+            cout << "\nOpcao: ";
+            cin >> input;
+
+            if (input == "1") {
+                cout << "Digite uma palavra para buscar: ";
+                string word;
+                cin >> word;
+                
+                SearchResult result = search(tree, word);
+                
+                if (result.found) {
+                    cout << "Palavra '" << word << "' encontrada nos documentos: ";
+                    for (int id : result.documentIds) {
+                        cout << id << " ";
+                    }
+                    cout << endl;
+                } else {
+                    cout << "Palavra '" << word << "' nao encontrada." << endl;
+                }
+                cout << "Comparacoes: " << result.numComparisons << endl;
+                cout << "Tempo (ms): " << result.executionTime << endl;
+            } else if (input == "2") {
+                printTree(tree);
+                
+            } else if (input == "3") {
+                printIndex(tree);
+                
+            } else if (input == "\\q") {
+                break;
+                
+            } else {
+                cout << "Opcao invalida." << endl;
+            }
+            
+            printMenuSearch();
+        }
+
+    } else if (command == "stats"){
+
+        while (true) {
+            cout << "\nOpcao: ";
+            cin >> input;
+
+            string input;
+            printMenuStats();
+
+            if (input == "1"){
+                printStatistics(tree, InsertResult& lastInsert, totalTime, n_docs);
+            } else if (input == "2") {
+                cout << "Tempo de inserção: " << endl;
+                cout << " • Tempo médio " << endl;
+                cout << " • Tempo total " <<  endl; 
+
+            } else if (input == "3") {
+                cout << "Tempo de busca: " << endl;
+                cout << " • Tempo médio " << endl;
+                cout << " • Tempo total " << totalTime << " ms" << endl;
+            } else if (input == "4") {
+                cout << " Número de comparações por operação" << endl;
+
+            } else if (input == "5") {
+                cout << " • Áltura da árvore" << endl;
+
+            } else if (input == "6") {
+                cout << "Tamanho dos galhos:" <<  endl;
+                cout << " • Maior" << endl;
+                cout << " • Menor" << endl;
+            
+            } else {
+                cout << " Opcao invalida." << endl;
+            }
+            
+            printMenuStats();
+        }
+
+    } else{
+        cout << "Comando inválido"
+
+        printUsage();
+    }
+
+    destroy(tree);
+    return 0;
+
+
     /*
     BinaryTree* avl = create();
 
