@@ -4,7 +4,7 @@ Integrantes: Carlos Daniel de Souza Lima, Gabriela Barbosa Souza, Gabrielly Este
 
 ## Introdução
 
-Este projeto implementa uma árvore binária de busca (BST) para indexar palavras de vários documentos de texto. O sistema permite inserir palavras associadas aos documentos onde aparecer e realizar buscas por essas palavras.
+Para a segunda entrega do projeto criamos a implementa uma árvore binária de busca autobalanceada (AVL) para indexar palavras de vários documentos de texto. O sistema permite inserir palavras associadas aos documentos onde aparecer e realizar buscas por essas palavras.
 
 ---
 
@@ -19,7 +19,7 @@ A implementação utiliza as seguintes bibliotecas:
 - `<fstream>` – Auxilia na leitura dos arquivos.
 - `<algorithm>` – Utilizada (indiretamente) para busca binária, se necessário.
 - `<cstring>` – Manipulação de strings.
-- `<cctype>` – Auxília na formatação das palavras.
+- `<cctype>` – Auxílio na formatação das palavras.
 
 ---
 
@@ -39,65 +39,51 @@ mingw32-make clean
 
 #### Para compilar manualmente
 -  Para compilar:
-
 ```bash
-g++ -c .\src\main_bst.cpp -o main_bst.o
-g++ -c .\src\bst.cpp -o bst.o
+g++ -c .\src\main_avl.cpp -o main_avl.o
+g++ -c .\src\avl.cpp -o avl.o
 g++ -c .\src\tree_utils.cpp -o tree_utils.o
 g++ -c .\src\data.cpp -o data.o
 ```
 > Se estiver no Linux/macOS, troque `.\src\` por `./src/`
 
 
-Linke todos os `.o` para criar o executável `bst.exe` (no Windows):
+Linke todos os `.o` para criar o executável `avl.exe` (no Windows):
 
 ```bash
-g++ main_bst.o bst.o tree_utils.o data.o -o bst.exe
+g++ main_avl.o avl.o tree_utils.o data.o -o avl.exe
 ```
 
-> No Linux/macOS, apenas use `bst` ao invés de `bst.exe`
+> No Linux/macOS, apenas use `avl`
 
 
 ### Modo de busca:
 
 ```bash
-./bst search <n_docs> <diretorio>
+./avl search <n_docs> <diretorio>
 ```
 Exemplo:
 ```bash
-./bst search 5 "./data/"
+./avl search 5 "./data/"
 ```
-O programa carregará os arquivos 0.txt até 4.txt e permitirá buscar palavras. Digite "\q" ou use Ctrl + C para encerrar.
+O programa carregará os arquivos 0.txt até 4.txt e permitirá buscar palavras. Digite "sair" para encerrar.
 
 ---
 
 ## Testes
 
-Aqui as funções foram testadas com algumas frases aleatórias.
-
-### Execução
-
-Execute o arquivo test_bst.cpp separadamente para validar o funcionamento da árvore:
-#### (Windows)
+Execute o arquivo test_avl.cpp separadamente para validar o funcionamento da árvore:
 
 ```bash
-g++ src/test_bst.cpp src/bst.cpp src/tree_utils.cpp -o src/test_bst
-./test_bst
+g++ src/test_avl.cpp src/avl.cpp src/tree_utils.cpp -o test_avl
+./test_avl
 ```
-Para deletar o executável:
+### Passo a passo:
+
+1. Abra o terminal na pasta do projeto (projetofinal-ed\src).
+
+2. Compile o projeto com o comando:
 
 ```bash
-del src/test_bst.exe
-```
-
-#### (Linux/macOS)
-
-```bash
-g++ src/test_bst.cpp src/bst.cpp src/tree_utils.cpp -o src/test_bst -I./src -std=c++17
-./src/test_bst
-```
-Para deletar o executável:
-
-```bash
-rm -f src\test_bst
+g++ -o test_avl test_avl.cpp avl.cpp tree_utils.cpp
 ```
