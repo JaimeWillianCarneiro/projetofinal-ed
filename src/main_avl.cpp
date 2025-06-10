@@ -199,8 +199,8 @@ void printStatistics(BinaryTree* tree, const InsertResult& lastInsert, double to
     cout << "Documentos indexados: " << n_docs << endl;
     cout << "Tempo total indexacao: " << totalTime << " ms" << endl;
     cout << "Ultima insercao:" << endl;
-    cout << "  • Comparacoes: " << lastInsert.numComparisons << endl;
-    cout << "  • Tempo: " << lastInsert.executionTime << " ms" << endl;
+    cout << "* Comparacoes: " << lastInsert.numComparisons << endl;
+    cout << "* Tempo: " << lastInsert.executionTime << " ms" << endl;
     cout << "=========================" << endl;
 }
 
@@ -366,13 +366,17 @@ int main(int argc, char* argv[]) {
                 cout << " • Maior" << endl;
                 cout << " • Menor" << endl;
             
-            } else {
+            } else if (command == "\\q"){
+                break;
+            }
+                
+                else {
                 cout << " Opcao invalida." << endl;
             }
             
             printMenuStats();
-        }
-        } else{
+    
+        } } else{
             cout << "Comando inválido";
 
             printUsage();
