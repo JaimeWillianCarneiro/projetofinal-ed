@@ -9,9 +9,11 @@
 #include <string>
 #include <algorithm>
 #include <cctype>
-
+#include <chrono>
 using namespace std;
 using namespace TREE_UTILS;
+using namespace AVL;
+using namespace std::chrono;
 using namespace AVL;
 
 namespace DATA{
@@ -46,7 +48,7 @@ namespace DATA{
         }
     }
     
-    void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree,InsertResult& stats ){
+    void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree, InsertResult& stats ){
         
         stats = {0, 0.0}; // reset das estatisticas
 
@@ -54,6 +56,7 @@ namespace DATA{
             string address (directory);
             address += to_string(i);
             address += ".txt";
+            string word;
             
             readDataFromFile(address, i, tree, stats);
         }

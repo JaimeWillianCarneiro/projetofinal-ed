@@ -16,7 +16,7 @@ namespace DATA {
      * @param number_files Number of files to be read
      * @param tree The Binary Tree to be updated
      */
-    void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree);
+    void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree, InsertResult& stats);
 
     /**
      * @brief Read the data from the file specified by the address

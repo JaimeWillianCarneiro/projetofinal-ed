@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
-
+#include <chrono>
 #include "avl.h"
 #include "tree_utils.h"
 #include "data.h"
@@ -11,6 +11,7 @@ using namespace std;
 using namespace TREE_UTILS;
 using namespace AVL;
 using namespace DATA;
+using namespace std::chrono;
 
 void printUsage() {
     cout << "Uso correto:" << endl;
@@ -30,8 +31,8 @@ void printMenuSearch() {
 void printMenuStats() {
     cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
     cout << "1. Ver todas as stats." << endl;
-    cout << "2. Tempo de inserção." << endl;
-    cout << "3. Número de comparações por operação" << endl;
+    cout << "2. Tempo de insercao." << endl;
+    cout << "3. Numero de comparacoes por operacao" << endl;
     cout << "Ou digite '\\q' para sair. (ou ctrl + c)" << endl;
 }
 
@@ -179,7 +180,7 @@ void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCo
 }
 
 void printStatistics(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
-    if (!tree || !tree->root) {
+    if (tree == nullptr || tree->root== nullptr) {
         cout << "Arvore vazia!" << endl;
         return;
     }
@@ -206,8 +207,9 @@ void printStatistics(BinaryTree* tree, const InsertResult& lastInsert, double to
 
 
 
-
+/*
 int main() {
+    
     BinaryTree* avl = create();
 
     string nodes[6] = {"3", "1", "5", "2", "4", "6"};
@@ -250,8 +252,9 @@ int main() {
     printTreeHeight(avl);
     cout << "Comparacoes: " << insResult.numComparisons << "\nTempo: " << insResult.executionTime << "\n\n";
 
-    */
+    
 }
+    */
 
 
 
@@ -279,14 +282,22 @@ int main(int argc, char* argv[]) {
 
     // Create an empty Binary Search Tree (BST)
     BinaryTree* tree = create();
+    InsertResult lastInsert = {0, 0.0};
+    // Modificado para capturar tempo total
+
+    auto start = chrono::high_resolution_clock::now();
+    
+    readFilesFromDirectory(n_docs, directory, tree, lastInsert); // Você precisará atualizar esta função
+    auto end = chrono::high_resolution_clock::now();
+    double totalTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
     // Read files from the specified directory and insert data into the BST
-    readFilesFromDirectory(n_docs, directory, tree);
+    // readFilesFromDirectory(n_docs, directory, tree);
 
     // If command is "search", allow user to query words
   if (command == "search") {
         string input;
-        printMenu();
+        printMenuSearch();
         
         while (true) {
             cout << "\nOpcao: ";
@@ -324,11 +335,49 @@ int main(int argc, char* argv[]) {
                 cout << "Opcao invalida." << endl;
             }
             
-            printMenu();
+            printMenuSearch();
         }
-    } else {
-        cout << "Ainda nao implementado: stats" << endl;
-    }
+    } else  if (command == "stats"){
+        string input;
+        printMenuStats();
+        while (true) {
+            cout << "\nOpcao: ";
+            cin >> input;
+
+            if (input == "1"){
+                printStatistics(tree,  lastInsert, totalTime, n_docs);
+            } else if (input == "2") {
+                cout << "Tempo de inserção: " << endl;
+                cout << " • Tempo médio " << endl;
+                cout << " • Tempo total " <<  endl; 
+
+            } else if (input == "3") {
+                cout << "Tempo de busca: " << endl;
+                cout << " • Tempo médio " << endl;
+                cout << " • Tempo total " << totalTime << " ms" << endl;
+            } else if (input == "4") {
+                cout << " Número de comparações por operação" << endl;
+
+            } else if (input == "5") {
+                cout << " • Áltura da árvore" << endl;
+
+            } else if (input == "6") {
+                cout << "Tamanho dos galhos:" <<  endl;
+                cout << " • Maior" << endl;
+                cout << " • Menor" << endl;
+            
+            } else {
+                cout << " Opcao invalida." << endl;
+            }
+            
+            printMenuStats();
+        }
+        } else{
+            cout << "Comando inválido";
+
+            printUsage();
+
+        }
 
     destroy(tree);
     return 0;
