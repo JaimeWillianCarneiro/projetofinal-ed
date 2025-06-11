@@ -17,6 +17,8 @@ using namespace AVL;
 namespace DATA{
 
     void readDataFromFile(string address, int documentId, BinaryTree* tree){
+        if(tree == nullptr) return;
+
         string word;
         ifstream myfile(address);
         if (myfile.is_open())
@@ -29,16 +31,24 @@ namespace DATA{
                 
                 // Check for capital letters
                 transform(word.begin(), word.end(), word.begin(), ::tolower);
-
+                if (word.empty()) continue;
                 // Add the word to the tree
                 InsertResult new_insert = insert(tree, word, documentId);
             }
             myfile.close();
             return;
+        } else {
+            cout << "Erro ao abrir o arquivo: " << address << endl;
         }
     }
     
     void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree){
+        if (number_files <= 0) {
+            cout << "Erro: número de arquivos inválido (" << number_files << ")." << endl;
+            return;
+        }
+
+        
         for (int i = 0; i < number_files; i++){
             string address (directory);
             address += to_string(i);

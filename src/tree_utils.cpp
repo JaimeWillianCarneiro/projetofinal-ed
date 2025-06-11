@@ -69,6 +69,11 @@ namespace TREE_UTILS {
     }
 
     int binarySearch(vector<int> documentIds, int docId, int start, int end) {
+        if (documentIds.empty()) {
+            cout << "Aviso: vetor de documentos vazio em binarySearch()." << endl;
+            return 0;
+        }
+        
         // Stop condition.
         if (start > end) {
             return start;

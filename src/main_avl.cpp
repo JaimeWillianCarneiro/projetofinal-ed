@@ -86,6 +86,7 @@ void bfsPrintHeight(Node* root) {
 }
 
 void printTreeHeight(BinaryTree* tree) {
+    if(tree == nullptr) return;
     bfsPrintHeight(tree->root);
 }
 
@@ -148,6 +149,7 @@ void bfsPrint(Node* root) {
 }
 
 void printTreeAlt(BinaryTree* tree) {
+    if(tree == nullptr) return;
     bfsPrint(tree->root);
 }
 

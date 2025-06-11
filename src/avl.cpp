@@ -34,6 +34,8 @@ namespace AVL {
 
     // Atualiza a altura de um nó com base nas alturas dos filhos
     void updateHeight(Node* node) {
+        if(node == nullptr) return;
+
         node->height = std::max(getHeight(node->left), getHeight(node->right)) + 1;
     }
     
@@ -43,6 +45,8 @@ namespace AVL {
     }
 
     void sideRotate(Node* parent, Node* son, int grandSide, int rotateSide) {
+        if (parent == nullptr || son == nullptr) return;
+
         // Swap son and parent, making the parent inherit the grandchildren on the opposite side of the rotation.
         if (rotateSide == 0) {
             parent->right = son->left;
@@ -69,7 +73,7 @@ namespace AVL {
     InsertResult insert(BinaryTree* tree, const string& word, int documentId) {
         InsertResult insResult = InsertResult{0, 0.0};
         auto start = high_resolution_clock::now();
-        if (tree == nullptr) {
+        if (tree == nullptr || word.empty()) {
             auto end = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(end - start);
             insResult.executionTime = duration.count()/1000;
@@ -185,12 +189,12 @@ namespace AVL {
 
     // Busca uma palavra na AVL e retorna se foi encontrada e em quais documentos
     SearchResult search(BinaryTree* tree, const string& word) {
-         SearchResult result{0, {}, 0.0, 0};
+        SearchResult result{0, {}, 0.0, 0};
 
-        if (tree == nullptr || tree->root == nullptr) {
-                return result;
-        
+        if (tree == nullptr || tree->root == nullptr || word.empty()) {
+            return result;
         }
+
         auto start = high_resolution_clock::now(); // Inicia contagem de tempo
 
         Node* current = tree->root;
