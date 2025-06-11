@@ -38,7 +38,7 @@ mingw32-make clean
 ```
 
 #### Para compilar manualmente
--  Para compilar:
+- Para compilar:
 ```bash
 g++ -c .\src\main_avl.cpp -o main_avl.o
 g++ -c .\src\avl.cpp -o avl.o
@@ -47,32 +47,40 @@ g++ -c .\src\data.cpp -o data.o
 ```
 > Se estiver no Linux/macOS, troque `.\src\` por `./src/`
 
+Linke todos os `.o` para criar o executável `avl.exe`:
 
-Linke todos os `.o` para criar o executável `avl.exe` (no Windows):
+> No Windows:
 
 ```bash
 g++ main_avl.o avl.o tree_utils.o data.o -o avl.exe
 ```
 
-> No Linux/macOS, apenas use `avl`
+> No Linux/macOS:
 
+```bash
+g++ main_avl.o avl.o tree_utils.o data.o -o avl
+```
+---
 
-### Modo de busca:
+### Como usar
+#### Com os arquivos compilados, você escolherá  a *árvore* (por enquanto, bst ou avl), o *modo* (search ou stats), o *número de documentos a serem incluídos* e a *pasta com os dados* da seguinte forma:
 
 ```bash
 ./avl search <n_docs> <diretorio>
 ```
-Exemplo:
+Exemplo de search:
 ```bash
 ./avl search 5 "./data/"
 ```
-O programa carregará os arquivos 0.txt até 4.txt e permitirá buscar palavras. Digite "sair" para encerrar.
+O programa carregará os arquivos em ordem numérica, neste caso, carregará de 0.txt até 4.txt. 
+O modo *search* permitirá buscar palavras.
+Digite "sair" ou dê Ctrl + C para encerrar.
 
 ---
 
 ## Testes
 
-Execute o arquivo test_avl.cpp separadamente para validar o funcionamento da árvore:
+No terminal, execute o arquivo test_avl.cpp separadamente para validar o funcionamento dos recursos da árvore AVL:
 
 ```bash
 g++ src/test_avl.cpp src/avl.cpp src/tree_utils.cpp -o test_avl
@@ -87,3 +95,4 @@ g++ src/test_avl.cpp src/avl.cpp src/tree_utils.cpp -o test_avl
 ```bash
 g++ -o test_avl test_avl.cpp avl.cpp tree_utils.cpp
 ```
+
