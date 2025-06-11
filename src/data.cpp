@@ -52,7 +52,7 @@ namespace DATA{
         }
     }
     
-    void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree){
+    void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree, InsertResult& stats){
         for (int i = 0; i < number_files; i++){
             string address (directory);
             address += to_string(i);
