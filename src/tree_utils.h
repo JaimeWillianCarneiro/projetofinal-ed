@@ -42,6 +42,27 @@ namespace TREE_UTILS {
      */
     void printTree(BinaryTree* tree);
 
+    /**
+     * @brief Use an alternative order to print right nodes first.
+     * @param node Center node.
+     * @param depth Node's depth.
+     * @param maxWordForNivel Vector with gap to nodes in each level.
+     * @param restos Auxiliar vector to print edges in correct order.
+     */
+    void inverseOrderTransversePrint(Node* node, int depth, vector<int> maxWordForNivel, vector<int> restos[]);
+
+    /**
+     * @brief Use bfs to get size of gaps to each node in each depth.
+     * @param root Tree's root.
+     */
+    void bfsPrintLateral(Node* root);
+
+    /**
+     * @brief Print a tree in left to right.
+     * @param tree Tree to print.
+     */
+    void printTreeLateral(BinaryTree* tree);
+
     struct InsertResult {
         int numComparisons;
         double executionTime;
