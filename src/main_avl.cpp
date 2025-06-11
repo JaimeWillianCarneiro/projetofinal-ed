@@ -260,62 +260,9 @@ void printBasicStructureStats(BinaryTree* tree) {
     cout << "Nos totais: " << stats.nodeCount << endl;
     cout << "Altura da arvore: " << stats.height << endl;
     cout << "Fator de balanceamento maximo: " << stats.maxImbalance << endl;
-    cout << "Densidade da arvore: " << fixed << setprecision(2) 
-         << (stats.nodeCount > 0 ? (double)stats.nodeCount / pow(2, stats.height + 1) : 0) << endl;
+    cout << "Densidade da arvore: " << (stats.nodeCount > 0 ? (double)stats.nodeCount / pow(2, stats.height + 1) : 0) << endl;
     cout << "================================" << endl;
 }
-
-
-
-/*
-int main() {
-    
-    BinaryTree* avl = create();
-
-    string nodes[6] = {"3", "1", "5", "2", "4", "6"};
-    for (int eachNode = 0; eachNode < 6; eachNode++) {
-        cout << endl << endl;
-        insert(avl, nodes[eachNode], 0);
-        printTreeHeight(avl);
-        printTreeAlt(avl);
-    }
-
-    cout << "\n\n\n\n";
-    // printTree(avl);
-    printTreeAlt(avl);
-    printTreeHeight(avl);
-
-
-    cout << "\n\n";
-    InsertResult insResult = insert(avl, "0", 2);
-    // printTree(avl);
-    printTreeAlt(avl);
-    printTreeHeight(avl);
-
-    cout << "Comparacoes: " << insResult.numComparisons << "\nTempo: " << insResult.executionTime << "\n\n";
-    insResult = insert(avl, "0.1", 1);
-    // printTree(avl);
-    printTreeAlt(avl);
-    printTreeHeight(avl);
-
-    cout << "Comparacoes: " << insResult.numComparisons << "\nTempo: " << insResult.executionTime << "\n\n";
-
-    insResult = insert(avl, "0.2", 1);
-    // printTree(avl);
-    printTreeAlt(avl);
-    printTreeHeight(avl);
-    cout << "Comparacoes: " << insResult.numComparisons << "\nTempo: " << insResult.executionTime << "\n\n";
-
-    insResult = insert(avl, "0.3", 1);
-    // printTree(avl);
-    printTreeAlt(avl);
-    printTreeHeight(avl);
-    cout << "Comparacoes: " << insResult.numComparisons << "\nTempo: " << insResult.executionTime << "\n\n";
-
-    
-}
-    */
-
 
 
 
@@ -403,9 +350,12 @@ int main(int argc, char* argv[]) {
         while (true) {
             cout << "\nOpcao: ";
             cin >> input;
+            TreeStatistics stats = collectAllStats(tree->root);
 
             if (input == "1"){
-                printAllStatistics(tree,  lastInsert, totalTime, n_docs);
+                cout << "Tempo de insercao: " << endl;
+                cout << " * Tempo medio: " << totalTime/stats.nodeCount <<  endl;
+                cout << " * Tempo total: " << totalTime << " ms" <<  endl;
             } else if (input == "2") {
                 cout << "Tempo de busca: " << endl;
                 cout << " * Tempo medio: " << endl;
@@ -414,16 +364,20 @@ int main(int argc, char* argv[]) {
             } else if (input == "3") {
                 cout << "Numero de comparacoes por operacao: " << endl;
 
+
             } else if (input == "4") {
-                cout << "Altura da arvore: " << endl;
+                cout << "Altura da arvore: "  << stats.height << endl;
+                cout << "Razao altura/nos: " << (stats.nodeCount > 0 ? (double)stats.height / stats.nodeCount : 0) << endl;
+
 
             } else if (input == "5") {
                 cout << "Tamanho dos galhos: " <<  endl;
-                cout << " * Maior: " << endl;
-                cout << " * Menor: " << endl;
-
+                cout << " * Maior galho: " << stats.height<< endl;
+                cout << " * Menor galho: " << stats.minDepth  << endl;
+                cout << "Diferenca: " << stats.height - stats.minDepth << endl;
+                cout << "Profundidade media: "  << stats.averageDepth << endl;
             } else if (input == "6") {
-                printStatistics(tree,  lastInsert, totalTime, n_docs);
+                printAllStats(tree,  lastInsert, totalTime, n_docs);
             
                         } else if (input == "\\q") {
                 break;
