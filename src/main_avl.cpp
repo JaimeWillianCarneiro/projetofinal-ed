@@ -18,7 +18,7 @@ void printUsage() {
     cout << "./bst search <n_docs> <diretorio>" << endl;
     cout << "./bst stats <n_docs> <diretorio>" << endl;
 }
-
+//  print menu search options
 void printMenuSearch() {
     cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
     cout << "1. Pesquisar uma palavra." << endl;
@@ -27,13 +27,13 @@ void printMenuSearch() {
     cout << "Ou digite '\\q' para sair. (ou ctrl + c)" << endl;
 }
 
-// Prints menu options
+// Prints menu stats options
 void printMenuStats() {
     cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
     cout << "1. Tempo de insercao." << endl;
     cout << "2. Tempo de busca." << endl;
     cout << "3. Numero de comparacoes por operacao." << endl;
-    cout << "4. Altura da arvore." << endl;
+    cout << "4. Altura  e densidade da arvore." << endl;
     cout << "5. Tamanho dos galhos." << endl;
     cout << "6. Todas as estatisticas." << endl;
     cout << "Ou digite '\\q' para sair (ou ctrl + c)." << endl;
@@ -168,106 +168,6 @@ void printTreeAlt(BinaryTree* tree) {
 }
 
 
-// Função para coletar estatísticas avançadas da árvore
-void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance) {
-    if (node== nullptr) {
-        return;
-    }
-    
-    nodeCount++;
-    totalDepth += currentDepth;
-    minDepth = min(minDepth, currentDepth);
-    
-    int balance = getBalanceFactor(node);
-    maxImbalance = max(maxImbalance, abs(balance));
-    
-    collectTreeStats(node->left, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
-    collectTreeStats(node->right, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
-}
-
-
-    // Função unificada para coletar todas as estatísticas
-TreeStatistics collectAllStats(Node* root) {
-    TreeStatistics stats;
-    if (root == nullptr) {
-        stats.height = -1;
-        stats.nodeCount = 0;
-        stats.averageDepth = 0.0;
-        stats.minDepth = 0;
-        stats.maxImbalance = 0;
-        return stats;
-    }
-
-    int totalDepth = 0, nodeCount = 0, minDepth = INT_MAX, maxImbalance = 0;
-    collectTreeStats(root, 0, totalDepth, nodeCount, minDepth, maxImbalance);
-
-    stats.height = getHeight(root);
-    stats.nodeCount = nodeCount;
-    stats.averageDepth = nodeCount > 0 ? (double)totalDepth / nodeCount : 0.0;
-    stats.minDepth = minDepth;
-    stats.maxImbalance = maxImbalance;
-
-    return stats;
-}
-
-
-
-void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
-    TreeStatistics stats = collectAllStats(tree->root);
-    
-    cout << "\n=== TODAS ESTATISTICAS ===" << endl;
-    cout << "------ Estruturais ------" << endl;
-    cout << "Altura da arvore: " << stats.height << endl;
-    cout << "Nos totais: " << stats.nodeCount << endl;
-    cout << "Profundidade media: " << stats.averageDepth << endl;
-    cout << "Profundidade minima: " << stats.minDepth << endl;
-    cout << "Fator de balanceamento maximo: " << stats.maxImbalance << endl;
-    
-    cout << "\n------ Desempenho ------" << endl;
-    cout << "Documentos indexados: " << n_docs << endl;
-    cout << "Tempo total indexacao: " << totalTime << " ms" << endl;
-    cout << "Ultima insercao:" << endl;
-    cout << "* Comparacoes: " << lastInsert.numComparisons << endl;
-    cout << "* Tempo: " << lastInsert.executionTime << " ms" << endl;
-    cout << "=========================" << endl;
-}
-
-void printTreeHeightStats(BinaryTree* tree) {
-    TreeStatistics stats = collectAllStats(tree->root);
-    
-    cout << "\n=== ESTATISTICAS DE ALTURA ===" << endl;
-    cout << "Altura da arvore: " << stats.height << endl;
-    cout << "Profundidade minima: " << stats.minDepth << endl;
-    cout << "Razão altura/nós: " << (stats.nodeCount > 0 ? (double)stats.height / stats.nodeCount : 0) << endl;
-    cout << "==============================" << endl;
-}
-
-void printBranchStats(BinaryTree* tree) {
-    TreeStatistics stats = collectAllStats(tree->root);
-    
-    cout << "\n=== ESTATISTICAS DOS GALHOS ===" << endl;
-    cout << "Maior profundidade (galho mais longo): " << stats.height << endl;
-    cout << "Menor profundidade (galho mais curto): " << stats.minDepth << endl;
-    cout << "Diferença: " << stats.height - stats.minDepth << endl;
-    cout << "Profundidade media: " << stats.averageDepth << endl;
-    cout << "=================================" << endl;
-}
-
-void printBasicStructureStats(BinaryTree* tree) {
-    TreeStatistics stats = collectAllStats(tree->root);
-    
-    cout << "\n=== ESTATISTICAS ESTRUTURAIS ===" << endl;
-    cout << "Nos totais: " << stats.nodeCount << endl;
-    cout << "Altura da arvore: " << stats.height << endl;
-    cout << "Fator de balanceamento maximo: " << stats.maxImbalance << endl;
-    cout << "Densidade da arvore: " << (stats.nodeCount > 0 ? (double)stats.nodeCount / pow(2, stats.height + 1) : 0) << endl;
-    cout << "================================" << endl;
-}
-
-
-
-
-
 int main(int argc, char* argv[]) {
     // Check if the correct number of arguments is provided
     if (argc != 4) {
@@ -368,7 +268,7 @@ int main(int argc, char* argv[]) {
             } else if (input == "4") {
                 cout << "Altura da arvore: "  << stats.height << endl;
                 cout << "Razao altura/nos: " << (stats.nodeCount > 0 ? (double)stats.height / stats.nodeCount : 0) << endl;
-
+                cout << "Densidade da arvore: " << (stats.nodeCount > 0 ? (double)stats.nodeCount / pow(2, stats.height + 1) : 0)  << endl;
 
             } else if (input == "5") {
                 cout << "Tamanho dos galhos: " <<  endl;

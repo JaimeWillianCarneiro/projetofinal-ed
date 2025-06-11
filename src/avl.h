@@ -52,8 +52,8 @@ namespace AVL {
      */
     void destroy(BinaryTree* tree);
 
-    int getHeight(Node* node);
-    int getBalanceFactor(Node* node);
+    
+    
 }
 
 #endif

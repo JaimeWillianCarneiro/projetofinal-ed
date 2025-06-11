@@ -34,10 +34,7 @@ namespace AVL {
         return tree;
     }
     // Retorna a altura de um nó (ou -1 se for nulo)
-    int getHeight(Node* node) {
-        return node ? node->height : -1;
-    }
-
+   
     // Atualiza a altura de um nó com base nas alturas dos filhos
     void updateHeight(Node* node) {
         if(node == nullptr) return;
@@ -45,10 +42,7 @@ namespace AVL {
         node->height = std::max(getHeight(node->left), getHeight(node->right)) + 1;
     }
     
-    // Retorna o fator de balanceamento de um nó (esq - dir)
-     int getBalanceFactor(Node* node) {
-        return node ? getHeight(node->left) - getHeight(node->right) : 0;
-    }
+    
 
     void sideRotate(Node* parent, Node* son, int grandSide, int rotateSide) {
         if (parent == nullptr || son == nullptr) return;

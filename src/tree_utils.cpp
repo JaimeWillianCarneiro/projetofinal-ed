@@ -2,9 +2,10 @@
 #include <vector>
 #include <string>
 #include "tree_utils.h"
-
+#include <algorithm>
 using std::cout;
 using std::endl;
+using namespace std;
 
 namespace TREE_UTILS {
     // Função auxiliar para fazer in-order traversal e imprimir cada nó
@@ -91,8 +92,84 @@ namespace TREE_UTILS {
     }
 
 
+     int getHeight(Node* node) {
+        return node ? node->height : -1;
+    }
 
 
+
+
+    // Retorna o fator de balanceamento de um nó (esq - dir)
+     int getBalanceFactor(Node* node) {
+        return node ? getHeight(node->left) - getHeight(node->right) : 0;
+    }
+
+
+
+
+
+    // Função para coletar estatísticas avançadas da árvore
+void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance) {
+    if (node== nullptr) {
+        return;
+    }
+    
+    nodeCount++;
+    totalDepth += currentDepth;
+    minDepth = min(minDepth, currentDepth);
+    
+    int balance = getBalanceFactor(node);
+    maxImbalance = max(maxImbalance, abs(balance));
+    
+    collectTreeStats(node->left, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
+    collectTreeStats(node->right, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
+}
+
+
+        // Função unificada para coletar todas as estatísticas
+TreeStatistics collectAllStats(Node* root) {
+    TreeStatistics stats;
+    if (root == nullptr) {
+        stats.height = -1;
+        stats.nodeCount = 0;
+        stats.averageDepth = 0.0;
+        stats.minDepth = 0;
+        stats.maxImbalance = 0;
+        return stats;
+    }
+
+    int totalDepth = 0, nodeCount = 0, minDepth = INT_MAX, maxImbalance = 0;
+    collectTreeStats(root, 0, totalDepth, nodeCount, minDepth, maxImbalance);
+
+    stats.height = getHeight(root);
+    stats.nodeCount = nodeCount;
+    stats.averageDepth = nodeCount > 0 ? (double)totalDepth / nodeCount : 0.0;
+    stats.minDepth = minDepth;
+    stats.maxImbalance = maxImbalance;
+
+    return stats;
+}
+
+
+void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
+    TreeStatistics stats = collectAllStats(tree->root);
+    
+    cout << "\n=== TODAS ESTATISTICAS ===" << endl;
+    cout << "------ Estruturais ------" << endl;
+    cout << "Altura da arvore: " << stats.height << endl;
+    cout << "Nos totais: " << stats.nodeCount << endl;
+    cout << "Profundidade media: " << stats.averageDepth << endl;
+    cout << "Profundidade minima: " << stats.minDepth << endl;
+    cout << "Fator de balanceamento maximo: " << stats.maxImbalance << endl;
+    
+    cout << "\n------ Desempenho ------" << endl;
+    cout << "Documentos indexados: " << n_docs << endl;
+    cout << "Tempo total indexacao: " << totalTime << " ms" << endl;
+    cout << "Ultima insercao:" << endl;
+    cout << "* Comparacoes: " << lastInsert.numComparisons << endl;
+    cout << "* Tempo: " << lastInsert.executionTime << " ms" << endl;
+    cout << "=========================" << endl;
+}
 
 
 }
