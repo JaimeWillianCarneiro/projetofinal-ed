@@ -187,7 +187,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Create an empty Binary Search Tree (AVL)
+    // Create an empty Binary Search Tree (BST)
     BinaryTree* tree = create();
     InsertResult lastInsert = {0, 0.0};
     // Modificado para capturar tempo total
@@ -281,7 +281,6 @@ int main(int argc, char* argv[]) {
                 cout << "Razao maior/menor galho: N/A (menor galho eh zero)" << endl;
     }
                 cout << "Profundidade media: "  << stats.averageDepth << endl;
-
             } else if (input == "6") {
                 printAllStats(tree,  lastInsert, totalTime, n_docs);
             
