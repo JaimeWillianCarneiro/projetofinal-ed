@@ -187,7 +187,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Create an empty Binary Search Tree (BST)
+    // Create an empty Binary Search Tree (AVL)
     BinaryTree* tree = create();
     InsertResult lastInsert = {0, 0.0};
     // Modificado para capturar tempo total
@@ -267,7 +267,7 @@ int main(int argc, char* argv[]) {
 
             } else if (input == "4") {
                 cout << "Altura da arvore: "  << stats.height << endl;
-                cout << "Razao altura/nos: " << (stats.nodeCount > 0 ? (double)stats.height / stats.nodeCount : 0) << endl;
+                cout << "Razao nos/alturas: " << (stats.nodeCount > 0 ? (double)stats.nodeCount/ stats.height : 0) << endl;
                 cout << "Densidade da arvore: " << (stats.nodeCount > 0 ? (double)stats.nodeCount / pow(2, stats.height + 1) : 0)  << endl;
 
             } else if (input == "5") {
@@ -275,7 +275,9 @@ int main(int argc, char* argv[]) {
                 cout << " * Maior galho: " << stats.height<< endl;
                 cout << " * Menor galho: " << stats.minDepth  << endl;
                 cout << "Diferenca: " << stats.height - stats.minDepth << endl;
+                cout <<  "Razao maior/menor galho" <<   stats.height/ stats.minDepth  << endl;
                 cout << "Profundidade media: "  << stats.averageDepth << endl;
+
             } else if (input == "6") {
                 printAllStats(tree,  lastInsert, totalTime, n_docs);
             
