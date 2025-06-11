@@ -29,6 +29,14 @@ void printMenu() {
     cout << "Ou digite '\\q' para sair. (ou ctrl + c)" << endl;
 }
 
+void printMenuStats(){
+    cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
+    cout << "1. Analisar estatísticas." << endl;
+    cout << "2. Printar a arvore." << endl;
+    cout << "3. Printar Indice Invertido." << endl;
+    cout << "Ou digite '\\q' para sair. (ou ctrl + c)" << endl;
+
+}
 int main(int argc, char* argv[]) {
     // Check if the correct number of arguments is provided
     if (argc != 4) {

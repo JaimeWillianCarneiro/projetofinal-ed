@@ -9,14 +9,16 @@
 #include <string>
 #include <algorithm>
 #include <cctype>
-
+#include <chrono>
 using namespace std;
 using namespace TREE_UTILS;
+using namespace AVL;
+using namespace std::chrono;
 using namespace AVL;
 
 namespace DATA{
 
-    void readDataFromFile(string address, int documentId, BinaryTree* tree){
+    void readDataFromFile(string address, int documentId, BinaryTree* tree, InsertResult& stats){
         if(tree == nullptr) return;
 
         string word;
@@ -33,8 +35,16 @@ namespace DATA{
                 transform(word.begin(), word.end(), word.begin(), ::tolower);
                 if (word.empty()) continue;
                 // Add the word to the tree
-                InsertResult new_insert = insert(tree, word, documentId);
-            }
+
+            if (!word.empty()) {
+                auto start = high_resolution_clock::now();
+                InsertResult result = insert(tree, word, documentId);
+                auto end = high_resolution_clock::now();
+                
+                // Acumula estatísticas
+                stats.numComparisons += result.numComparisons;
+                stats.executionTime += duration_cast<microseconds>(end - start).count() / 1000.0;
+            }            }
             myfile.close();
             return;
         } else {
@@ -43,18 +53,13 @@ namespace DATA{
     }
     
     void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree){
-        if (number_files <= 0) {
-            cout << "Erro: número de arquivos inválido (" << number_files << ")." << endl;
-            return;
-        }
-
-        
         for (int i = 0; i < number_files; i++){
             string address (directory);
             address += to_string(i);
             address += ".txt";
+            string word;
             
-            readDataFromFile(address, i, tree);
+            readDataFromFile(address, i, tree, stats);
         }
         return;
     }
