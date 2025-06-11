@@ -30,10 +30,14 @@ void printMenuSearch() {
 // Prints menu options
 void printMenuStats() {
     cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
-    cout << "1. Ver todas as stats." << endl;
-    cout << "2. Tempo de insercao." << endl;
-    cout << "3. Numero de comparacoes por operacao" << endl;
-    cout << "Ou digite '\\q' para sair. (ou ctrl + c)" << endl;
+    cout << "1. Tempo de insercao." << endl;
+    cout << "2. Tempo de busca." << endl;
+    cout << "3. Numero de comparacoes por operacao." << endl;
+    cout << "4. Altura da arvore." << endl;
+    cout << "5. Tamanho dos galhos." << endl;
+    cout << "6. Todas as estatisticas." << endl;
+    cout << "Ou digite '\\q' para sair (ou ctrl + c)." << endl;
+
 }
 
 void bfsPrintHeight(Node* root) {
@@ -347,45 +351,42 @@ int main(int argc, char* argv[]) {
             cin >> input;
 
             if (input == "1"){
-                printStatistics(tree,  lastInsert, totalTime, n_docs);
+                cout << "Tempo de insercao: " << endl;
+                cout << " * Tempo medio: " << endl;
+                cout << " * Tempo total: " <<  endl;
+
             } else if (input == "2") {
-                cout << "Tempo de inserção: " << endl;
-                cout << " • Tempo médio " << endl;
-                cout << " • Tempo total " <<  endl; 
+                cout << "Tempo de busca: " << endl;
+                cout << " * Tempo medio: " << endl;
+                cout << " * Tempo total: " << totalTime << " ms" << endl;
 
             } else if (input == "3") {
-                cout << "Tempo de busca: " << endl;
-                cout << " • Tempo médio " << endl;
-                cout << " • Tempo total " << totalTime << " ms" << endl;
+                cout << "Numero de comparacoes por operacao: " << endl;
+
             } else if (input == "4") {
-                cout << " Número de comparações por operação" << endl;
+                cout << "Altura da arvore: " << endl;
 
             } else if (input == "5") {
-                cout << " • Áltura da árvore" << endl;
+                cout << "Tamanho dos galhos: " <<  endl;
+                cout << " * Maior: " << endl;
+                cout << " * Menor: " << endl;
 
             } else if (input == "6") {
-                cout << "Tamanho dos galhos:" <<  endl;
-                cout << " • Maior" << endl;
-                cout << " • Menor" << endl;
+                printStatistics(tree,  lastInsert, totalTime, n_docs);
             
-            } else if (command == "\\q"){
+                        } else if (input == "\\q") {
                 break;
-            }
-                
-                else {
-                cout << " Opcao invalida." << endl;
+            } else {
+                cout << "Opcao invalida." << endl;
             }
             
             printMenuStats();
-    
-        } } else{
-            cout << "Comando inválido";
-
-            printUsage();
-
         }
+    } else {
+        cout << "Comando invalido";
+        printUsage();
+    }
 
     destroy(tree);
     return 0;
- 
 }

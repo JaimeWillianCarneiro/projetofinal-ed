@@ -1,11 +1,17 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <string>
 #include "avl.h"
 #include "tree_utils.h"
 #include <algorithm>
 
-using std::cin, std::cout, std::endl, std::string, std::vector;
+using std::cin;
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+
 using namespace std::chrono;
 using namespace TREE_UTILS;
 

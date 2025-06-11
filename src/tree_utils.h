@@ -3,8 +3,15 @@
 
 #include <iostream>
 #include <vector>
+#include <climits>
+#include <vector>
+#include <string>
 
-using std::cin, std::cout, std::endl, std::string, std::vector;
+using std::cin;
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
 
 namespace TREE_UTILS {
     struct Node {
@@ -61,7 +68,7 @@ namespace TREE_UTILS {
  * 
  * @note Função auxiliar usada durante a inserção de documentos
  */
-    int binarySearch(vector<int> documentIds, int docId, int start, int end);
+    int binarySearch(std::vector<int> documentIds, int docId, int start, int end);
 
 
 
