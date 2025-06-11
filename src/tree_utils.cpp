@@ -3,7 +3,8 @@
 #include <string>
 #include "tree_utils.h"
 
-using std::cout, std::endl;
+using std::cout;
+using std::endl;
 
 namespace TREE_UTILS {
     // Função auxiliar para fazer in-order traversal e imprimir cada nó
