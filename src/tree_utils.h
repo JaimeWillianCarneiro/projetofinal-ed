@@ -22,6 +22,12 @@ namespace TREE_UTILS {
         Node* right;
         int height;   // Usado na AVL
         int isRed;    // Usado na RBT
+
+
+        // Novos campos para estatísticas de busca
+        double totalSearchTime = 0.0;
+        int totalSearchComparisons = 0;
+        int searchCount = 0;
     };
 
     struct BinaryTree {

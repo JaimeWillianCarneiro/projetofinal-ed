@@ -267,7 +267,6 @@ int main(int argc, char* argv[]) {
 
             } else if (input == "4") {
                 cout << "Altura da arvore: "  << stats.height << endl;
-                cout << "Razao nos/alturas: " << (stats.nodeCount > 0 ? (double)stats.nodeCount/ stats.height : 0) << endl;
                 cout << "Densidade da arvore: " << (stats.nodeCount > 0 ? (double)stats.nodeCount / pow(2, stats.height + 1) : 0)  << endl;
 
             } else if (input == "5") {
@@ -275,7 +274,12 @@ int main(int argc, char* argv[]) {
                 cout << " * Maior galho: " << stats.height<< endl;
                 cout << " * Menor galho: " << stats.minDepth  << endl;
                 cout << "Diferenca: " << stats.height - stats.minDepth << endl;
-                cout <<  "Razao maior/menor galho" <<   stats.height/ stats.minDepth  << endl;
+                // Correção: verificar se minDepth não é zero antes de dividir
+            if (stats.minDepth != 0) {
+                cout << "Razao maior/menor galho: " << static_cast<double>(stats.height) / stats.minDepth << endl;
+            } else {
+                cout << "Razao maior/menor galho: N/A (menor galho eh zero)" << endl;
+    }
                 cout << "Profundidade media: "  << stats.averageDepth << endl;
 
             } else if (input == "6") {
