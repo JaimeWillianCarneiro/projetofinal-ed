@@ -181,21 +181,43 @@ void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCo
     collectTreeStats(node->right, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
 }
 
-void printStatistics(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
-    if (tree == nullptr || tree->root== nullptr) {
-        cout << "Arvore vazia!" << endl;
-        return;
+
+    // Função unificada para coletar todas as estatísticas
+TreeStatistics collectAllStats(Node* root) {
+    TreeStatistics stats;
+    if (root == nullptr) {
+        stats.height = -1;
+        stats.nodeCount = 0;
+        stats.averageDepth = 0.0;
+        stats.minDepth = 0;
+        stats.maxImbalance = 0;
+        return stats;
     }
 
     int totalDepth = 0, nodeCount = 0, minDepth = INT_MAX, maxImbalance = 0;
-    collectTreeStats(tree->root, 0, totalDepth, nodeCount, minDepth, maxImbalance);
+    collectTreeStats(root, 0, totalDepth, nodeCount, minDepth, maxImbalance);
 
-    cout << "\n=== ESTATISTICAS AVL ===" << endl;
+    stats.height = getHeight(root);
+    stats.nodeCount = nodeCount;
+    stats.averageDepth = nodeCount > 0 ? (double)totalDepth / nodeCount : 0.0;
+    stats.minDepth = minDepth;
+    stats.maxImbalance = maxImbalance;
+
+    return stats;
+}
+
+
+
+void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
+    TreeStatistics stats = collectAllStats(tree->root);
+    
+    cout << "\n=== TODAS ESTATISTICAS ===" << endl;
     cout << "------ Estruturais ------" << endl;
-    cout << "Altura da arvore: " << getHeight(tree->root) << endl;
-    cout << "Nos totais: " << nodeCount << endl;
-    cout << "Profundidade media: " << fixed << (double)totalDepth/nodeCount << endl;
-    cout << "Fator de balanceamento maximo: " << maxImbalance << endl;
+    cout << "Altura da arvore: " << stats.height << endl;
+    cout << "Nos totais: " << stats.nodeCount << endl;
+    cout << "Profundidade media: " << stats.averageDepth << endl;
+    cout << "Profundidade minima: " << stats.minDepth << endl;
+    cout << "Fator de balanceamento maximo: " << stats.maxImbalance << endl;
     
     cout << "\n------ Desempenho ------" << endl;
     cout << "Documentos indexados: " << n_docs << endl;
@@ -206,6 +228,38 @@ void printStatistics(BinaryTree* tree, const InsertResult& lastInsert, double to
     cout << "=========================" << endl;
 }
 
+void printTreeHeightStats(BinaryTree* tree) {
+    TreeStatistics stats = collectAllStats(tree->root);
+    
+    cout << "\n=== ESTATISTICAS DE ALTURA ===" << endl;
+    cout << "Altura da arvore: " << stats.height << endl;
+    cout << "Profundidade minima: " << stats.minDepth << endl;
+    cout << "Razão altura/nós: " << (stats.nodeCount > 0 ? (double)stats.height / stats.nodeCount : 0) << endl;
+    cout << "==============================" << endl;
+}
+
+void printBranchStats(BinaryTree* tree) {
+    TreeStatistics stats = collectAllStats(tree->root);
+    
+    cout << "\n=== ESTATISTICAS DOS GALHOS ===" << endl;
+    cout << "Maior profundidade (galho mais longo): " << stats.height << endl;
+    cout << "Menor profundidade (galho mais curto): " << stats.minDepth << endl;
+    cout << "Diferença: " << stats.height - stats.minDepth << endl;
+    cout << "Profundidade media: " << stats.averageDepth << endl;
+    cout << "=================================" << endl;
+}
+
+void printBasicStructureStats(BinaryTree* tree) {
+    TreeStatistics stats = collectAllStats(tree->root);
+    
+    cout << "\n=== ESTATISTICAS ESTRUTURAIS ===" << endl;
+    cout << "Nos totais: " << stats.nodeCount << endl;
+    cout << "Altura da arvore: " << stats.height << endl;
+    cout << "Fator de balanceamento maximo: " << stats.maxImbalance << endl;
+    cout << "Densidade da arvore: " << fixed << setprecision(2) 
+         << (stats.nodeCount > 0 ? (double)stats.nodeCount / pow(2, stats.height + 1) : 0) << endl;
+    cout << "================================" << endl;
+}
 
 
 
@@ -347,7 +401,7 @@ int main(int argc, char* argv[]) {
             cin >> input;
 
             if (input == "1"){
-                printStatistics(tree,  lastInsert, totalTime, n_docs);
+                printAllStatistics(tree,  lastInsert, totalTime, n_docs);
             } else if (input == "2") {
                 cout << "Tempo de inserção: " << endl;
                 cout << " • Tempo médio " << endl;

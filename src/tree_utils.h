@@ -90,6 +90,20 @@ namespace TREE_UTILS {
 */
     void printIndex(BinaryTree* tree);
 
+
+    // Estrutura para armazenar todas as estatísticas coletadas
+    struct TreeStatistics {
+        int height;
+        int nodeCount;
+        double averageDepth;
+        int minDepth;
+        int maxImbalance;
+};
+
+    // TreeStatistics collectAllStats(Node* root);
+
+    // void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance);
+
 }
 
 #endif // TREE_UTILS_H
