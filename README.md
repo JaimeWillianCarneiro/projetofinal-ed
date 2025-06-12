@@ -4,7 +4,7 @@ Integrantes: Carlos Daniel de Souza Lima, Gabriela Barbosa Souza, Gabrielly Este
 
 ## Introdução
 
-Para a segunda entrega do projeto criamos a implementa uma árvore binária de busca autobalanceada (AVL) para indexar palavras de vários documentos de texto. O sistema permite inserir palavras associadas aos documentos onde aparecer e realizar buscas por essas palavras.
+Para a segunda entrega do projeto criamos a implementação de uma árvore binária de busca autobalanceada (AVL) para indexar palavras de vários documentos de texto. O sistema permite inserir palavras associadas aos documentos onde aparecer e realizar buscas por essas palavras, além de implementarmos algumas estatísticas relavantes para compará-la com a BST previamente criada.
 
 ---
 
@@ -24,15 +24,13 @@ A implementação utiliza as seguintes bibliotecas:
 ---
 
 ## Instruções para Compilar e Executar
-### Para compilar você pode utilizar o Makefile (no `Windows`):
+### Para compilar você pode utilizar o Makefile (no **Windows**):
 
- - Para compilar
+- Para compilar
 ```bash
 mingw32-make
 ```
-
 - Para limpar os arquivos .o
-
 ```bash
 mingw32-make clean
 ```
@@ -50,37 +48,58 @@ g++ -c .\src\data.cpp -o data.o
 Linke todos os `.o` para criar o executável `avl.exe`:
 
 > No Windows:
-
 ```bash
 g++ main_avl.o avl.o tree_utils.o data.o -o avl.exe
 ```
 
 > No Linux/macOS:
-
 ```bash
 g++ main_avl.o avl.o tree_utils.o data.o -o avl
 ```
+
 ---
 
 ### Como usar
-#### Com os arquivos compilados, você escolherá  a *árvore* (por enquanto, bst ou avl), o *modo* (search ou stats), o *número de documentos a serem incluídos* e a *pasta com os dados* da seguinte forma:
+ Com os arquivos compilados, você escolherá  a *árvore* (por enquanto, bst ou avl), o *modo* (search ou stats), o *número de documentos a serem incluídos* e a *pasta com os dados* da seguinte forma:
 
 ```bash
-./avl search <n_docs> <diretorio>
+./<arvore> <modo> <n_docs> <diretorio>
 ```
-Exemplo de search:
+Exemplo de uso:
 ```bash
-./avl search 5 "./data/"
+./avl stats 5 "./data/"
 ```
 O programa carregará os arquivos em ordem numérica, neste caso, carregará de 0.txt até 4.txt. 
-O modo *search* permitirá buscar palavras.
-Digite "sair" ou dê Ctrl + C para encerrar.
+
+Digite "\q" ou dê Ctrl + C para encerrar.
+
+---
+
+## Estatísticas
+
+Ao usar o modo *stats* o seguinte menu aparecerá:
+
+```
+  Selecione uma das opcoes (Insira apenas o numero):
+  1. Tempo de insercao.
+  2. Altura  e densidade da arvore.
+  3. Tamanho dos galhos.
+  4. Todas as estatisticas.
+  Ou digite '\q' para sair (ou ctrl + c).
+```
+**Opção 1**: são mostrados os tempos médio e total de inserção das palavras dos documentos escolhidos.
+
+**Opção 2**: são mostradas a altura da árvore criada e sua densidade.
+
+**Opção 3**: o programa retorna os tamanhos do maior e menor galhos, diferença e razão entre eles e a profundidade média dos nós.
+
+**Opção 4**: retorna todas as estatísticas citadas de uma única vez
 
 ---
 
 ## Testes
 
-No terminal, execute o arquivo test_avl.cpp separadamente para validar o funcionamento dos recursos da árvore AVL:
+No terminal, execute o arquivo test_avl.cpp separadamente para validar o funcionamento da inserção e busca da árvore AVL:
 
 ```bash
 g++ src/test_avl.cpp src/avl.cpp src/tree_utils.cpp -o test_avl
