@@ -38,6 +38,10 @@ mingw32-make clean
 #### Para compilar manualmente
 - Para compilar:
 ```bash
+g++ -c .\src\main_bst.cpp -o main_bst.o
+g++ -c .\src\bst.cpp -o bst.o
+g++ -c .\src\tree_utils.cpp -o tree_utils.o
+g++ -c .\src\data.cpp -o data.o
 g++ -c .\src\main_avl.cpp -o main_avl.o
 g++ -c .\src\avl.cpp -o avl.o
 g++ -c .\src\tree_utils.cpp -o tree_utils.o
