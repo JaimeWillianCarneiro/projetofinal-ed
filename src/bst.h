@@ -17,7 +17,7 @@ namespace BST {
     Node* initializeNode();
 
     /**
-     * @brief Initialize a binary  tree.
+     * @brief Initialize a binary tree.
      * @return BST created.
      */
     BinaryTree* create();

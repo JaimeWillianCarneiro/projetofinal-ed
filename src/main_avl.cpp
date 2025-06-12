@@ -1,27 +1,25 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <chrono>
-#include <fstream>
 #include <cmath>
-#include "bst.h"
+#include <chrono>
+#include "avl.h"
 #include "tree_utils.h"
 #include "data.h"
 
 using namespace std;
-using namespace std::chrono;
-using namespace DATA;
 using namespace TREE_UTILS;
-using namespace BST;
-// Prints usage instructions
+using namespace AVL;
+using namespace DATA;
+using namespace std::chrono;
+
 void printUsage() {
     cout << "Uso correto:" << endl;
-    cout << "./bst search <n_docs> <diretorio>" << endl;
-    cout << "./bst stats <n_docs> <diretorio>" << endl;
+    cout << "./avl search <n_docs> <diretorio>" << endl;
+    cout << "./avl stats <n_docs> <diretorio>" << endl;
 }
-
-// Prints menu options
-void printMenu() {
+//  print menu search options
+void printMenuSearch() {
     cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
     cout << "1. Pesquisar uma palavra." << endl;
     cout << "2. Printar a arvore." << endl;
@@ -41,6 +39,133 @@ void printMenuStats() {
     cout << "Ou digite '\\q' para sair (ou ctrl + c)." << endl;
 
 }
+
+// void bfsPrintHeight(Node* root) {
+//     if (root == nullptr) return;
+//     int height = -1;
+//     vector<Node*> q;
+//     vector<vector<string>> p;
+//     q.push_back(root);
+//     bool again = true;
+//     int maxWord = 0;
+//     while (again) {
+//         again = false;
+//         height++;
+//         vector<string> nivel;
+//         int temp = q.size();
+//         for (int each_item_q = 0; each_item_q < temp; each_item_q++) {
+//             if (q[0] == nullptr) {
+//                 nivel.push_back("-1");
+//                 q.push_back(nullptr);
+//                 q.push_back(nullptr);
+//                 q.erase(q.begin());
+//                 continue;
+//             }
+//             again = true;
+//             maxWord = maxWord < q[0]->word.size() ? q[0]->word.size() : maxWord;
+//             nivel.push_back(to_string(q[0]->height));
+//             q.push_back(q[0]->left);
+//             q.push_back(q[0]->right);
+//             q.erase(q.begin());
+//         }
+//         p.push_back(nivel);
+//     }
+    
+
+//     int leafs = pow(2, height);
+//     int gap = (maxWord + 1)*(leafs - 1);
+//     int complete;
+//     for (int n = 0; n <= height-1; n++) {
+//         gap /= 2;
+//         for (int i = 0; i < pow(2, n); i++) {
+//             if (p[n][i] == "-1") {
+//                 cout << string((2 * gap + maxWord - 1), ' ');
+//                 continue;
+//             }
+            
+//             cout << string((gap/2 + 1), ' ');
+//             cout << string(gap/2 - maxWord/2, '_');
+//             if (i < p[n].size()) {
+//                 complete = maxWord - p[n][i].size();
+//                 cout << string(complete/2, ' ');
+//                 cout << p[n][i];
+//                 cout << string((complete + 1) / 2, ' ');
+//             }
+//             cout << string(gap/2 - maxWord/2, '_');
+//             cout << string((gap/2 + 2), ' ');
+//         }
+//         cout << endl;
+//     }
+
+// }
+
+// void printTreeHeight(BinaryTree* tree) {
+// //     if(tree == nullptr) return;
+// //     bfsPrintHeight(tree->root);
+// // }
+
+
+// void bfsPrint(Node* root) {
+//     if (root == nullptr) return;
+//     int height = -1;
+//     vector<Node*> q;
+//     vector<vector<string>> p;
+//     q.push_back(root);
+//     bool again = true;
+//     int maxWord = 0;
+//     while (again) {
+//         again = false;
+//         height++;
+//         vector<string> nivel;
+//         int temp = q.size();
+//         for (int each_item_q = 0; each_item_q < temp; each_item_q++) {
+//             if (q[0] == nullptr) {
+//                 nivel.push_back("*");
+//                 q.push_back(nullptr);
+//                 q.push_back(nullptr);
+//                 q.erase(q.begin());
+//                 continue;
+//             }
+//             again = true;
+//             maxWord = maxWord < q[0]->word.size() ? q[0]->word.size() : maxWord;
+//             nivel.push_back(q[0]->word);
+//             q.push_back(q[0]->left);
+//             q.push_back(q[0]->right);
+//             q.erase(q.begin());
+//         }
+//         p.push_back(nivel);
+//     }
+    
+
+//     int leafs = pow(2, height);
+//     int gap = (maxWord + 1)*(leafs - 1);
+//     int complete;
+//     for (int n = 0; n <= height-1; n++) {
+//         gap /= 2;
+//         for (int i = 0; i < pow(2, n); i++) {
+//             if (p[n][i] == "*") {
+//                 cout << string((2 * gap + maxWord - 1), ' ');
+//                 continue;
+//             }
+//             cout << string((gap/2 + 1), ' ');
+//             cout << string(gap/2 - maxWord/2, '_');
+//             if (i < p[n].size()) {
+//                 complete = maxWord - p[n][i].size();
+//                 cout << string(complete/2, ' ');
+//                 cout << p[n][i];
+//                 cout << string((complete + 1) / 2, ' ');
+//             }
+//             cout << string(gap/2 - maxWord/2, '_');
+//             cout << string((gap/2 + 2), ' ');
+//         }
+//         cout << endl;
+//     }
+// }
+
+// void printTreeAlt(BinaryTree* tree) {
+//     if(tree == nullptr) return;
+//     bfsPrint(tree->root);
+// }
 
 
 int main(int argc, char* argv[]) {
@@ -62,20 +187,24 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Create an empty Binary Search Tree (BST)
+    // Create an empty Binary Search Tree (AVL)
     BinaryTree* tree = create();
     InsertResult lastInsert = {0, 0.0};
+    // Modificado para capturar tempo total
 
     auto start = chrono::high_resolution_clock::now();
-    // Read files from the specified directory and insert data into the BST
-    readFilesFromDirectory(n_docs, directory, tree,  lastInsert, BST::insert);
+    
+    readFilesFromDirectory(n_docs, directory, tree, lastInsert, AVL::insert); 
     auto end = chrono::high_resolution_clock::now();
     double totalTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
+
+    // Read files from the specified directory and insert data into the AVL
+    // readFilesFromDirectory(n_docs, directory, tree);
 
     // If command is "search", allow user to query words
   if (command == "search") {
         string input;
-        printMenu();
+        printMenuSearch();
         
         while (true) {
             cout << "\nOpcao: ";
@@ -113,11 +242,9 @@ int main(int argc, char* argv[]) {
                 cout << "Opcao invalida." << endl;
             }
             
-            printMenu();
+            printMenuSearch();
         }
-    } 
-
-    else  if (command == "stats"){
+    } else  if (command == "stats"){
         string input;
         printMenuStats();
         while (true) {
@@ -169,7 +296,7 @@ int main(int argc, char* argv[]) {
         cout << "Comando invalido";
         printUsage();
     }
+
     destroy(tree);
     return 0;
- 
 }

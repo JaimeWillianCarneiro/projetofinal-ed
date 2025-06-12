@@ -28,8 +28,9 @@ namespace BST {
 
     InsertResult insert(BinaryTree* tree, const string& word, int documentId) {
         InsertResult insResult = InsertResult{0, 0.0};
+
         auto start = high_resolution_clock::now();
-        if (tree == nullptr) {
+        if (tree == nullptr || word.empty()) {
             auto end = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(end - start);
             insResult.executionTime = duration.count()/1000;
@@ -50,7 +51,7 @@ namespace BST {
 
         // Apply binary search in bst until find the correct position to word.
         Node* parent = tree->root;
-        Node* nextParent;
+        Node* nextParent = nullptr;
 
         while (parent != nullptr) {
             insResult.numComparisons++;
@@ -93,9 +94,9 @@ namespace BST {
 
     SearchResult search(BinaryTree* tree, const std::string& word) {
         SearchResult result{0, {}, 0.0, 0}; // Inicializa resultado vazio
-        
-        // Verifica árvore vazia
-        if (tree == nullptr || tree->root == nullptr) {
+    
+        // Verifica árvore e palavra vazias
+        if (tree == nullptr || tree->root == nullptr || word.empty()) {
             return result;
         }
 
@@ -146,13 +147,4 @@ namespace BST {
         // Libera a estrutura principal da árvore
         delete tree;
     }
-
-
-
-
-
-    
-
-    
-
 }

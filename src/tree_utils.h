@@ -3,8 +3,15 @@
 
 #include <iostream>
 #include <vector>
+#include <climits>
+#include <vector>
+#include <string>
 
-using std::cin, std::cout, std::endl, std::string, std::vector;
+using std::cin;
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
 
 namespace TREE_UTILS {
     struct Node {
@@ -15,6 +22,12 @@ namespace TREE_UTILS {
         Node* right;
         int height;   // Usado na AVL
         int isRed;    // Usado na RBT
+
+
+        // Novos campos para estatísticas de busca
+        double totalSearchTime = 0.0;
+        int totalSearchComparisons = 0;
+        int searchCount = 0;
     };
 
     struct BinaryTree {
@@ -35,13 +48,32 @@ namespace TREE_UTILS {
      */
     void printTree(BinaryTree* tree);
 
+    /**
+     * @brief Use an alternative order to print right nodes first.
+     * @param node Center node.
+     * @param depth Node's depth.
+     * @param maxWordForNivel Vector with gap to nodes in each level.
+     * @param restos Auxiliar vector to print edges in correct order.
+     */
+    void inverseOrderTransversePrint(Node* node, int depth, vector<int> maxWordForNivel, vector<int> restos[]);
+
+    /**
+     * @brief Use bfs to get size of gaps to each node in each depth.
+     * @param root Tree's root.
+     */
+    void bfsPrintLateral(Node* root);
+
+    /**
+     * @brief Print a tree in left to right.
+     * @param tree Tree to print.
+     */
+    void printTreeLateral(BinaryTree* tree);
+
     struct InsertResult {
         int numComparisons;
         double executionTime;
         // <Possíveis outras variáveis>
     };
-
-
     
     struct SearchResult {
         int found;
@@ -50,6 +82,16 @@ namespace TREE_UTILS {
         int numComparisons;
         // <Possíveis outras variáveis>
     };
+
+    
+    // Estrutura para armazenar todas as estatísticas coletadas
+    struct TreeStatistics {
+        int height;
+        int nodeCount;
+        double averageDepth;
+        int minDepth;
+        int maxImbalance;
+};  
 
     /**
  * @brief Realiza busca binária em um vetor de IDs de documentos
@@ -63,7 +105,7 @@ namespace TREE_UTILS {
  * 
  * @note Função auxiliar usada durante a inserção de documentos
  */
-    int binarySearch(vector<int> documentIds, int docId, int start, int end);
+    int binarySearch(std::vector<int> documentIds, int docId, int start, int end);
 
 
 
@@ -91,6 +133,68 @@ namespace TREE_UTILS {
  *          - Lista de IDs de documentos onde a palavra aparece
 */
     void printIndex(BinaryTree* tree);
+
+    /**
+ * @brief Calcula a altura de um nó na árvore AVL.
+ * @param node Ponteiro para o nó cuja altura será calculada. Se nullptr, a altura é considerada -1.
+ * @return int A altura do nó, onde:
+ *             - -1 indica que o nó é nullptr (inexistente)
+ *             - 0 indica um nó folha
+ *             - Valores > 0 indicam a profundidade na árvore
+ * @note A altura é calculada recursivamente como:
+ *       altura = 1 + max(altura(esquerda), altura(direita))
+ */int getHeight(Node* node);
+
+    /**
+ * @brief Calcula o fator de balanceamento de um nó AVL.
+ * 
+ * @param node Ponteiro para o nó a ser analisado.
+ * @return int O fator de balanceamento, calculado como:
+ *             altura(subárvore esquerda) - altura(subárvore direita)
+ *             Valores possíveis:
+ *             - -2: Desbalanceado para direita (rotação necessária)
+ *             - -1: Levemente desbalanceado para direita
+ *             -  0: Perfeitamente balanceado
+ *             - +1: Levemente desbalanceado para esquerda
+ *             - +2: Desbalanceado para esquerda (rotação necessária)
+ * @warning Retorna 0 se o nó for nullptr.
+ */int getBalanceFactor(Node* node);
+
+    /**
+ * @brief Coleta estatísticas abrangentes sobre a árvore AVL.
+ * 
+ * @param root Ponteiro para a raiz da árvore.
+ * @return TreeStatistics Estrutura contendo:
+ *             - height: Altura total da árvore
+ *             - nodeCount: Número total de nós
+ *             - averageDepth: Profundidade média dos nós
+ *             - minDepth: Profundidade mínima até uma folha
+ *             - maxImbalance: Maior fator de desbalanceamento encontrado
+ * 
+ * @note Esta função utiliza collectTreeStats internamente para percorrer a árvore.
+ *       Complexidade: O(n), onde n é o número de nós.
+ */TreeStatistics collectAllStats(Node* root);
+   
+   /**
+ * @brief Exibe um relatório completo de estatísticas da árvore AVL.
+ * 
+ * @param tree Ponteiro para a estrutura da árvore binária.
+ * @param lastInsert Dados da última operação de inserção (comparações e tempo).
+ * @param totalTime Tempo total de indexação em milissegundos.
+ * @param n_docs Número de documentos indexados.
+ * 
+ * @details O relatório inclui:
+ *          - Seção Estrutural:
+ *              * Altura da árvore
+ *              * Contagem de nós
+ *              * Profundidades média/mínima
+ *              * Fator de balanceamento máximo
+ *          - Seção de Desempenho:
+ *              * Métricas de tempo (total/última inserção)
+ *              * Comparações na última inserção
+ *              * Documentos processados
+
+ */void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs);
 
 }
 
