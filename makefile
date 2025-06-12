@@ -43,4 +43,4 @@ data.o: src/data.cpp src/data.h
 # Limpeza
 # ============================
 clean:
-	rm -f *.o avl bst
+	del /Q *.o avl.exe bst.exe
