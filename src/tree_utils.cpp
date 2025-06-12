@@ -217,16 +217,18 @@ void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCo
     
     nodeCount++;
     totalDepth += currentDepth;
-    minDepth = min(minDepth, currentDepth);
+
+      // Só atualiza minDepth se for FOLHA
+    if (node->left == nullptr && node->right == nullptr) {
+        minDepth = std::min(minDepth, currentDepth);
+    }
     
     int balance = getBalanceFactor(node);
     maxImbalance = max(maxImbalance, abs(balance));
     
-    collectTreeStats(node->left, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
+    collectTreeStats(node->left,  currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
     collectTreeStats(node->right, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
 }
-
-
         // Função unificada para coletar todas as estatísticas
 TreeStatistics collectAllStats(Node* root) {
     TreeStatistics stats;
