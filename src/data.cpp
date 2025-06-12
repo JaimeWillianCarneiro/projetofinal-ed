@@ -1,6 +1,6 @@
 #include "data.h"
 #include "tree_utils.h"
-#include "avl.h"
+// #include "avl.h"
 
 #include <iostream>
 #include <cstring>
@@ -12,13 +12,13 @@
 #include <chrono>
 using namespace std;
 using namespace TREE_UTILS;
-using namespace AVL;
+// using namespace AVL;
 using namespace std::chrono;
-using namespace AVL;
+// using namespace AVL;
 
 namespace DATA{
 
-    void readDataFromFile(string address, int documentId, BinaryTree* tree, InsertResult& stats){
+    void readDataFromFile(string address, int documentId, BinaryTree* tree, InsertResult& stats,  InsertFunction insertFn){
         if(tree == nullptr) return;
 
         string word;
@@ -38,7 +38,7 @@ namespace DATA{
 
             if (!word.empty()) {
                 auto start = high_resolution_clock::now();
-                InsertResult result = insert(tree, word, documentId);
+                InsertResult result = insertFn(tree, word, documentId);
                 auto end = high_resolution_clock::now();
                 
                 // Acumula estatísticas
@@ -52,14 +52,14 @@ namespace DATA{
         }
     }
     
-    void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree, InsertResult& stats){
+    void readFilesFromDirectory(int number_files, string directory, BinaryTree* tree, InsertResult& stats,  InsertFunction insertFn){
         for (int i = 0; i < number_files; i++){
             string address (directory);
             address += to_string(i);
             address += ".txt";
             string word;
             
-            readDataFromFile(address, i, tree, stats);
+            readDataFromFile(address, i, tree, stats, insertFn);
         }
         return;
     }
