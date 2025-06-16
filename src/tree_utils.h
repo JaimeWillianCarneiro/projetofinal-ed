@@ -196,6 +196,9 @@ namespace TREE_UTILS {
 
  */void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs);
 
+//  FUnção para exportar estatistica para csv
+void exportStatsToCSV(BinaryTree* tree, const std::string& filename, 
+                     const InsertResult& lastInsert, double totalTime, int n_docs);
 }
 
 #endif // TREE_UTILS_H

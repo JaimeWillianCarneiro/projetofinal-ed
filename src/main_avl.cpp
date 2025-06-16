@@ -6,6 +6,7 @@
 #include "avl.h"
 #include "tree_utils.h"
 #include "data.h"
+#include <fstream>
 
 using namespace std;
 using namespace TREE_UTILS;
@@ -36,6 +37,7 @@ void printMenuStats() {
     cout << "2. Altura  e densidade da arvore." << endl;
     cout << "3. Tamanho dos galhos." << endl;
     cout << "4. Todas as estatisticas." << endl;
+    cout << "5. Exportar estatisticas para CSV." << endl;  
     cout << "Ou digite '\\q' para sair (ou ctrl + c)." << endl;
 
 }
@@ -168,6 +170,73 @@ void printMenuStats() {
 // }
 
 
+// Função para exportar estatísticas evolutivas
+void exportEvolutionStatsToCSV(BinaryTree* tree, const std::string& basePath, 
+                             int max_docs, const std::vector<InsertResult>& insertHistory,
+                             const std::vector<double>& timeHistory) {
+    if (!tree || !tree->root) {
+        std::cerr << "Árvore vazia, nenhum dado para exportar." << std::endl;
+        return;
+    }
+
+    // Solicitar nome do arquivo ao usuário
+    std::string filename;
+    std::cout << "Digite o nome do arquivo para exportar (sem extensão): ";
+    std::cin >> filename;
+    
+    // Garantir que o caminho termine com /
+    std::string path = basePath;
+    if (!path.empty() && path.back() != '/') {
+        path += "/";
+    }
+    
+    // Garantir extensão .csv
+    std::string outputFilename = path + filename + ".csv";
+
+    std::ofstream csvFile(outputFilename);
+    if (!csvFile.is_open()) {
+        std::cerr << "Erro ao abrir arquivo " << outputFilename << " para escrita." << std::endl;
+        return;
+    }
+
+    // Cabeçalho do CSV
+    csvFile << "Numero de Documentos,Total de Nos,Altura,"
+            << "Profundidade Media,Profundidade Minima,Maximo Desbalanceamento,"
+            << "Tempo Total Indexacao (ms),Comparacoes Ultima Insercao,"
+            << "Tempo Ultima Insercao (ms)\n";
+
+    // Criar uma cópia temporária da árvore para simular o crescimento
+    BinaryTree* tempTree = create();
+    
+    // Percorrer de 1 até max_docs documentos
+    for (int n = 1; n <= max_docs; n++) {
+        // Simular a árvore com n documentos
+        // (Você precisará implementar uma forma de reconstruir a árvore até o n-ésimo documento)
+        rebuildTreeUpToNDocs(tempTree, n);
+        
+        // Coletar estatísticas estruturais
+        TreeStatistics stats = collectAllStats(tempTree->root);
+        
+        // Escrever os dados no arquivo CSV
+        csvFile << n << ","
+                << stats.nodeCount << ","
+                << stats.height << ","
+                << stats.averageDepth << ","
+                << stats.minDepth << ","
+                << stats.maxImbalance << ","
+                << (n < timeHistory.size() ? timeHistory[n-1] : 0.0) << ","
+                << (n < insertHistory.size() ? insertHistory[n-1].numComparisons : 0) << ","
+                << (n < insertHistory.size() ? insertHistory[n-1].executionTime : 0.0) << "\n";
+    }
+
+    // Liberar a árvore temporária
+    destroy(tempTree);
+    csvFile.close();
+    std::cout << "Estatísticas evolutivas exportadas para " << outputFilename << std::endl;
+}
+
+
+
 int main(int argc, char* argv[]) {
     // Check if the correct number of arguments is provided
     if (argc != 4) {
@@ -284,7 +353,15 @@ int main(int argc, char* argv[]) {
             } else if (input == "4") {
                 printAllStats(tree,  lastInsert, totalTime, n_docs);
             
-                        } else if (input == "\\q") {
+                        } 
+            else if (input == "5"){
+                string filename;
+                cout << "Digite o nome do arquivo CSV (ex: estatisticas.csv): ";
+                cin >> filename;
+                exportStatsToCSV(tree, filename, lastInsert, totalTime, n_docs);
+                break;
+            }
+                        else if (input == "\\q") {
                 break;
             } else {
                 cout << "Opcao invalida." << endl;

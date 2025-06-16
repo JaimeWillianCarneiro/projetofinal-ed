@@ -1,0 +1,2 @@
+Tipo de Arvore,Numero de Documentos,Total de Nos,Altura,Profundidade Media,Profundidade Minima,Maximo Desbalanceamento,Tempo Total Indexacao (ms),Comparacoes Ultima Insercao,Tempo Ultima Insercao (ms),Total Buscas,Comparacoes Totais Busca,Tempo Total Busca (ms)
+AVL,10,1279,11,8.57936,7,1,16,27097,1.762,0,0,0

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
 #include "tree_utils.h"
 #include <algorithm>
 using std::cout;
@@ -206,9 +207,6 @@ int binarySearch(vector<int> documentIds, int docId, int start, int end) {
 }
 
 
-
-
-
     // Função para coletar estatísticas avançadas da árvore
 void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance) {
     if (node== nullptr) {
@@ -225,7 +223,7 @@ void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCo
     
     int balance = getBalanceFactor(node);
     maxImbalance = max(maxImbalance, abs(balance));
-    
+
     collectTreeStats(node->left,  currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
     collectTreeStats(node->right, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
 }
@@ -275,4 +273,89 @@ void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double tota
 }
 
 
+// Função auxiliar recursiva para acumular estatísticas de busca
+void accumulateSearchStatsRecursive(Node* node, double& totalTime, 
+                                  int& totalComparisons, int& totalSearches) {
+    if (!node) return;
+    
+    // Percorre a subárvore esquerda
+    accumulateSearchStatsRecursive(node->left, totalTime, totalComparisons, totalSearches);
+    
+    // Processa o nó atual
+    if (node->searchCount > 0) {
+        totalTime += node->totalSearchTime;
+        totalComparisons += node->totalSearchComparisons;
+        totalSearches += node->searchCount;
+    }
+    
+    // Percorre a subárvore direita
+    accumulateSearchStatsRecursive(node->right, totalTime, totalComparisons, totalSearches);
+}
+
+// Função principal para exportar estatísticas
+void exportStatsToCSV(BinaryTree* tree, const std::string& filename, 
+                     const InsertResult& lastInsert, double totalTime, int n_docs) {
+    if (!tree || !tree->root) {
+        std::cerr << "Árvore vazia, nenhum dado para exportar." << std::endl;
+        return;
+    }
+    std::string outputFilename = filename;
+    if (outputFilename.size() < 4 || 
+        outputFilename.substr(outputFilename.size() - 4) != ".csv") {
+        outputFilename += ".csv";
+    }
+
+
+    std::ofstream csvFile(outputFilename);
+    if (!csvFile.is_open()) {
+        std::cerr << "Erro ao abrir arquivo " << filename << " para escrita." << std::endl;
+        return;
+    }
+
+    // Cabeçalho do CSV
+    csvFile << "Tipo de Arvore,Numero de Documentos,Total de Nos,Altura,"
+            << "Profundidade Media,Profundidade Minima,Maximo Desbalanceamento,"
+            << "Tempo Total Indexacao (ms),Comparacoes Ultima Insercao,"
+            << "Tempo Ultima Insercao (ms),Total Buscas,Comparacoes Totais Busca,"
+            << "Tempo Total Busca (ms)\n";
+
+    // Coletar estatísticas estruturais
+    TreeStatistics stats = collectAllStats(tree->root);
+    
+    // Coletar estatísticas de busca usando recursão
+    double totalSearchTime = 0.0;
+    int totalSearchComparisons = 0;
+    int totalSearches = 0;
+    
+    accumulateSearchStatsRecursive(tree->root, totalSearchTime, 
+                                 totalSearchComparisons, totalSearches);
+
+    // Determinar o tipo de árvore (AVL ou BST)
+    std::string treeType;
+#ifdef BST_MODE
+    treeType = "BST";
+#else
+    treeType = "AVL";
+#endif
+
+    // Escrever os dados no arquivo CSV
+    csvFile << treeType << ","
+            << n_docs << ","
+            << stats.nodeCount << ","
+            << stats.height << ","
+            << stats.averageDepth << ","
+            << stats.minDepth << ","
+            << stats.maxImbalance << ","
+            << totalTime << ","
+            << lastInsert.numComparisons << ","
+            << lastInsert.executionTime << ","
+            << totalSearches << ","
+            << totalSearchComparisons << ","
+            << totalSearchTime << "\n";
+
+    csvFile.close();
+    std::cout << "Estatísticas exportadas para " << filename << std::endl;
+}
+
+    
 }
