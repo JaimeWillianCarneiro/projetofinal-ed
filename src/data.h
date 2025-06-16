@@ -1,31 +1,31 @@
+// data.h (CORRIGIDO)
 #ifndef DATA_H
 #define DATA_H
 
 #include <vector>
 #include <string>
-#include "tree_utils.h"
+#include "tree_utils.h" // Garanta que tree_utils.h está incluído para ver a variável global
 
-using namespace std; 
+using namespace std;
 using namespace TREE_UTILS;
 
-
 namespace DATA {
-    using InsertFunction = InsertResult(*)(TREE_UTILS::BinaryTree*, const std::string&, int);
-    /**
-     * @brief Read the n first files adding its words and ids into the tree
-     * @param number_files Number of files to be read
-     * @param tree The Binary Tree to be updated
-     */
-            void readFilesFromDirectory(int number_files, std::string directory, TREE_UTILS::BinaryTree* tree, TREE_UTILS::InsertResult& stats, InsertFunction insertFn);
+    typedef InsertResult (*InsertFunction)(BinaryTree*, const std::string&, int);
 
-    /**
-     * @brief Read the data from the file specified by the address
-     * @param address The path to the file
-     * @param documentId The ID of the document to be added to the tree
-     * @param tree The Binary Tree to be updated
-     */
-    void readDataFromFile(std::string address, int documentId, TREE_UTILS::BinaryTree* tree, TREE_UTILS::InsertResult& stats, InsertFunction insertFn);
+    // readDataFromFile NÃO RECEBE MAIS allInsertedDocs como parâmetro
+    void readDataFromFile(std::string address, int documentId,
+                          BinaryTree* tree,
+                          InsertResult& stats,
+                          std::vector<InsertResult>& insertHistory,
+                          std::vector<double>& timeHistory,
+                          InsertFunction insertFn);
 
+    // readFilesFromDirectory TAMBÉM NÃO RECEBE MAIS allInsertedDocs como parâmetro
+    void readFilesFromDirectory(int number_files, string directory,
+                                BinaryTree* tree,
+                                InsertResult& stats,
+                                vector<InsertResult>& insertHistory,
+                                vector<double>& timeHistory,
+                                InsertFunction insertFn); // Removido allInsertedDocs daqui
 }
-
 #endif

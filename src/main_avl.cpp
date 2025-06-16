@@ -42,199 +42,6 @@ void printMenuStats() {
 
 }
 
-// void bfsPrintHeight(Node* root) {
-//     if (root == nullptr) return;
-//     int height = -1;
-//     vector<Node*> q;
-//     vector<vector<string>> p;
-//     q.push_back(root);
-//     bool again = true;
-//     int maxWord = 0;
-//     while (again) {
-//         again = false;
-//         height++;
-//         vector<string> nivel;
-//         int temp = q.size();
-//         for (int each_item_q = 0; each_item_q < temp; each_item_q++) {
-//             if (q[0] == nullptr) {
-//                 nivel.push_back("-1");
-//                 q.push_back(nullptr);
-//                 q.push_back(nullptr);
-//                 q.erase(q.begin());
-//                 continue;
-//             }
-//             again = true;
-//             maxWord = maxWord < q[0]->word.size() ? q[0]->word.size() : maxWord;
-//             nivel.push_back(to_string(q[0]->height));
-//             q.push_back(q[0]->left);
-//             q.push_back(q[0]->right);
-//             q.erase(q.begin());
-//         }
-//         p.push_back(nivel);
-//     }
-    
-
-//     int leafs = pow(2, height);
-//     int gap = (maxWord + 1)*(leafs - 1);
-//     int complete;
-//     for (int n = 0; n <= height-1; n++) {
-//         gap /= 2;
-//         for (int i = 0; i < pow(2, n); i++) {
-//             if (p[n][i] == "-1") {
-//                 cout << string((2 * gap + maxWord - 1), ' ');
-//                 continue;
-//             }
-            
-//             cout << string((gap/2 + 1), ' ');
-//             cout << string(gap/2 - maxWord/2, '_');
-//             if (i < p[n].size()) {
-//                 complete = maxWord - p[n][i].size();
-//                 cout << string(complete/2, ' ');
-//                 cout << p[n][i];
-//                 cout << string((complete + 1) / 2, ' ');
-//             }
-//             cout << string(gap/2 - maxWord/2, '_');
-//             cout << string((gap/2 + 2), ' ');
-//         }
-//         cout << endl;
-//     }
-
-// }
-
-// void printTreeHeight(BinaryTree* tree) {
-// //     if(tree == nullptr) return;
-// //     bfsPrintHeight(tree->root);
-// // }
-
-
-// void bfsPrint(Node* root) {
-//     if (root == nullptr) return;
-//     int height = -1;
-//     vector<Node*> q;
-//     vector<vector<string>> p;
-//     q.push_back(root);
-//     bool again = true;
-//     int maxWord = 0;
-//     while (again) {
-//         again = false;
-//         height++;
-//         vector<string> nivel;
-//         int temp = q.size();
-//         for (int each_item_q = 0; each_item_q < temp; each_item_q++) {
-//             if (q[0] == nullptr) {
-//                 nivel.push_back("*");
-//                 q.push_back(nullptr);
-//                 q.push_back(nullptr);
-//                 q.erase(q.begin());
-//                 continue;
-//             }
-//             again = true;
-//             maxWord = maxWord < q[0]->word.size() ? q[0]->word.size() : maxWord;
-//             nivel.push_back(q[0]->word);
-//             q.push_back(q[0]->left);
-//             q.push_back(q[0]->right);
-//             q.erase(q.begin());
-//         }
-//         p.push_back(nivel);
-//     }
-    
-
-//     int leafs = pow(2, height);
-//     int gap = (maxWord + 1)*(leafs - 1);
-//     int complete;
-//     for (int n = 0; n <= height-1; n++) {
-//         gap /= 2;
-//         for (int i = 0; i < pow(2, n); i++) {
-//             if (p[n][i] == "*") {
-//                 cout << string((2 * gap + maxWord - 1), ' ');
-//                 continue;
-//             }
-//             cout << string((gap/2 + 1), ' ');
-//             cout << string(gap/2 - maxWord/2, '_');
-//             if (i < p[n].size()) {
-//                 complete = maxWord - p[n][i].size();
-//                 cout << string(complete/2, ' ');
-//                 cout << p[n][i];
-//                 cout << string((complete + 1) / 2, ' ');
-//             }
-//             cout << string(gap/2 - maxWord/2, '_');
-//             cout << string((gap/2 + 2), ' ');
-//         }
-//         cout << endl;
-//     }
-// }
-
-// void printTreeAlt(BinaryTree* tree) {
-//     if(tree == nullptr) return;
-//     bfsPrint(tree->root);
-// }
-
-
-// Função para exportar estatísticas evolutivas
-void exportEvolutionStatsToCSV(BinaryTree* tree, const std::string& basePath, 
-                             int max_docs, const std::vector<InsertResult>& insertHistory,
-                             const std::vector<double>& timeHistory) {
-    if (!tree || !tree->root) {
-        std::cerr << "Árvore vazia, nenhum dado para exportar." << std::endl;
-        return;
-    }
-
-    // Solicitar nome do arquivo ao usuário
-    std::string filename;
-    std::cout << "Digite o nome do arquivo para exportar (sem extensão): ";
-    std::cin >> filename;
-    
-    // Garantir que o caminho termine com /
-    std::string path = basePath;
-    if (!path.empty() && path.back() != '/') {
-        path += "/";
-    }
-    
-    // Garantir extensão .csv
-    std::string outputFilename = path + filename + ".csv";
-
-    std::ofstream csvFile(outputFilename);
-    if (!csvFile.is_open()) {
-        std::cerr << "Erro ao abrir arquivo " << outputFilename << " para escrita." << std::endl;
-        return;
-    }
-
-    // Cabeçalho do CSV
-    csvFile << "Numero de Documentos,Total de Nos,Altura,"
-            << "Profundidade Media,Profundidade Minima,Maximo Desbalanceamento,"
-            << "Tempo Total Indexacao (ms),Comparacoes Ultima Insercao,"
-            << "Tempo Ultima Insercao (ms)\n";
-
-    // Criar uma cópia temporária da árvore para simular o crescimento
-    BinaryTree* tempTree = create();
-    
-    // Percorrer de 1 até max_docs documentos
-    for (int n = 1; n <= max_docs; n++) {
-        // Simular a árvore com n documentos
-        // (Você precisará implementar uma forma de reconstruir a árvore até o n-ésimo documento)
-        rebuildTreeUpToNDocs(tempTree, n);
-        
-        // Coletar estatísticas estruturais
-        TreeStatistics stats = collectAllStats(tempTree->root);
-        
-        // Escrever os dados no arquivo CSV
-        csvFile << n << ","
-                << stats.nodeCount << ","
-                << stats.height << ","
-                << stats.averageDepth << ","
-                << stats.minDepth << ","
-                << stats.maxImbalance << ","
-                << (n < timeHistory.size() ? timeHistory[n-1] : 0.0) << ","
-                << (n < insertHistory.size() ? insertHistory[n-1].numComparisons : 0) << ","
-                << (n < insertHistory.size() ? insertHistory[n-1].executionTime : 0.0) << "\n";
-    }
-
-    // Liberar a árvore temporária
-    destroy(tempTree);
-    csvFile.close();
-    std::cout << "Estatísticas evolutivas exportadas para " << outputFilename << std::endl;
-}
-
 
 
 int main(int argc, char* argv[]) {
@@ -259,14 +66,20 @@ int main(int argc, char* argv[]) {
     // Create an empty Binary Search Tree (AVL)
     BinaryTree* tree = create();
     InsertResult lastInsert = {0, 0.0};
-    // Modificado para capturar tempo total
+    vector<InsertResult> insertHistory;
+    vector<double> timeHistory;
+    // vector<TREE_UTILS::Document> allInsertedDocs; 
 
     auto start = chrono::high_resolution_clock::now();
     
-    readFilesFromDirectory(n_docs, directory, tree, lastInsert, AVL::insert); 
+    // // Chamada corrigida com todos os parâmetros necessários
+    // readFilesFromDirectory(n_docs, directory, tree, lastInsert, 
+    //                      insertHistory, timeHistory, allInsertedDocs, AVL::insert);
+
+    readFilesFromDirectory(n_docs, directory, tree, lastInsert, insertHistory, timeHistory, AVL::insert);    
     auto end = chrono::high_resolution_clock::now();
     double totalTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-
+    // salvarEstatisticasEvolutiva("output/estatisticas_evolutiva_avl.csv", "AVL", max_docs);
     // Read files from the specified directory and insert data into the AVL
     // readFilesFromDirectory(n_docs, directory, tree);
 
@@ -319,8 +132,7 @@ int main(int argc, char* argv[]) {
         while (true) {
             cout << "\nOpcao: ";
             cin >> input;
-            TreeStatistics stats = collectAllStats(tree->root);
-
+            TREE_UTILS::TreeStatistics stats = TREE_UTILS::collectAllStats(tree->root);
             if (input == "1"){
                 cout << "Tempo de insercao: " << endl;
                 cout << " * Tempo medio: " << totalTime/stats.nodeCount <<  endl;
@@ -355,11 +167,14 @@ int main(int argc, char* argv[]) {
             
                         } 
             else if (input == "5"){
-                string filename;
-                cout << "Digite o nome do arquivo CSV (ex: estatisticas.csv): ";
-                cin >> filename;
-                exportStatsToCSV(tree, filename, lastInsert, totalTime, n_docs);
-                break;
+                // string filename;
+                // cout << "Digite o nome do arquivo CSV (ex: estatisticas.csv): ";
+                // cin >> filename;
+                // exportStatsToCSV(tree, filename, lastInsert, totalTime, n_docs);
+                // break;
+
+                cout << "Exportando estatisticas evolutivas (1-" << n_docs << " docs)" << endl;
+                TREE_UTILS::exportEvolutionStatsToCSV(n_docs, directory, "AVL");
             }
                         else if (input == "\\q") {
                 break;
