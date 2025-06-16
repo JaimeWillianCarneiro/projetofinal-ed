@@ -1,38 +1,36 @@
-#include "data.h"
+#include "data.h" // Inclui as declarações de DATA:: e o typedef InsertFunction
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include <string>
-#include <algorithm>
-#include <cctype>
-#include <chrono>
-#include "tree_utils.h" // Necessário para acessar TREE_UTILS::allInsertedDocuments
+#include <algorithm> // Para std::remove_if e std::transform
+#include <cctype>    // Para ::tolower e isalnum
+#include <chrono>    // Para std::chrono
+// Nao precisa incluir tree_utils.h aqui se data.h ja o faz e se o acesso global for via 'using namespace TREE_UTILS;'
 
-using namespace std;
-using namespace TREE_UTILS; // Permite acesso direto a allInsertedDocuments
-using namespace std::chrono;
+using namespace std;       // Para cout, endl, string, vector, etc.
+using namespace TREE_UTILS; // Para Node, BinaryTree, InsertResult, Document, allInsertedDocuments, etc.
+using namespace std::chrono; // Para high_resolution_clock, duration_cast
 
 namespace DATA {
 
-    // readDataFromFile - DEVE TER 7 PARÂMETROS
     void readDataFromFile(string address, int documentId,
                           BinaryTree* tree,
                           InsertResult& stats,
-                          vector<InsertResult>& insertHistory,
-                          vector<double>& timeHistory,
-                          InsertFunction insertFn) { // Removido allInsertedDocs daqui
+                          InsertFunction insertFn) { // 5 PARÂMETROS
         if(tree == nullptr) return;
 
         string word;
         ifstream myfile(address);
         if (myfile.is_open()) {
             while (getline(myfile, word, ' ')) {
-                word.erase(remove_if(word.begin(), word.end(),
-                    [](unsigned char c) { return !isalnum(c); }), word.end());
-                transform(word.begin(), word.end(), word.begin(), ::tolower);
+                // Certifique-se de usar std::remove_if e std::transform (graças ao #include <algorithm>)
+                word.erase(std::remove_if(word.begin(), word.end(),
+                    [](unsigned char c) { return !std::isalnum(c); }), word.end()); // isalnum com std::
+                std::transform(word.begin(), word.end(), word.begin(), ::tolower); // tolower é global
 
                 if (!word.empty()) {
                     auto start = high_resolution_clock::now();
+                    // insertFn é um ponteiro para função, use-o como tal
                     InsertResult result = insertFn(tree, word, documentId);
                     auto end = high_resolution_clock::now();
 
@@ -40,10 +38,9 @@ namespace DATA {
                     double elapsed = duration_cast<microseconds>(end - start).count() / 1000.0;
                     stats.executionTime += elapsed;
 
-                    insertHistory.push_back(result);
-                    timeHistory.push_back(elapsed);
-
-                    // ESTA LINHA É CRÍTICA PARA PREENCHER O CSV
+                    // Preenchendo as variáveis globais do namespace TREE_UTILS
+                    TREE_UTILS::insertHistory.push_back(result);
+                    TREE_UTILS::timeHistory.push_back(elapsed);
                     TREE_UTILS::allInsertedDocuments.push_back({word, documentId});
                 }
             }
@@ -53,23 +50,19 @@ namespace DATA {
         }
     }
 
-    // readFilesFromDirectory - DEVE TER 7 PARÂMETROS
-    void readFilesFromDirectory(int number_files,
-                                 string directory,
-                                 BinaryTree* tree,
-                                 InsertResult& stats,
-                                 vector<InsertResult>& insertHistory,
-                                 vector<double>& timeHistory,
-                                 InsertFunction insertFn) { // Removido allInsertedDocs daqui
-        // LIMPAR AS LISTAS GLOBAIS NO INÍCIO DE CADA EXECUÇÃO
+    void readFilesFromDirectory(int number_files, string directory,
+                                BinaryTree* tree,
+                                InsertResult& stats,
+                                InsertFunction insertFn) { // 5 PARÂMETROS
+        // Limpar as variáveis globais do histórico antes de iniciar a nova leitura
         TREE_UTILS::allInsertedDocuments.clear();
         TREE_UTILS::insertHistory.clear();
         TREE_UTILS::timeHistory.clear();
 
         for (int i = 0; i < number_files; i++) {
             string address = directory + to_string(i) + ".txt";
-            // CHAMADA PARA readDataFromFile - AGORA TEM 7 PARÂMETROS
-            readDataFromFile(address, i, tree, stats, insertHistory, timeHistory, insertFn);
+            // Chamada para readDataFromFile (5 PARÂMETROS)
+            readDataFromFile(address, i, tree, stats, insertFn);
         }
     }
 }

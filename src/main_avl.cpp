@@ -66,8 +66,8 @@ int main(int argc, char* argv[]) {
     // Create an empty Binary Search Tree (AVL)
     BinaryTree* tree = create();
     InsertResult lastInsert = {0, 0.0};
-    vector<InsertResult> insertHistory;
-    vector<double> timeHistory;
+    // vector<InsertResult> insertHistory;
+    // vector<double> timeHistory;
     // vector<TREE_UTILS::Document> allInsertedDocs; 
 
     auto start = chrono::high_resolution_clock::now();
@@ -76,7 +76,8 @@ int main(int argc, char* argv[]) {
     // readFilesFromDirectory(n_docs, directory, tree, lastInsert, 
     //                      insertHistory, timeHistory, allInsertedDocs, AVL::insert);
 
-    readFilesFromDirectory(n_docs, directory, tree, lastInsert, insertHistory, timeHistory, AVL::insert);    
+    // readFilesFromDirectory(n_docs, directory, tree, lastInsert, insertHistory, timeHistory, AVL::insert);
+    readFilesFromDirectory(n_docs, directory, tree, lastInsert, AVL::insert); // OU BST::insert
     auto end = chrono::high_resolution_clock::now();
     double totalTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
     // salvarEstatisticasEvolutiva("output/estatisticas_evolutiva_avl.csv", "AVL", max_docs);

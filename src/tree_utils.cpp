@@ -233,9 +233,9 @@ void exportEvolutionStatsToCSV(int max_docs,
     }
 
     // Cabeçalho do CSV
-    csvFile << "Num Docs,Altura,Total Nos,Profundidade Media,"
-            << "Profundidade Minima,Max Desbalanceamento,"
-            << "Tempo Total (ms),Comparacoes Medias,Tipo Arvore\n";
+    csvFile << "Num_Docs,Altura,Total_Nos,Profundidade_Media,"
+            << "Profundidade_Minima,Max_Desbalanceamento,"
+            << "Tempo_Total,Comparacoes_Medias,Tipo_Arvore\n";
 
     // Ponteiros para funções específicas
     BinaryTree* (*createFunc)() = nullptr;
@@ -256,35 +256,41 @@ void exportEvolutionStatsToCSV(int max_docs,
     // Criar árvore temporária
     BinaryTree* tempTree = createFunc();
     
-    for (int n = 1; n <= max_docs && n <= allInsertedDocuments.size(); n++) {
-        // Limpar e recriar árvore
-        destroyFunc(tempTree);
-        tempTree = createFunc();
-        
-        // Reinserir documentos
-        for (int i = 0; i < n; i++) {
-            const auto& doc = allInsertedDocuments[i];
-            insertFunc(tempTree, doc.word, doc.docId);
+    // O loop externo itera pelo número de documentos
+for (int num_docs_iter = 1; num_docs_iter <= max_docs; ++num_docs_iter) {
+    // 1. Limpa e recria a árvore para o estado "zerado" antes de inserir os documentos até num_docs_iter
+    destroyFunc(tempTree);
+    tempTree = createFunc();
+    
+    // 2. Reinserir APENAS as palavras pertencentes aos documentos de 0 até (num_docs_iter - 1)
+    for (const auto& doc_entry : allInsertedDocuments) { // Itera sobre CADA palavra/docId coletada
+        if (doc_entry.docId < num_docs_iter) { // Se a palavra pertence a um documento que estamos considerando AGORA
+            insertFunc(tempTree, doc_entry.word, doc_entry.docId);
         }
-        
-        // Coletar estatísticas
-        TreeStatistics stats = collectAllStats(tempTree->root);
-        
-        // Escrever linha no CSV
-        csvFile << n << ","
-                << stats.height << ","
-                << stats.nodeCount << ","
-                << stats.averageDepth << ","
-                << stats.minDepth << ","
-                << stats.maxImbalance << ","
-                << (n <= timeHistory.size() ? timeHistory[n-1] : 0) << ","
-                << (n <= insertHistory.size() ? insertHistory[n-1].numComparisons : 0) << ","
-                << treeType << "\n";
     }
+    
+    // 3. Coletar estatísticas da tempTree para o número de documentos atual (num_docs_iter)
+    TreeStatistics stats = collectAllStats(tempTree->root);
+    
+    // 4. Escrever linha no CSV usando num_docs_iter como 'Num Docs'
+    csvFile << num_docs_iter << ","
+            << stats.height << ","
+            << stats.nodeCount << ","
+            << stats.averageDepth << ","
+            << stats.minDepth << ","
+            << stats.maxImbalance << ","
+            // Verifique se os índices timeHistory[num_docs_iter-1] e insertHistory[num_docs_iter-1]
+            // fazem sentido para o que você quer medir aqui.
+            // Se timeHistory e insertHistory guardam estatísticas por DOCUMENTO, então usar num_docs_iter-1 está ok.
+            << (static_cast<size_t>(num_docs_iter) <= timeHistory.size() ? timeHistory[static_cast<size_t>(num_docs_iter)-1] : 0) << ","
+            << (static_cast<size_t>(num_docs_iter) <= insertHistory.size() ? insertHistory[static_cast<size_t>(num_docs_iter)-1].numComparisons : 0) << ","
+            << treeType << "\n";
+}
 
     // Liberar memória
-    destroyFunc(tempTree);
+    destroyFunc(tempTree); // Libera a última tempTree
     csvFile.close();
+    
     std::cout << "Estatísticas exportadas para " << outputFilename << std::endl;
 }
 
