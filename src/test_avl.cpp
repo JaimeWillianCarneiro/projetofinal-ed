@@ -1,5 +1,5 @@
-// test_bst.cpp
-// testes unitários e exemplos para implementação da Árvore Binária de Busca
+// test_avl.cpp
+// testes unitários e exemplos para implementação da Árvore AVL
 
 #include <iostream>
 #include "avl.h"

@@ -1,10 +1,12 @@
+// rbt.h
 #ifndef RBT_H
 #define RBT_H
 
-#include <string>
+#include <iostream>
+#include <vector>
 #include "tree_utils.h"
 
-using std::string;
+using std::cin, std::cout, std::endl, std::string, std::vector;
 using namespace TREE_UTILS;
 
 namespace RBT {
@@ -21,6 +23,15 @@ namespace RBT {
     BinaryTree* create();
 
     /**
+     * @brief Insert a word in RBT and update or create a list of documents where this word appears.
+     * @param tree RBT where to insert the word.
+     * @param word Alias for the word to be inserted.
+     * @param documentId Id of the document where the word was found.
+     * @return Benchmark datas to analyse the complexity of RBT.
+     */
+    InsertResult insert(BinaryTree* tree, const string& word, int documentId);
+
+    /**
      * @brief Rotate parent and son in a specific side.
      * @param parent Parent of relashionship.
      * @param son Son of relashionship.
@@ -28,15 +39,6 @@ namespace RBT {
      * @param rotateSide Side to apply rotate.
      */
     void sideRotate(Node* parent, Node* son, int grandSide, int rotateSide);
-
-    /**
-     * @brief Insert a word in RBT and update or create a list of documents where this word appears.
-     * @param tree BST where to insert the word.
-     * @param word Alias for the word to be inserted.
-     * @param documentId Id of the document where the word was found.
-     * @return Benchmark datas to analyse the complexity of RBT.
-     */
-    InsertResult insert(BinaryTree* tree, const string& word, int documentId);
 
     /**
      * @brief Busca uma palavra na RBT.

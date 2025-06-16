@@ -93,7 +93,7 @@ namespace AVL {
             return insResult;
         }
 
-        // Apply binary search in bst until find the correct position to word.
+        // Apply binary search in avl until find the correct position to word.
         Node* parent = tree->root;
         Node* nextParent = nullptr;
         while (parent != nullptr) {

@@ -1,7 +1,5 @@
 #include "data.h"
 #include "tree_utils.h"
-// #include "avl.h"
-
 #include <iostream>
 #include <cstring>
 #include <fstream>
@@ -12,9 +10,8 @@
 #include <chrono>
 using namespace std;
 using namespace TREE_UTILS;
-// using namespace AVL;
 using namespace std::chrono;
-// using namespace AVL;
+
 
 namespace DATA{
 
