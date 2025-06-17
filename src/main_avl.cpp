@@ -66,23 +66,15 @@ int main(int argc, char* argv[]) {
     // Create an empty Binary Search Tree (AVL)
     BinaryTree* tree = create();
     InsertResult lastInsert = {0, 0.0};
-    // vector<InsertResult> insertHistory;
-    // vector<double> timeHistory;
-    // vector<TREE_UTILS::Document> allInsertedDocs; 
+  
 
     auto start = chrono::high_resolution_clock::now();
     
-    // // Chamada corrigida com todos os parâmetros necessários
-    // readFilesFromDirectory(n_docs, directory, tree, lastInsert, 
-    //                      insertHistory, timeHistory, allInsertedDocs, AVL::insert);
-
-    // readFilesFromDirectory(n_docs, directory, tree, lastInsert, insertHistory, timeHistory, AVL::insert);
+    
     readFilesFromDirectory(n_docs, directory, tree, lastInsert, AVL::insert); // OU BST::insert
     auto end = chrono::high_resolution_clock::now();
     double totalTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-    // salvarEstatisticasEvolutiva("output/estatisticas_evolutiva_avl.csv", "AVL", max_docs);
-    // Read files from the specified directory and insert data into the AVL
-    // readFilesFromDirectory(n_docs, directory, tree);
+    
 
     // If command is "search", allow user to query words
   if (command == "search") {
@@ -175,7 +167,7 @@ int main(int argc, char* argv[]) {
                 // break;
 
                 cout << "Exportando estatisticas evolutivas (1-" << n_docs << " docs)" << endl;
-                TREE_UTILS::exportEvolutionStatsToCSV(n_docs, directory, "AVL");
+                TREE_UTILS::exportEvolutionStatsToCSV(n_docs, "docs", "AVL");
             }
                         else if (input == "\\q") {
                 break;

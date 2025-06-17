@@ -6,7 +6,9 @@
 #include <algorithm>
 #include "avl.h"
 #include "bst.h"
-using std::cout;
+#include <math.h>
+#include <cmath> 
+#include <filesystem> // using std::cout;
 using std::endl;
 using namespace std;
 
@@ -159,6 +161,13 @@ TreeStatistics collectAllStats(Node* root) {
 void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
     TreeStatistics stats = collectAllStats(tree->root);
     
+     // Novos cálculos para print
+    double tree_density = (stats.height >= 0 && stats.nodeCount > 0) ? (double)stats.nodeCount / (pow(2, stats.height + 1) - 1) : 0.0;
+    int longest_branch = stats.height;
+    int shortest_branch = stats.minDepth;
+    int branch_difference = longest_branch - shortest_branch;
+    double branch_ratio = (shortest_branch != 0) ? static_cast<double>(longest_branch) / shortest_branch : (longest_branch == 0 ? 1.0 : -1.0 /* Infinito ou N/A */);
+
     cout << "\n=== TODAS ESTATISTICAS ===" << endl;
     cout << "------ Estruturais ------" << endl;
     cout << "Altura da arvore: " << stats.height << endl;
@@ -166,10 +175,26 @@ void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double tota
     cout << "Profundidade media: " << stats.averageDepth << endl;
     cout << "Profundidade minima: " << stats.minDepth << endl;
     cout << "Fator de balanceamento maximo: " << stats.maxImbalance << endl;
-    
+      // --- Adicionado as linhas de impressão para as variáveis ---
+    cout << "Densidade da arvore: " << tree_density << endl;
+    cout << "Tamanho do maior galho: " << longest_branch << endl;
+    cout << "Tamanho do menor galho: " << shortest_branch << endl;
+    cout << "Diferenca entre galhos: " << branch_difference << endl; // Impressão adicionada
+        
+    if (shortest_branch != 0) {
+            cout << "Razao maior/menor galho: " << branch_ratio << endl;
+        } else {
+            cout << "Razao maior/menor galho: N/A (menor galho eh zero ou indefinido)" << endl;
+        }
     cout << "\n------ Desempenho ------" << endl;
     cout << "Documentos indexados: " << n_docs << endl;
     cout << "Tempo total indexacao: " << totalTime << " ms" << endl;
+    
+    // Cálculo do tempo médio de inserção aqui
+    double average_insertion_time = (stats.nodeCount > 0) ? totalTime / stats.nodeCount : 0.0;
+    cout << "Tempo medio de insercao por no: " << average_insertion_time << " ms" << endl;
+
+    
     cout << "Ultima insercao:" << endl;
     cout << "* Comparacoes: " << lastInsert.numComparisons << endl;
     cout << "* Tempo: " << lastInsert.executionTime << " ms" << endl;
@@ -202,96 +227,118 @@ std::vector<Document> allInsertedDocuments;
 std::vector<InsertResult> insertHistory;
 std::vector<double> timeHistory;
 
-
-
-
 void exportEvolutionStatsToCSV(int max_docs, 
-                             const std::string& basePath,
-                             const std::string& treeType) {
-    if (max_docs <= 0) {
-        std::cerr << "Número de documentos inválido." << std::endl;
-        return;
-    }
-
-    // Garantir caminho correto
-    std::string path = basePath;
-    if (!path.empty() && path.back() != '/') {
-        path += "/";
-    }
-
-    // Solicitar nome do arquivo
-    std::string filename;
-    std::cout << "Digite o nome do arquivo para exportar (sem extensão): ";
-    std::cin >> filename;
-    
-    std::string outputFilename = path + filename + ".csv";
-
-    std::ofstream csvFile(outputFilename);
-    if (!csvFile.is_open()) {
-        std::cerr << "Erro ao abrir arquivo " << outputFilename << std::endl;
-        return;
-    }
-
-    // Cabeçalho do CSV
-    csvFile << "Num_Docs,Altura,Total_Nos,Profundidade_Media,"
-            << "Profundidade_Minima,Max_Desbalanceamento,"
-            << "Tempo_Total,Comparacoes_Medias,Tipo_Arvore\n";
-
-    // Ponteiros para funções específicas
-    BinaryTree* (*createFunc)() = nullptr;
-    void (*destroyFunc)(BinaryTree*) = nullptr;
-    InsertResult (*insertFunc)(BinaryTree*, const std::string&, int) = nullptr;
-
-    // Configurar funções baseadas no tipo de árvore
-    if (treeType == "AVL") {
-        createFunc = AVL::create;
-        destroyFunc = AVL::destroy;
-        insertFunc = AVL::insert;
-    } else {
-        createFunc = BST::create;
-        destroyFunc = BST::destroy;
-        insertFunc = BST::insert;
-    }
-
-    // Criar árvore temporária
-    BinaryTree* tempTree = createFunc();
-    
-    // O loop externo itera pelo número de documentos
-for (int num_docs_iter = 1; num_docs_iter <= max_docs; ++num_docs_iter) {
-    // 1. Limpa e recria a árvore para o estado "zerado" antes de inserir os documentos até num_docs_iter
-    destroyFunc(tempTree);
-    tempTree = createFunc();
-    
-    // 2. Reinserir APENAS as palavras pertencentes aos documentos de 0 até (num_docs_iter - 1)
-    for (const auto& doc_entry : allInsertedDocuments) { // Itera sobre CADA palavra/docId coletada
-        if (doc_entry.docId < num_docs_iter) { // Se a palavra pertence a um documento que estamos considerando AGORA
-            insertFunc(tempTree, doc_entry.word, doc_entry.docId);
+                                  const std::string& basePath,
+                                  const std::string& treeType) {
+        if (max_docs <= 0) {
+            std::cerr << "Número de documentos inválido." << std::endl;
+            return;
         }
-    }
-    
-    // 3. Coletar estatísticas da tempTree para o número de documentos atual (num_docs_iter)
-    TreeStatistics stats = collectAllStats(tempTree->root);
-    
-    // 4. Escrever linha no CSV usando num_docs_iter como 'Num Docs'
-    csvFile << num_docs_iter << ","
-            << stats.height << ","
-            << stats.nodeCount << ","
-            << stats.averageDepth << ","
-            << stats.minDepth << ","
-            << stats.maxImbalance << ","
-            // Verifique se os índices timeHistory[num_docs_iter-1] e insertHistory[num_docs_iter-1]
-            // fazem sentido para o que você quer medir aqui.
-            // Se timeHistory e insertHistory guardam estatísticas por DOCUMENTO, então usar num_docs_iter-1 está ok.
-            << (static_cast<size_t>(num_docs_iter) <= timeHistory.size() ? timeHistory[static_cast<size_t>(num_docs_iter)-1] : 0) << ","
-            << (static_cast<size_t>(num_docs_iter) <= insertHistory.size() ? insertHistory[static_cast<size_t>(num_docs_iter)-1].numComparisons : 0) << ","
-            << treeType << "\n";
-}
 
-    // Liberar memória
-    destroyFunc(tempTree); // Libera a última tempTree
-    csvFile.close();
-    
-    std::cout << "Estatísticas exportadas para " << outputFilename << std::endl;
-}
+        std::string path = basePath;
+        if (!path.empty() && path.back() != '/') {
+            path += "/";
+        }
+
+        std::string outputDirectory = "docs/"; 
+        
+        if (!std::filesystem::exists(outputDirectory)) {
+            try {
+                std::filesystem::create_directory(outputDirectory);
+                cout << "Diretorio '" << outputDirectory << "' criado com sucesso." << endl;
+            } catch (const std::filesystem::filesystem_error& e) {
+                std::cerr << "Erro ao criar diretorio '" << outputDirectory << "': " << e.what() << endl;
+                return;
+            }
+        }
+
+        std::string filename;
+        std::cout << "Digite o nome do arquivo para exportar (sem extensão): ";
+        std::cin >> filename;
+        
+        std::string outputFilename = outputDirectory + filename + ".csv";
+
+        std::ofstream csvFile(outputFilename);
+        if (!csvFile.is_open()) {
+            std::cerr << "Erro ao abrir arquivo " << outputFilename << ". Não foi possível salvar." << std::endl;
+            return;
+        }
+
+        // --- Cabeçalho do CSV Atualizado ---
+        csvFile << "Num_Docs,Altura,Total_Nos,Profundidade_Media,"
+                  << "Profundidade_Minima,Max_Desbalanceamento,"
+                  << "Tempo_Total_Indexacao,Tempo_Medio_Insercao,"
+                  << "Densidade_Arvore,Maior_Galho,Menor_Galho,"
+                  << "Total_Comparacoes_Indexacao,Tipo_Arvore\n"; // Nome da coluna alterado aqui
+
+        // Ponteiros para funções específicas
+        BinaryTree* (*createFunc)() = nullptr;
+        void (*destroyFunc)(BinaryTree*) = nullptr;
+        InsertResult (*insertFunc)(BinaryTree*, const std::string&, int) = nullptr;
+
+        if (treeType == "AVL") {
+            createFunc = AVL::create;
+            destroyFunc = AVL::destroy;
+            insertFunc = AVL::insert;
+        } else {
+            createFunc = BST::create;
+            destroyFunc = BST::destroy;
+            insertFunc = BST::insert;
+        }
+
+        BinaryTree* tempTree = createFunc();
+        
+        for (int num_docs_iter = 1; num_docs_iter <= max_docs; ++num_docs_iter) {
+            destroyFunc(tempTree);
+            tempTree = createFunc();
+            
+            double current_cumulative_insertion_time = 0.0; 
+            long long current_cumulative_comparisons = 0; // Nova variável para acumular as comparações
+            
+            for (size_t i = 0; i < allInsertedDocuments.size(); ++i) { 
+                const auto& doc_entry = allInsertedDocuments[i];
+                if (doc_entry.docId < num_docs_iter) { 
+                    insertFunc(tempTree, doc_entry.word, doc_entry.docId);
+                    
+                    if (i < timeHistory.size()) {
+                        current_cumulative_insertion_time += timeHistory[i];
+                    }
+                    if (i < insertHistory.size()) { // Acumula comparações
+                        current_cumulative_comparisons += insertHistory[i].numComparisons;
+                    }
+                } else {
+                    break; 
+                }
+            }
+            
+            TreeStatistics stats = collectAllStats(tempTree->root);
+            
+            double average_insertion_time = (stats.nodeCount > 0) ? current_cumulative_insertion_time / stats.nodeCount : 0.0;
+            double tree_density = (stats.height >= 0 && stats.nodeCount > 0) ? (double)stats.nodeCount / (pow(2, stats.height + 1) - 1) : 0.0; 
+            int longest_branch = stats.height;
+            int shortest_branch = stats.minDepth;
+            
+            // Escrever linha no CSV
+            csvFile << num_docs_iter << ","
+                      << stats.height << ","
+                      << stats.nodeCount << ","
+                      << stats.averageDepth << ","
+                      << stats.minDepth << ","
+                      << stats.maxImbalance << ","
+                      << current_cumulative_insertion_time << ","
+                      << average_insertion_time << ","    
+                      << tree_density << ","              
+                      << longest_branch << ","            
+                      << shortest_branch << ","           
+                      << current_cumulative_comparisons << "," // Usa o total acumulado de comparações
+                      << treeType << "\n";
+        }
+
+        destroyFunc(tempTree); 
+        csvFile.close();
+        
+        std::cout << "Estatísticas exportadas para " << outputFilename << std::endl;
+    }
+
 
 }

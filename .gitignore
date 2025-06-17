@@ -7,7 +7,7 @@
 *.obj
 *.slo
 *.lo
-data/data
+data
 # Libraries
 *.a
 *.lib
@@ -56,3 +56,6 @@ Release/
 *.swo
 .DS_Store                # MacOS
 Thumbs.db                # Windows
+
+
+data/
