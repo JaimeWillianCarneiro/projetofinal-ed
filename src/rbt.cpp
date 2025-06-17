@@ -23,7 +23,7 @@ namespace RBT {
         node->left = nullptr;
         node->right = nullptr;
         node->height = 0;
-        node->isRed = 0;
+        node->isRed = 1;
         return node;
     }
 
@@ -40,9 +40,7 @@ namespace RBT {
         if(node == nullptr) return;
 
         node->height = std::max(getHeight(node->left), getHeight(node->right)) + 1;
-    }
-    
-    
+    }   
 
     void sideRotate(Node* parent, Node* son, int grandSide, int rotateSide) {
         if (parent == nullptr || son == nullptr) return;
@@ -70,6 +68,23 @@ namespace RBT {
         updateHeight(son);
     }
 
+    void fixInsert(BinaryTree* tree, Node* z){
+        while (z->parent != nullptr && z->parent->isRed == 1) {
+            if (z->parent == z->parent->parent->left) { // pai é filho da esquerda
+                Node* y = z->parent->parent->right; // tio
+                if (y->isRed == 1) {
+                    // Caso 1: pai e tio são vermelhos → sobe a instabilidade
+                    z->parent->isRed = 0;
+                    y->isRed = 0;
+                    z->parent->parent->isRed = 1;
+                    z = z->parent->parent;
+                }
+                //  ============== Casos de rotacionar =======================
+            }    
+        }
+    }
+
+
     InsertResult insert(BinaryTree* tree, const string& word, int documentId) {
         InsertResult insResult = InsertResult{0, 0.0};
         auto start = high_resolution_clock::now();
@@ -86,6 +101,7 @@ namespace RBT {
         newNode->height = 0;
         newNode->documentIds.push_back(documentId);
         if (tree->root == nullptr) {
+            newNode->isRed = 0;
             tree->root = newNode;
             auto end = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(end - start);
@@ -98,7 +114,7 @@ namespace RBT {
         Node* nextParent = nullptr;
         while (parent != nullptr) {
             insResult.numComparisons++;
-            // Just update list of docs if newNodw already exists
+            // Just update list of docs if newNode already exists
             if (word == parent->word) {
                 int indexDocId = binarySearch(parent->documentIds, documentId, 0, parent->documentIds.size()-1);
                 if (indexDocId >= 0) {
@@ -127,58 +143,8 @@ namespace RBT {
             parent->left = newNode;
         }
         newNode->parent = parent;
-
-        // Update height until find first imbalance Node.
-        Node* nodeUpdateHeight = parent;
-        Node* firstImbalanceNode = nullptr;
-        int balanceFactor = getBalanceFactor(nodeUpdateHeight);
-        while (balanceFactor != 0 && firstImbalanceNode == nullptr) { // When balanceFactor is zero, the add of newNode doesn't alter the height of nodeUpdateHeight and it's parents.
-            // When find the first imbalance, the height of its parents doesnt change after rotate.
-            if ((balanceFactor) / 2 != 0) {  // Balance factors(0 or 1) / 2 = round(x), with x < 1, them round(x) = 0.
-                firstImbalanceNode = nodeUpdateHeight;
-                break;
-            }
-            nodeUpdateHeight->height++;
-            nodeUpdateHeight = nodeUpdateHeight->parent;
-            if (nodeUpdateHeight == nullptr) break; // Find root -> stop.
-            balanceFactor = getBalanceFactor(nodeUpdateHeight);
-        }
-
-        // Apply rotate if necessary
-        if (firstImbalanceNode != nullptr) {
-            int grandSide = 0, firstSide = 0, secondSide = 0; // 0 - left, 1 - right (default left).
-            
-            // firstImbalanceNode father there is, for default, on it's left.
-            if (firstImbalanceNode->parent != nullptr) {
-                if (firstImbalanceNode->parent->left == firstImbalanceNode) grandSide = 1;
-            } else { //firstImbalanceNode is the root.
-                grandSide = -1;
-            }
-
-            // Define the side of firsImbalance subtree where newNode was added (default is left).
-            Node* sonToRotate = firstImbalanceNode->left;
-            if (getBalanceFactor(firstImbalanceNode) < 0) { 
-                firstSide = 1;
-                sonToRotate = firstImbalanceNode->right;
-            }
-
-            // Define the side of the newNode was added in firstImbalanceNode subtree (default is left).
-            Node* grandChildToRotate = sonToRotate->left;
-            if (getBalanceFactor(sonToRotate) < 0) {
-                secondSide = 1;
-                grandChildToRotate = sonToRotate->right;
-            }
-
-            // If necessary, apply a second rotate.
-            if (firstSide != secondSide) {
-                sideRotate(sonToRotate, grandChildToRotate, static_cast<int>(!firstSide), static_cast<int>(!secondSide));
-                Node* temp = sonToRotate;
-                sonToRotate = grandChildToRotate;
-                grandChildToRotate = temp;
-            }
-            sideRotate(firstImbalanceNode, sonToRotate, grandSide, static_cast<int>(!firstSide));
-            if (grandSide == -1) tree->root = sonToRotate; // Update tree's root if firstImbalanceNode is the root.
-        }
+// ======================================= Tirei o balanceamento da AVL ==================================================
+        fixInsert(tree, newNode);
 
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start);
