@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <climits>
-#include <string> // Corrigi a duplicação de <vector>
+#include <string> 
 
 using std::cin;
 using std::cout;
@@ -14,8 +14,7 @@ using std::vector;
 
 namespace TREE_UTILS {
 
-    // --- PRIMEIRA PARTE: DEFINIÇÕES DE STRUCTS NECESSÁRIAS ---
-    // Estas structs precisam ser definidas antes de serem usadas pelas variáveis globais
+
     struct InsertResult {
         int numComparisons;
         double executionTime;
@@ -38,27 +37,24 @@ namespace TREE_UTILS {
         double insertionTime;
     };
 
-    struct Document { // Esta struct precisa vir antes de allInsertedDocuments
+    struct Document { 
         std::string word;
         int docId;
     };
 
-    // --- SEGUNDA PARTE: DECLARAÇÕES EXTERNAS DE VARIÁVEIS GLOBAIS ---
-    // Agora que Document e InsertResult estão definidas, essas podem vir
+  
     extern std::vector<Document> allInsertedDocuments;
     extern std::vector<InsertResult> insertHistory;
     extern std::vector<double> timeHistory;
 
-    // --- TERCEIRA PARTE: OUTRAS STRUCTS E DECLARAÇÕES DE FUNÇÕES ---
-    // O restante das suas structs e funções vem aqui.
     struct Node {
         std::string word;
         std::vector<int> documentIds;
         Node* parent;
         Node* left;
         Node* right;
-        int height;
-        int isRed;
+        int height; // Usado na AVL
+        int isRed; // Usado na RBT
 
         double totalSearchTime = 0.0;
         int totalSearchComparisons = 0;
@@ -67,33 +63,155 @@ namespace TREE_UTILS {
 
     struct BinaryTree {
         Node* root;
-        Node* NIL;
+        Node* NIL; // Usado na RBT (não necessário para BST)
     };
 
-    // ... (o restante das declarações de funções como printIndexInOrder, printTree, etc.) ...
+
+    /**
+ * @brief Realiza um percurso em-ordem (in-order traversal) na árvore para imprimir as palavras e seus documentos associados
+ * @param node Nó raiz da subárvore a ser impressa (pode ser nullptr)
+ * @details Esta função auxiliar recursiva percorre a árvore em ordem alfabética (esquerda-raiz-direita) e para cada nó encontrado:
+ *          1. Imprime a palavra do nó
+ *          2. Imprime a lista de IDs de documentos onde a palavra aparece, separados por vírgulas
+ *          3. Coloca cada entrada em uma nova linha
+ * @pre Caso o parâmetro node seja nullptr, a função retorna silenciosamente
+ * @post Não modifica a estrutura da árvore ou seus dados
+ * @note Formato de saída:
+ *       palavra1: id1, id2, id3
+ *       palavra2: id1, id4
+ *       palavra3: id5
+ */
     void printIndexInOrder(Node* node);
 
+
+    /**
+ * @brief Imprime todo o índice invertido em ordem alfabética
+ * @param tree Ponteiro para a árvore binária contendo o índice
+ * @details Percorre a árvore em ordem (in-order traversal) e para cada nó imprime:
+ *          - A palavra
+ *          - Lista de IDs de documentos onde a palavra aparece
+*/
     void printIndex(BinaryTree* tree);
+
+       /**
+     * @brief Print Tree in directory format.
+     * @param tree BST to be printed.
+     */
     void printTree(BinaryTree* tree);
-    // ... (todas as outras declarações de funções que você tinha) ...
+
     int binarySearch(std::vector<int> documentIds, int docId, int start, int end);
-    int getHeight(Node* node);
-    int getBalanceFactor(Node* node);
+    
+    
+    
+     /**
+ * @brief Calcula a altura de um nó na árvore AVL.
+ * @param node Ponteiro para o nó cuja altura será calculada. Se nullptr, a altura é considerada -1.
+ * @return int A altura do nó, onde:
+ *             - -1 indica que o nó é nullptr (inexistente)
+ *             - 0 indica um nó folha
+ *             - Valores > 0 indicam a profundidade na árvore
+ * @note A altura é calculada recursivamente como:
+ *       altura = 1 + max(altura(esquerda), altura(direita))
+ */int getHeight(Node* node);
+    
+ 
+     /**
+ * @brief Calcula o fator de balanceamento de um nó AVL.
+ * 
+ * @param node Ponteiro para o nó a ser analisado.
+ * @return int O fator de balanceamento, calculado como:
+ *             altura(subárvore esquerda) - altura(subárvore direita)
+ *             Valores possíveis:
+ *             - -2: Desbalanceado para direita (rotação necessária)
+ *             - -1: Levemente desbalanceado para direita
+ *             -  0: Perfeitamente balanceado
+ *             - +1: Levemente desbalanceado para esquerda
+ *             - +2: Desbalanceado para esquerda (rotação necessária)
+ * @warning Retorna 0 se o nó for nullptr.
+ */int getBalanceFactor(Node* node);
+    
+ 
     void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance);
+    
+     /**
+ * @brief Coleta estatísticas abrangentes sobre a árvore.
+ * 
+ * @param root Ponteiro para a raiz da árvore.
+ * @return TreeStatistics Estrutura contendo:
+ *             - height: Altura total da árvore
+ *             - nodeCount: Número total de nós
+ *             - averageDepth: Profundidade média dos nós
+ *             - minDepth: Profundidade mínima até uma folha
+ *             - maxImbalance: Maior fator de desbalanceamento encontrado
+ * 
+ * @note Esta função utiliza collectTreeStats internamente para percorrer a árvore.
+ *       Complexidade: O(n), onde n é o número de nós.
+ */
     TreeStatistics collectAllStats(Node* root);
-    void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs);
-    void exportStatsToCSV(BinaryTree* tree, const std::string& filename,
+
+
+    /**
+ * @brief Exibe um relatório completo de estatísticas da árvore AVL.
+ * 
+ * @param tree Ponteiro para a estrutura da árvore binária.
+ * @param lastInsert Dados da última operação de inserção (comparações e tempo).
+ * @param totalTime Tempo total de indexação em milissegundos.
+ * @param n_docs Número de documentos indexados.
+ * 
+ * @details O relatório inclui:
+ *          - Seção Estrutural:
+ *              * Altura da árvore
+ *              * Contagem de nós
+ *              * Profundidades média/mínima
+ *              * Fator de balanceamento máximo
+ *          - Seção de Desempenho:
+ *              * Métricas de tempo (total/última inserção)
+ *              * Comparações na última inserção
+ *              * Documentos processados
+
+ */void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs);
+
+
+ /**
+     * @brief Exporta as estatísticas atuais da árvore para um arquivo CSV.
+     * @param tree Um ponteiro para a estrutura BinaryTree cujas estatísticas serão exportadas.
+     * @param filename O nome do arquivo CSV onde as estatísticas serão salvas.
+     * @param lastInsert Uma referência constante a uma estrutura InsertResult contendo estatísticas
+     * da última inserção de palavra realizada.
+     * @param totalTime O tempo total acumulado (em milissegundos) gasto para indexar todos
+     * os documentos processados até o momento para construir a árvore atual.
+     * @param n_docs O número total de documentos que foram indexados para construir a árvore atual.
+     */
+ void exportStatsToCSV(BinaryTree* tree, const std::string& filename,
                          const InsertResult& lastInsert, double totalTime, int n_docs);
+    
+    
+     /**
+     * @brief Exporta estatísticas evolutivas da árvore para um arquivo CSV.
+     * @param max_docs O número máximo de documentos a serem considerados para a análise evolutiva.
+     * A função gerará estatísticas para árvores construídas com 1 documento,
+     * 2 documentos, ..., até `max_docs` documentos.
+     * @param basePath O diretório base onde os documentos de texto de origem estão localizados (ex: "data/").
+     * Isso é usado para identificar os arquivos de entrada (ex: "0.txt", "1.txt").
+     * @param treeType Uma string indicando o tipo de árvore que está sendo analisada (ex: "AVL", "BST").
+     * Esta informação é incluída na saída CSV.
+     */
     void exportEvolutionStatsToCSV(int max_docs,
                                   const std::string& basePath,
                                   const std::string& treeType);
+    
+    
+    /**
+     * @brief Reconstrói uma árvore binária com palavras de um número específico de documentos.
+     * @param tree Um ponteiro para a estrutura BinaryTree a ser reconstruída.
+     * @param n O número de documentos (começando do ID 0) cujas palavras devem ser inseridas na árvore.
+     * @param isAVL Um flag booleano indicando se a árvore que está sendo construída é uma árvore AVL (`true`)
+     * ou uma Árvore Binária de Busca padrão (`false`). Isso determina qual função de inserção
+     * (`AVL::insert` ou `BST::insert`) é utilizada.
+     */
     void rebuildTreeUpToNDocs(BinaryTree* tree, int n, bool isAVL);
-    void salvarEstatisticasEvolutivas(
-        BinaryTree* tree,
-        const std::vector<std::vector<std::string>>& documentos,
-        InsertResult (*insertFunc)(BinaryTree*, const std::string&, int),
-        const std::string& caminhoArquivoCSV
-    );
+    
+
 
 } // Fim do namespace TREE_UTILS
 

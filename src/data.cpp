@@ -1,12 +1,10 @@
-#include "data.h" // Inclui as declarações de DATA:: e o typedef InsertFunction
+#include "data.h"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <algorithm> // Para std::remove_if e std::transform
 #include <cctype>    // Para ::tolower e isalnum
 #include <chrono>    // Para std::chrono
-// Nao precisa incluir tree_utils.h aqui se data.h ja o faz e se o acesso global for via 'using namespace TREE_UTILS;'
-
 using namespace std;       // Para cout, endl, string, vector, etc.
 using namespace TREE_UTILS; // Para Node, BinaryTree, InsertResult, Document, allInsertedDocuments, etc.
 using namespace std::chrono; // Para high_resolution_clock, duration_cast
@@ -16,21 +14,21 @@ namespace DATA {
     void readDataFromFile(string address, int documentId,
                           BinaryTree* tree,
                           InsertResult& stats,
-                          InsertFunction insertFn) { // 5 PARÂMETROS
+                          InsertFunction insertFn) { 
         if(tree == nullptr) return;
 
         string word;
         ifstream myfile(address);
         if (myfile.is_open()) {
             while (getline(myfile, word, ' ')) {
-                // Certifique-se de usar std::remove_if e std::transform (graças ao #include <algorithm>)
+                
                 word.erase(std::remove_if(word.begin(), word.end(),
-                    [](unsigned char c) { return !std::isalnum(c); }), word.end()); // isalnum com std::
+                    [](unsigned char c) { return !std::isalnum(c); }), word.end()); 
                 std::transform(word.begin(), word.end(), word.begin(), ::tolower); // tolower é global
 
                 if (!word.empty()) {
                     auto start = high_resolution_clock::now();
-                    // insertFn é um ponteiro para função, use-o como tal
+                    // insertFn é um ponteiro para função
                     InsertResult result = insertFn(tree, word, documentId);
                     auto end = high_resolution_clock::now();
 

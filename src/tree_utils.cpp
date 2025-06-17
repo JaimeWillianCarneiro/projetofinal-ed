@@ -264,13 +264,12 @@ void exportEvolutionStatsToCSV(int max_docs,
             return;
         }
 
-        // --- Cabeçalho do CSV Atualizado ---
+   
         csvFile << "Num_Docs,Altura,Total_Nos,Profundidade_Media,"
                   << "Profundidade_Minima,Max_Desbalanceamento,"
                   << "Tempo_Total_Indexacao,Tempo_Medio_Insercao,"
                   << "Densidade_Arvore,Maior_Galho,Menor_Galho,"
-                  << "Total_Comparacoes_Indexacao,Tipo_Arvore\n"; // Nome da coluna alterado aqui
-
+                  << "Total_Comparacoes_Indexacao,Tipo_Arvore\n";
         // Ponteiros para funções específicas
         BinaryTree* (*createFunc)() = nullptr;
         void (*destroyFunc)(BinaryTree*) = nullptr;
