@@ -22,7 +22,7 @@ void printUsage() {
 
 // Prints menu options
 void printMenu() {
-    cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
+     cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
     cout << "1. Pesquisar uma palavra." << endl;
     cout << "2. Printar a arvore." << endl;
     cout << "3. Printar Indice Invertido." << endl;
@@ -33,14 +33,16 @@ void printMenu() {
 void printMenuStats() {
     cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
     cout << "1. Tempo de insercao." << endl;
-    cout << "2. Altura e densidade da arvore." << endl;
+    cout << "2. Altura  e densidade da arvore." << endl;
     cout << "3. Tamanho dos galhos." << endl;
-    cout << "4. Todas as estatisticas." << endl;
-    cout << "5. Exportar estatisticas para CSV." << endl;
+    cout << "4. Estatisticas de Busca (Amostra)." << endl; // <-- NOVA OPÇÃO
+    cout << "5. Todas as estatisticas." << endl;
+    cout << "6. Exportar estatisticas para CSV." << endl;
+
     cout << "Ou digite '\\q' para sair (ou ctrl + c)." << endl;
+
+
 }
-
-
 int main(int argc, char* argv[]) {
     // Check if the correct number of arguments is provided
     if (argc != 4) {
@@ -128,14 +130,7 @@ int main(int argc, char* argv[]) {
                 cout << " * Tempo medio: " << totalTime/stats.nodeCount <<  endl;
                 cout << " * Tempo total: " << totalTime << " ms" <<  endl;
             } 
-            // else if (input == "2") {
-            //     cout << "Tempo de busca: " << endl;
-            //     cout << " * Tempo medio: " << endl;
-            //     cout << " * Tempo total: " << totalTime << " ms" << endl;
-
-            // } else if (input == "3") {
-            //     cout << "Numero de comparacoes por operacao: " << endl;
-            // } 
+        
             else if (input == "2") {
                 cout << "Altura da arvore: "  << stats.height << endl;
                  double tree_density   = (stats.height >= 0 && stats.nodeCount > 0) ? (double)stats.nodeCount / (pow(2, stats.height + 1) - 1) : 0.0;
@@ -154,15 +149,22 @@ int main(int argc, char* argv[]) {
     }
                 cout << "Profundidade media: "  << stats.averageDepth << endl;
             } else if (input == "4") {
-                printAllStats(tree,  lastInsert, totalTime, n_docs);
-            
+               
+                           printSearchStatsSample(tree, n_docs, BST::search);
                         } 
+
             
-            else if (input == "5"){ // Nova opção de exportar
-                cout << "Exportando estatisticas evolutivas (1-" << n_docs << " docs)" << endl;
-                TREE_UTILS::exportEvolutionStatsToCSV(n_docs, directory, "BST"); // <-- CORRIGIDO AQUI PARA "BST"
+            else if (input == "5"){ 
+                printAllStats(tree, lastInsert, totalTime, n_docs, BST::search);
             }
-                        else if (input == "\\q") {
+
+            else if (input == "6"){
+          
+
+                cout << "Exportando estatisticas evolutivas (1-" << n_docs << " docs)" << endl;
+                TREE_UTILS::exportEvolutionStatsToCSV(n_docs, "docs", "BST", BST::search);
+            }
+        else if (input == "\\q") {
                 break;
             } else {
                 cout << "Opcao invalida." << endl;

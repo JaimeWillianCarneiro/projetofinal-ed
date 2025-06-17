@@ -272,9 +272,12 @@ namespace TREE_UTILS {
  *              * Comparações na última inserção
  *              * Documentos processados
 
- */void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs);
+ */void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs, SearchResult (*searchFunc)(BinaryTree*, const std::string&));
 
 
+
+
+  void printSearchStatsSample(BinaryTree* tree, int n_docs, SearchResult (*searchFunc)(BinaryTree*, const std::string&));
  /**
      * @brief Exporta as estatísticas atuais da árvore para um arquivo CSV.
      * @param tree Um ponteiro para a estrutura BinaryTree cujas estatísticas serão exportadas.
@@ -300,8 +303,9 @@ namespace TREE_UTILS {
      * Esta informação é incluída na saída CSV.
      */
     void exportEvolutionStatsToCSV(int max_docs,
-                                  const std::string& basePath,
-                                  const std::string& treeType);
+                                   const std::string& basePath,
+                                   const std::string& treeType,
+                                   SearchResult (*searchFunc)(BinaryTree*, const std::string&));
     
     
     /**
