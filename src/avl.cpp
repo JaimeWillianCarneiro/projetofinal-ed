@@ -33,42 +33,6 @@ namespace AVL {
         tree->NIL = nullptr;
         return tree;
     }
-    // Retorna a altura de um nó (ou -1 se for nulo)
-   
-    // Atualiza a altura de um nó com base nas alturas dos filhos
-    void updateHeight(Node* node) {
-        if(node == nullptr) return;
-
-        node->height = std::max(getHeight(node->left), getHeight(node->right)) + 1;
-    }
-    
-    
-
-    void sideRotate(Node* parent, Node* son, int grandSide, int rotateSide) {
-        if (parent == nullptr || son == nullptr) return;
-
-        // Swap son and parent, making the parent inherit the grandchildren on the opposite side of the rotation.
-        if (rotateSide == 0) {
-            parent->right = son->left;
-            if (parent->right != nullptr) parent->right->parent = parent;
-            son->left = parent;
-        } else {
-            parent->left = son->right;
-            if (parent->left != nullptr) parent->left->parent = parent;
-            son->right = parent;
-        }
-        // The parent's parent inherit the son as his son.
-        son->parent = parent->parent;
-        if (grandSide == 0) {
-            son->parent->right = son;
-        } else if (grandSide == 1) {
-            son->parent->left = son;
-        }
-        parent->parent = son;
-        // Update height of nodes.
-        updateHeight(parent);
-        updateHeight(son);
-    }
 
     InsertResult insert(BinaryTree* tree, const string& word, int documentId) {
         InsertResult insResult = InsertResult{0, 0.0};
@@ -148,14 +112,14 @@ namespace AVL {
         if (firstImbalanceNode != nullptr) {
             int grandSide = 0, firstSide = 0, secondSide = 0; // 0 - left, 1 - right (default left).
             
-            // firstImbalanceNode father there is, for default, on it's left.
+            // firstImbalanceNode's father there is, for default, on it's left.
             if (firstImbalanceNode->parent != nullptr) {
                 if (firstImbalanceNode->parent->left == firstImbalanceNode) grandSide = 1;
-            } else { //firstImbalanceNode is the root.
+            } else { // firstImbalanceNode is the root.
                 grandSide = -1;
             }
 
-            // Define the side of firsImbalance subtree where newNode was added (default is left).
+            // Define the side of firsImbalance's subtree where newNode was added (default is left).
             Node* sonToRotate = firstImbalanceNode->left;
             if (getBalanceFactor(firstImbalanceNode) < 0) { 
                 firstSide = 1;
@@ -185,7 +149,6 @@ namespace AVL {
         insResult.executionTime = duration.count()/1000;
         return insResult;
     }
-
 
     // Busca uma palavra na AVL e retorna se foi encontrada e em quais documentos
     SearchResult search(BinaryTree* tree, const string& word) {
@@ -238,6 +201,3 @@ namespace AVL {
         delete tree;
     }
 }
-
-
-
