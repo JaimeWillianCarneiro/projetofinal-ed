@@ -65,10 +65,14 @@ int main(int argc, char* argv[]) {
     // Create an empty Binary Search Tree (BST)
     BinaryTree* tree = create();
     InsertResult lastInsert = {0, 0.0};
+    //  std::vector<InsertResult> insertHistory;
+    // std::vector<double> timeHistory;
+    // std::vector<TREE_UTILS::Document> allInsertedDocs; // Certifique-se de que esta linha existe!
 
     auto start = chrono::high_resolution_clock::now();
     // Read files from the specified directory and insert data into the BST
-    readFilesFromDirectory(n_docs, directory, tree,  lastInsert, BST::insert);
+    // readFilesFromDirectory(n_docs, directory, tree, lastInsert, insertHistory, timeHistory, BST::insert);
+    readFilesFromDirectory(n_docs, directory, tree, lastInsert, BST::insert); // OU BST::insert
     auto end = chrono::high_resolution_clock::now();
     double totalTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
 
