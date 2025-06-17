@@ -74,6 +74,7 @@ namespace TREE_UTILS {
         if (tree == nullptr) return;
         preOrderPrint(tree->root, 0, "", "");
     }
+
 int binarySearch(vector<int> documentIds, int docId, int start, int end) {
     if (documentIds.empty()) {
         cout << "Aviso: vetor de documentos vazio em binarySearch()." << endl;
@@ -85,30 +86,78 @@ int binarySearch(vector<int> documentIds, int docId, int start, int end) {
         return start;
     }
 
-    int mid = (start + end) / 2;
-    if (docId == documentIds[mid]) {
-        return -1;
-    }else if (docId > documentIds[mid]) {
-        return binarySearch(documentIds, docId, mid+1, end);
-    } else {
-        return binarySearch(documentIds, docId, start, mid-1);
+
+    int binarySearch(vector<int> documentIds, int docId, int start, int end) {
+        if (documentIds.empty()) {
+            cout << "Aviso: vetor de documentos vazio em binarySearch()." << endl;
+            return 0;
+        }
+        
+        // Stop condition.
+        if (start > end) {
+            return start;
+        }
+
+
+        int mid = (start + end) / 2;
+        if (docId == documentIds[mid]) {
+            return -1;
+        }else if (docId > documentIds[mid]) {
+            return binarySearch(documentIds, docId, mid+1, end);
+        } else {
+            return binarySearch(documentIds, docId, start, mid-1);
+        }
     }
-}
 
-
+    // Retorna a altura de um nó (ou -1 se for nulo)
     int getHeight(Node* node) {
-    return node ? node->height : -1;
-}
+        return node ? node->height : -1;
+    }
+   
+    // Atualiza a altura de um nó com base nas alturas dos filhos
+    void updateHeight(Node* node) {
+        if(node == nullptr) return;
 
+        node->height = std::max(getHeight(node->left), getHeight(node->right)) + 1;
+    }
 
-
-
-// Retorna o fator de balanceamento de um nó (esq - dir)
+    // Retorna o fator de balanceamento de um nó (esq - dir)
     int getBalanceFactor(Node* node) {
-    return node ? getHeight(node->left) - getHeight(node->right) : 0;
-}
+        return node ? getHeight(node->left) - getHeight(node->right) : 0;
+    }
 
 
+
+    void sideRotate(Node* parent, Node* son, int grandSide, int rotateSide) {
+        if (parent == nullptr || son == nullptr) return;
+
+        // Swap son and parent, making the parent inherit the grandchildren on the opposite side of the rotation.
+        if (rotateSide == 0) {
+            parent->right = son->left;
+            if (parent->right != nullptr) parent->right->parent = parent;
+            son->left = parent;
+        } else {
+            parent->left = son->right;
+            if (parent->left != nullptr) parent->left->parent = parent;
+            son->right = parent;
+        }
+        // The parent's parent inherit the son as his son.
+        son->parent = parent->parent;
+        if (grandSide == 0) {
+            son->parent->right = son;
+        } else if (grandSide == 1) {
+            son->parent->left = son;
+        }
+        parent->parent = son;
+        // Update height of nodes.
+        updateHeight(parent);
+        updateHeight(son);
+    }
+
+
+
+   
+   
     // Função para coletar estatísticas avançadas da árvore
 void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance) {
     if (node== nullptr) {
@@ -156,7 +205,6 @@ TreeStatistics collectAllStats(Node* root) {
     stats.insertionTime = 0.0;   
     return stats;
 }
-
 
 void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
     TreeStatistics stats = collectAllStats(tree->root);
@@ -339,5 +387,50 @@ void exportEvolutionStatsToCSV(int max_docs,
         std::cout << "Estatísticas exportadas para " << outputFilename << std::endl;
     }
 
+    }
+
+
+void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
+    TreeStatistics stats = collectAllStats(tree->root);
+    
+     // Novos cálculos para print
+    double tree_density = (stats.height >= 0 && stats.nodeCount > 0) ? (double)stats.nodeCount / (pow(2, stats.height + 1) - 1) : 0.0;
+    int longest_branch = stats.height;
+    int shortest_branch = stats.minDepth;
+    int branch_difference = longest_branch - shortest_branch;
+    double branch_ratio = (shortest_branch != 0) ? static_cast<double>(longest_branch) / shortest_branch : (longest_branch == 0 ? 1.0 : -1.0 /* Infinito ou N/A */);
+
+    cout << "\n=== TODAS ESTATISTICAS ===" << endl;
+    cout << "------ Estruturais ------" << endl;
+    cout << "Altura da arvore: " << stats.height << endl;
+    cout << "Nos totais: " << stats.nodeCount << endl;
+    cout << "Profundidade media: " << stats.averageDepth << endl;
+    cout << "Profundidade minima: " << stats.minDepth << endl;
+    cout << "Fator de balanceamento maximo: " << stats.maxImbalance << endl;
+      // --- Adicionado as linhas de impressão para as variáveis ---
+    cout << "Densidade da arvore: " << tree_density << endl;
+    cout << "Tamanho do maior galho: " << longest_branch << endl;
+    cout << "Tamanho do menor galho: " << shortest_branch << endl;
+    cout << "Diferenca entre galhos: " << branch_difference << endl; // Impressão adicionada
+        
+    if (shortest_branch != 0) {
+            cout << "Razao maior/menor galho: " << branch_ratio << endl;
+        } else {
+            cout << "Razao maior/menor galho: N/A (menor galho eh zero ou indefinido)" << endl;
+        }
+    cout << "\n------ Desempenho ------" << endl;
+    cout << "Documentos indexados: " << n_docs << endl;
+    cout << "Tempo total indexacao: " << totalTime << " ms" << endl;
+    
+    // Cálculo do tempo médio de inserção aqui
+    double average_insertion_time = (stats.nodeCount > 0) ? totalTime / stats.nodeCount : 0.0;
+    cout << "Tempo medio de insercao por no: " << average_insertion_time << " ms" << endl;
+
+    
+    cout << "Ultima insercao:" << endl;
+    cout << "* Comparacoes: " << lastInsert.numComparisons << endl;
+    cout << "* Tempo: " << lastInsert.executionTime << " ms" << endl;
+    cout << "=========================" << endl;
+}
 
 }

@@ -4,7 +4,7 @@ CXXFLAGS = -std=c++17 -Wall -Wextra -O2
 # ============================
 # Alvo principal
 # ============================
-all: avl bst
+all: avl bst rbt
 
 # ============================
 # AVL Executable
@@ -34,6 +34,20 @@ bst.o: src/bst.cpp src/bst.h src/tree_utils.h # Adicionado tree_utils.h para con
 
 # ============================
 # Código Compartilhado (dependem de outros headers também)
+=======
+# RBT
+# ============================
+rbt: main_rbt.o rbt.o tree_utils.o data.o
+	$(CXX) -o rbt main_rbt.o rbt.o tree_utils.o data.o
+
+main_rbt.o: src/main_rbt.cpp src/rbt.h src/tree_utils.h src/data.h
+	$(CXX) -c src/main_rbt.cpp -o main_rbt.o
+
+rbt.o: src/rbt.cpp src/rbt.h
+	$(CXX) -c src/rbt.cpp -o rbt.o
+
+# ============================
+# Código Compartilhado
 # ============================
 tree_utils.o: src/tree_utils.cpp src/tree_utils.h src/avl.h src/bst.h # Depende de ambos os headers
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -45,4 +59,5 @@ data.o: src/data.cpp src/data.h src/tree_utils.h # Depende de tree_utils.h
 # Limpeza
 # ============================
 clean:
-	del /Q *.o avl.exe bst.exe # Use .exe para Windows, se aplicável
+	del /Q *.o avl.exe bst.exe rbt.exe
+

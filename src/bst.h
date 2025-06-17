@@ -40,13 +40,13 @@ namespace BST {
    SearchResult search(BinaryTree* tree, const string& word);
     
     
-/**
- * @brief Destrói completamente uma árvore binária e libera toda a memória associada
- * @param tree Ponteiro para a árvore a ser destruída. Se nullptr, a função não tem efeito.
- * @warning Não utilize a árvore após chamar esta função
- * @note A função é segura para chamadas com nullptr
- * @see create() Para criar uma nova árvore após a destruição
- */
+    /**
+     * @brief Destrói completamente uma árvore binária e libera toda a memória associada
+     * @param tree Ponteiro para a árvore a ser destruída. Se nullptr, a função não tem efeito.
+     * @warning Não utilize a árvore após chamar esta função
+     * @note A função é segura para chamadas com nullptr
+     * @see create() Para criar uma nova árvore após a destruição
+     */
     void destroy(BinaryTree* tree); 
 }
 

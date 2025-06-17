@@ -2,7 +2,7 @@
 #include <vector>
 #include <chrono>
 #include <string>
-#include "avl.h"
+#include "rbt.h"
 #include "tree_utils.h"
 #include <algorithm>
 
@@ -16,14 +16,14 @@ using namespace std::chrono;
 using namespace TREE_UTILS;
 
 
-namespace AVL {
+namespace RBT {
     Node* initializeNode() {
         Node* node = new Node;
         node->parent = nullptr;
         node->left = nullptr;
         node->right = nullptr;
         node->height = 0;
-        node->isRed = 0;
+        node->isRed = 1;
         return node;
     }
 
@@ -33,6 +33,68 @@ namespace AVL {
         tree->NIL = nullptr;
         return tree;
     }
+
+    int getIsRed(Node* node){
+        return node != nullptr ? node->isRed : -1;
+    }
+
+    void fixInsert(BinaryTree* tree, Node* childNode, Node* parent, Node* grandParentNode){
+        // Trivial cases if parent or grandParentNode are nullptr.
+        if (childNode == nullptr || parent == nullptr || grandParentNode == nullptr) return;
+        if (getIsRed(parent) == 0) return; // Don't need to fix.
+
+        int grandSide = 0, firstSide = 0, secondSide = 0; // 0 - left, 1 - right (default left).
+        Node* uncle = grandParentNode->right;
+
+        // grandParentNode's father there is, for default, on it's left.
+        if (grandParentNode->parent != nullptr) {
+            if (grandParentNode->parent->left == grandParentNode) {
+                grandSide = 1;
+            }
+        } else { // grandParentNode is the root.
+            grandSide = -1;
+        }
+
+        // Define the side of grandParentNode's subtree where newNode was added (default is left).
+        if (grandParentNode->left != parent) { 
+            firstSide = 1;
+            uncle = grandParentNode->left;
+        }
+
+        // Simple case of recoloring and push instability.
+        if (getIsRed(uncle) == 1) {
+            if (tree->root == grandParentNode) {
+                parent->isRed = 0;
+                uncle->isRed = 0;
+                return;
+            }
+            parent->isRed = 0;
+            uncle->isRed = 0;
+            grandParentNode->isRed = 1;
+            childNode = grandParentNode;
+            parent = grandParentNode->parent;
+            grandParentNode = parent != nullptr ? parent->parent : nullptr;
+            return fixInsert(tree, childNode, parent, grandParentNode);
+        }
+
+        // Define the side of the newNode was added in parent subtree (default is left).
+        if (parent->left != childNode) {
+            secondSide = 1;
+        }
+
+        // If necessary, apply a second rotate.
+        if (firstSide != secondSide) {
+            sideRotate(parent, childNode, static_cast<int>(!firstSide), static_cast<int>(!secondSide));
+            Node* temp = parent;
+            parent = childNode;
+            childNode = temp;
+        }
+        sideRotate(grandParentNode, parent, grandSide, static_cast<int>(!firstSide));
+        grandParentNode->isRed = 1;
+        parent->isRed = 0;
+        if (grandSide == -1) tree->root = parent; // Update tree's root if parent is the root.
+    }
+
 
     InsertResult insert(BinaryTree* tree, const string& word, int documentId) {
         InsertResult insResult = InsertResult{0, 0.0};
@@ -50,6 +112,7 @@ namespace AVL {
         newNode->height = 0;
         newNode->documentIds.push_back(documentId);
         if (tree->root == nullptr) {
+            newNode->isRed = 0;
             tree->root = newNode;
             auto end = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(end - start);
@@ -57,12 +120,12 @@ namespace AVL {
             return insResult;
         }
 
-        // Apply binary search in avl until find the correct position to word.
+        // Apply binary search in bst until find the correct position to word.
         Node* parent = tree->root;
         Node* nextParent = nullptr;
         while (parent != nullptr) {
             insResult.numComparisons++;
-            // Just update list of docs if newNodw already exists
+            // Just update list of docs if newNode already exists
             if (word == parent->word) {
                 int indexDocId = binarySearch(parent->documentIds, documentId, 0, parent->documentIds.size()-1);
                 if (indexDocId >= 0) {
@@ -91,66 +154,16 @@ namespace AVL {
             parent->left = newNode;
         }
         newNode->parent = parent;
-
-        // Update height until find first imbalance Node.
-        Node* nodeUpdateHeight = parent;
-        Node* firstImbalanceNode = nullptr;
-        int balanceFactor = getBalanceFactor(nodeUpdateHeight);
-        while (balanceFactor != 0 && firstImbalanceNode == nullptr) { // When balanceFactor is zero, the add of newNode doesn't alter the height of nodeUpdateHeight and it's parents.
-            // When find the first imbalance, the height of its parents doesnt change after rotate.
-            if ((balanceFactor) / 2 != 0) {  // Balance factors(0 or 1) / 2 = round(x), with x < 1, them round(x) = 0.
-                firstImbalanceNode = nodeUpdateHeight;
-                break;
-            }
-            nodeUpdateHeight->height++;
-            nodeUpdateHeight = nodeUpdateHeight->parent;
-            if (nodeUpdateHeight == nullptr) break; // Find root -> stop.
-            balanceFactor = getBalanceFactor(nodeUpdateHeight);
-        }
-
-        // Apply rotate if necessary
-        if (firstImbalanceNode != nullptr) {
-            int grandSide = 0, firstSide = 0, secondSide = 0; // 0 - left, 1 - right (default left).
-            
-            // firstImbalanceNode's father there is, for default, on it's left.
-            if (firstImbalanceNode->parent != nullptr) {
-                if (firstImbalanceNode->parent->left == firstImbalanceNode) grandSide = 1;
-            } else { // firstImbalanceNode is the root.
-                grandSide = -1;
-            }
-
-            // Define the side of firsImbalance's subtree where newNode was added (default is left).
-            Node* sonToRotate = firstImbalanceNode->left;
-            if (getBalanceFactor(firstImbalanceNode) < 0) { 
-                firstSide = 1;
-                sonToRotate = firstImbalanceNode->right;
-            }
-
-            // Define the side of the newNode was added in firstImbalanceNode subtree (default is left).
-            Node* grandChildToRotate = sonToRotate->left;
-            if (getBalanceFactor(sonToRotate) < 0) {
-                secondSide = 1;
-                grandChildToRotate = sonToRotate->right;
-            }
-
-            // If necessary, apply a second rotate.
-            if (firstSide != secondSide) {
-                sideRotate(sonToRotate, grandChildToRotate, static_cast<int>(!firstSide), static_cast<int>(!secondSide));
-                Node* temp = sonToRotate;
-                sonToRotate = grandChildToRotate;
-                grandChildToRotate = temp;
-            }
-            sideRotate(firstImbalanceNode, sonToRotate, grandSide, static_cast<int>(!firstSide));
-            if (grandSide == -1) tree->root = sonToRotate; // Update tree's root if firstImbalanceNode is the root.
-        }
-
+// ======================================= Tirei o balanceamento da AVL ==================================================
+        fixInsert(tree, newNode, parent, parent->parent);
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start);
         insResult.executionTime = duration.count()/1000;
         return insResult;
     }
 
-    // Busca uma palavra na AVL e retorna se foi encontrada e em quais documentos
+
+    // Busca uma palavra na RBT e retorna se foi encontrada e em quais documentos
     SearchResult search(BinaryTree* tree, const string& word) {
         SearchResult result{0, {}, 0.0, 0};
 
@@ -194,7 +207,7 @@ namespace AVL {
         delete node;
     }
 
-    // Libera toda a árvore AVL
+    // Libera toda a árvore RBT
     void destroy(BinaryTree* tree) {
         if (!tree) return;
         destroyNode(tree->root);
