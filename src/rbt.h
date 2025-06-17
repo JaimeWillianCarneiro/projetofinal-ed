@@ -32,15 +32,6 @@ namespace RBT {
     InsertResult insert(BinaryTree* tree, const string& word, int documentId);
 
     /**
-     * @brief Rotate parent and son in a specific side.
-     * @param parent Parent of relashionship.
-     * @param son Son of relashionship.
-     * @param grandSide Parent's where the grandFather is.
-     * @param rotateSide Side to apply rotate.
-     */
-    void sideRotate(Node* parent, Node* son, int grandSide, int rotateSide);
-
-    /**
      * @brief Busca uma palavra na RBT.
      * @param tree Ponteiro para a árvore.
      * @param word Palavra a ser buscada.
@@ -49,18 +40,13 @@ namespace RBT {
     SearchResult search(BinaryTree* tree, const string& word);
 
     /**
-     * @brief Fix the color of the RBT
-     * @param root Pointer to the tree
-     * @param z Inserted node
+     * @brief Fix the color of the RBT.
+     * @param tree Tree to be modified.
+     * @param childNode New node created.
+     * @param parent childNode's parent.
+     * @param grandParentNode childNode's grand parent.
      */
-    void fixInsert(BinaryTree* tree, Node* z);
-
-    /**
-     * @brief Checks the color of the uncle of the node 
-     * @param z Node you want to check
-     * @return -1 if it doesnt have an uncle, 0 if black, 1 if red 
-     */
-    int getUncleColor(Node* z);
+    void fixInsert(BinaryTree* tree, Node* childNode, Node* parent, Node* grandParentNode);
 
     /**
      * @brief Libera toda a memória da árvore RBT.

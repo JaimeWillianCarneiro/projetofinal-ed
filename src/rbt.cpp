@@ -33,55 +33,67 @@ namespace RBT {
         tree->NIL = nullptr;
         return tree;
     }
-    // Retorna a altura de um nó (ou -1 se for nulo)
-   
-    // Atualiza a altura de um nó com base nas alturas dos filhos
-    void updateHeight(Node* node) {
-        if(node == nullptr) return;
 
-        node->height = std::max(getHeight(node->left), getHeight(node->right)) + 1;
-    }   
-
-    void sideRotate(Node* parent, Node* son, int grandSide, int rotateSide) {
-        if (parent == nullptr || son == nullptr) return;
-
-        // Swap son and parent, making the parent inherit the grandchildren on the opposite side of the rotation.
-        if (rotateSide == 0) {
-            parent->right = son->left;
-            if (parent->right != nullptr) parent->right->parent = parent;
-            son->left = parent;
-        } else {
-            parent->left = son->right;
-            if (parent->left != nullptr) parent->left->parent = parent;
-            son->right = parent;
-        }
-        // The parent's parent inherit the son as his son.
-        son->parent = parent->parent;
-        if (grandSide == 0) {
-            son->parent->right = son;
-        } else if (grandSide == 1) {
-            son->parent->left = son;
-        }
-        parent->parent = son;
-        // Update height of nodes.
-        updateHeight(parent);
-        updateHeight(son);
+    int getIsRed(Node* node){
+        return node != nullptr ? node->isRed : -1;
     }
 
-    void fixInsert(BinaryTree* tree, Node* z){
-        while (z->parent != nullptr && z->parent->isRed == 1) {
-            if (z->parent == z->parent->parent->left) { // pai é filho da esquerda
-                Node* y = z->parent->parent->right; // tio
-                if (y->isRed == 1) {
-                    // Caso 1: pai e tio são vermelhos → sobe a instabilidade
-                    z->parent->isRed = 0;
-                    y->isRed = 0;
-                    z->parent->parent->isRed = 1;
-                    z = z->parent->parent;
-                }
-                //  ============== Casos de rotacionar =======================
-            }    
+    void fixInsert(BinaryTree* tree, Node* childNode, Node* parent, Node* grandParentNode){
+        // Trivial cases if parent or grandParentNode are nullptr.
+        if (childNode == nullptr || parent == nullptr || grandParentNode == nullptr) return;
+        if (getIsRed(parent) == 0) return; // Don't need to fix.
+        cout << "FIX " << childNode->word << endl;
+
+        int grandSide = 0, firstSide = 0, secondSide = 0; // 0 - left, 1 - right (default left).
+        Node* uncle = grandParentNode->right;
+
+        // grandParentNode's father there is, for default, on it's left.
+        if (grandParentNode->parent != nullptr) {
+            if (grandParentNode->parent->left == grandParentNode) {
+                grandSide = 1;
+            }
+        } else { // grandParentNode is the root.
+            grandSide = -1;
         }
+
+        // Define the side of grandParentNode's subtree where newNode was added (default is left).
+        if (grandParentNode->left != parent) { 
+            firstSide = 1;
+            uncle = grandParentNode->left;
+        }
+
+        // Simple case of recoloring and push instability.
+        if (getIsRed(uncle) == 1) {
+            if (tree->root == grandParentNode) {
+                parent->isRed = 0;
+                uncle->isRed = 0;
+                return;
+            }
+            parent->isRed = 0;
+            uncle->isRed = 0;
+            grandParentNode->isRed = 1;
+            childNode = grandParentNode;
+            parent = grandParentNode->parent;
+            grandParentNode = parent != nullptr ? parent->parent : nullptr;
+            return fixInsert(tree, childNode, parent, grandParentNode);
+        }
+
+        // Define the side of the newNode was added in parent subtree (default is left).
+        if (parent->left != childNode) {
+            secondSide = 1;
+        }
+
+        // If necessary, apply a second rotate.
+        if (firstSide != secondSide) {
+            sideRotate(parent, childNode, static_cast<int>(!firstSide), static_cast<int>(!secondSide));
+            Node* temp = parent;
+            parent = childNode;
+            childNode = temp;
+        }
+        sideRotate(grandParentNode, parent, grandSide, static_cast<int>(!firstSide));
+        grandParentNode->isRed = 1;
+        parent->isRed = 0;
+        if (grandSide == -1) tree->root = parent; // Update tree's root if parent is the root.
     }
 
 
@@ -144,8 +156,8 @@ namespace RBT {
         }
         newNode->parent = parent;
 // ======================================= Tirei o balanceamento da AVL ==================================================
-        fixInsert(tree, newNode);
-
+        fixInsert(tree, newNode, parent, parent->parent);
+        printTree(tree);
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start);
         insResult.executionTime = duration.count()/1000;
@@ -189,30 +201,6 @@ namespace RBT {
         return result;
     }
 
-    int getUncleColor(Node* z){
-        if (z == nullptr || z->parent == nullptr || z->parent->parent == nullptr){
-            return -1;
-        }
-
-        // Verify if the parent is a child to the left
-        if(z->parent == z->parent->parent->left){
-
-            if(z->parent->parent->right == nullptr){
-                return -1;
-            } else{
-                return z->parent->parent->right->isRed;
-            }
-
-        } else{
-            if(z->parent->parent->left == nullptr){
-                return -1;
-            } else{
-                return z->parent->parent->left->isRed;
-            }
-        }
-
-    }
-
     // Libera recursivamente os nós da árvore
      void destroyNode(Node* node) {
         if (!node) return;
@@ -228,6 +216,3 @@ namespace RBT {
         delete tree;
     }
 }
-
-
-

@@ -171,108 +171,135 @@ namespace TREE_UTILS {
 // }
 
 
-int binarySearch(vector<int> documentIds, int docId, int start, int end) {
-    if (documentIds.empty()) {
-        cout << "Aviso: vetor de documentos vazio em binarySearch()." << endl;
-        return 0;
-    }
-    
-    // Stop condition.
-    if (start > end) {
-        return start;
+    int binarySearch(vector<int> documentIds, int docId, int start, int end) {
+        if (documentIds.empty()) {
+            cout << "Aviso: vetor de documentos vazio em binarySearch()." << endl;
+            return 0;
+        }
+        
+        // Stop condition.
+        if (start > end) {
+            return start;
+        }
+
+        int mid = (start + end) / 2;
+        if (docId == documentIds[mid]) {
+            return -1;
+        }else if (docId > documentIds[mid]) {
+            return binarySearch(documentIds, docId, mid+1, end);
+        } else {
+            return binarySearch(documentIds, docId, start, mid-1);
+        }
     }
 
-    int mid = (start + end) / 2;
-    if (docId == documentIds[mid]) {
-        return -1;
-    }else if (docId > documentIds[mid]) {
-        return binarySearch(documentIds, docId, mid+1, end);
-    } else {
-        return binarySearch(documentIds, docId, start, mid-1);
-    }
-}
-
-
+    // Retorna a altura de um nó (ou -1 se for nulo)
     int getHeight(Node* node) {
-    return node ? node->height : -1;
-}
+        return node ? node->height : -1;
+    }
+   
+    // Atualiza a altura de um nó com base nas alturas dos filhos
+    void updateHeight(Node* node) {
+        if(node == nullptr) return;
 
+        node->height = std::max(getHeight(node->left), getHeight(node->right)) + 1;
+    }
 
-
-
-// Retorna o fator de balanceamento de um nó (esq - dir)
+    // Retorna o fator de balanceamento de um nó (esq - dir)
     int getBalanceFactor(Node* node) {
-    return node ? getHeight(node->left) - getHeight(node->right) : 0;
-}
+        return node ? getHeight(node->left) - getHeight(node->right) : 0;
+    }
 
 
+    void sideRotate(Node* parent, Node* son, int grandSide, int rotateSide) {
+        if (parent == nullptr || son == nullptr) return;
 
+        // Swap son and parent, making the parent inherit the grandchildren on the opposite side of the rotation.
+        if (rotateSide == 0) {
+            parent->right = son->left;
+            if (parent->right != nullptr) parent->right->parent = parent;
+            son->left = parent;
+        } else {
+            parent->left = son->right;
+            if (parent->left != nullptr) parent->left->parent = parent;
+            son->right = parent;
+        }
+        // The parent's parent inherit the son as his son.
+        son->parent = parent->parent;
+        if (grandSide == 0) {
+            son->parent->right = son;
+        } else if (grandSide == 1) {
+            son->parent->left = son;
+        }
+        parent->parent = son;
+        // Update height of nodes.
+        updateHeight(parent);
+        updateHeight(son);
+    }
 
 
     // Função para coletar estatísticas avançadas da árvore
-void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance) {
-    if (node== nullptr) {
-        return;
-    }
-    
-    nodeCount++;
-    totalDepth += currentDepth;
+    void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance) {
+        if (node== nullptr) {
+            return;
+        }
+        
+        nodeCount++;
+        totalDepth += currentDepth;
 
-      // Só atualiza minDepth se for FOLHA
-    if (node->left == nullptr && node->right == nullptr) {
-        minDepth = std::min(minDepth, currentDepth);
+        // Só atualiza minDepth se for FOLHA
+        if (node->left == nullptr && node->right == nullptr) {
+            minDepth = std::min(minDepth, currentDepth);
+        }
+        
+        int balance = getBalanceFactor(node);
+        maxImbalance = max(maxImbalance, abs(balance));
+        
+        collectTreeStats(node->left,  currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
+        collectTreeStats(node->right, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
     }
-    
-    int balance = getBalanceFactor(node);
-    maxImbalance = max(maxImbalance, abs(balance));
-    
-    collectTreeStats(node->left,  currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
-    collectTreeStats(node->right, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
-}
+
         // Função unificada para coletar todas as estatísticas
-TreeStatistics collectAllStats(Node* root) {
-    TreeStatistics stats;
-    if (root == nullptr) {
-        stats.height = -1;
-        stats.nodeCount = 0;
-        stats.averageDepth = 0.0;
-        stats.minDepth = 0;
-        stats.maxImbalance = 0;
+    TreeStatistics collectAllStats(Node* root) {
+        TreeStatistics stats;
+        if (root == nullptr) {
+            stats.height = -1;
+            stats.nodeCount = 0;
+            stats.averageDepth = 0.0;
+            stats.minDepth = 0;
+            stats.maxImbalance = 0;
+            return stats;
+        }
+
+        int totalDepth = 0, nodeCount = 0, minDepth = INT_MAX, maxImbalance = 0;
+        collectTreeStats(root, 0, totalDepth, nodeCount, minDepth, maxImbalance);
+
+        stats.height = getHeight(root);
+        stats.nodeCount = nodeCount;
+        stats.averageDepth = nodeCount > 0 ? (double)totalDepth / nodeCount : 0.0;
+        stats.minDepth = minDepth;
+        stats.maxImbalance = maxImbalance;
+
         return stats;
     }
 
-    int totalDepth = 0, nodeCount = 0, minDepth = INT_MAX, maxImbalance = 0;
-    collectTreeStats(root, 0, totalDepth, nodeCount, minDepth, maxImbalance);
 
-    stats.height = getHeight(root);
-    stats.nodeCount = nodeCount;
-    stats.averageDepth = nodeCount > 0 ? (double)totalDepth / nodeCount : 0.0;
-    stats.minDepth = minDepth;
-    stats.maxImbalance = maxImbalance;
-
-    return stats;
-}
-
-
-void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
-    TreeStatistics stats = collectAllStats(tree->root);
-    
-    cout << "\n=== TODAS ESTATISTICAS ===" << endl;
-    cout << "------ Estruturais ------" << endl;
-    cout << "Altura da arvore: " << stats.height << endl;
-    cout << "Nos totais: " << stats.nodeCount << endl;
-    cout << "Profundidade media: " << stats.averageDepth << endl;
-    cout << "Profundidade minima: " << stats.minDepth << endl;
-    cout << "Fator de balanceamento maximo: " << stats.maxImbalance << endl;
-    
-    cout << "\n------ Desempenho ------" << endl;
-    cout << "Documentos indexados: " << n_docs << endl;
-    cout << "Tempo total indexacao: " << totalTime << " ms" << endl;
-    cout << "Ultima insercao:" << endl;
-    cout << "* Comparacoes: " << lastInsert.numComparisons << endl;
-    cout << "* Tempo: " << lastInsert.executionTime << " ms" << endl;
-    cout << "=========================" << endl;
-}
-
-
+    void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
+        TreeStatistics stats = collectAllStats(tree->root);
+        
+        cout << "\n=== TODAS ESTATISTICAS ===" << endl;
+        cout << "------ Estruturais ------" << endl;
+        cout << "Altura da arvore: " << stats.height << endl;
+        cout << "Nos totais: " << stats.nodeCount << endl;
+        cout << "Profundidade media: " << stats.averageDepth << endl;
+        cout << "Profundidade minima: " << stats.minDepth << endl;
+        cout << "Fator de balanceamento maximo: " << stats.maxImbalance << endl;
+        
+        cout << "\n------ Desempenho ------" << endl;
+        cout << "Documentos indexados: " << n_docs << endl;
+        cout << "Tempo total indexacao: " << totalTime << " ms" << endl;
+        cout << "Ultima insercao:" << endl;
+        cout << "* Comparacoes: " << lastInsert.numComparisons << endl;
+        cout << "* Tempo: " << lastInsert.executionTime << " ms" << endl;
+        cout << "=========================" << endl;
+    }
 }
