@@ -4,7 +4,7 @@ CXXFLAGS = -std=c++17 -Wall -Wextra -O2
 # ============================
 # Alvo principal
 # ============================
-all: avl bst
+all: avl bst rbt
 
 # ============================
 # AVL
@@ -55,4 +55,4 @@ data.o: src/data.cpp src/data.h
 # Limpeza
 # ============================
 clean:
-	del /Q *.o avl.exe bst.exe
+	del /Q *.o avl.exe bst.exe rbt.exe

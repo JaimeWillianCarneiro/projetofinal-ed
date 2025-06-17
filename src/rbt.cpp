@@ -42,7 +42,6 @@ namespace RBT {
         // Trivial cases if parent or grandParentNode are nullptr.
         if (childNode == nullptr || parent == nullptr || grandParentNode == nullptr) return;
         if (getIsRed(parent) == 0) return; // Don't need to fix.
-        cout << "FIX " << childNode->word << endl;
 
         int grandSide = 0, firstSide = 0, secondSide = 0; // 0 - left, 1 - right (default left).
         Node* uncle = grandParentNode->right;
@@ -94,24 +93,6 @@ namespace RBT {
         grandParentNode->isRed = 1;
         parent->isRed = 0;
         if (grandSide == -1) tree->root = parent; // Update tree's root if parent is the root.
-    }
-
-    bool checkBlackHeight(Node* node, int blackCount, int& expectedBlackCount) {
-    if (node == nullptr) {
-        // Stop condition: got to a leaf
-        if (expectedBlackCount == -1) {
-            expectedBlackCount = blackCount;
-            return true;
-        }
-        return blackCount == expectedBlackCount;
-    }
-
-    // Count the black nodes in the path
-    if (node->isRed == 0) blackCount++;
-
-    // Verify the same for the left and right
-    return checkBlackHeight(node->left, blackCount, expectedBlackCount) &&
-           checkBlackHeight(node->right, blackCount, expectedBlackCount);
     }
 
 
@@ -175,7 +156,6 @@ namespace RBT {
         newNode->parent = parent;
 // ======================================= Tirei o balanceamento da AVL ==================================================
         fixInsert(tree, newNode, parent, parent->parent);
-        printTree(tree);
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start);
         insResult.executionTime = duration.count()/1000;
