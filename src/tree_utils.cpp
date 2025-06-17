@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "avl.h"
 #include "bst.h"
+#include "rbt.h"
 #include <math.h>
 #include <cmath> 
 #include <filesystem> // using std::cout;
@@ -320,10 +321,14 @@ void exportEvolutionStatsToCSV(int max_docs,
             createFunc = AVL::create;
             destroyFunc = AVL::destroy;
             insertFunc = AVL::insert;
-        } else {
+        } else if (treeType == "BST") { // Adicionado para BST
             createFunc = BST::create;
             destroyFunc = BST::destroy;
             insertFunc = BST::insert;
+        } else { // Presume RBT se não for AVL ou BST
+            createFunc = RBT::create;
+            destroyFunc = RBT::destroy;
+            insertFunc = RBT::insert;
         }
 
         BinaryTree* tempTree = createFunc();
