@@ -42,7 +42,6 @@ namespace RBT {
         // Trivial cases if parent or grandParentNode are nullptr.
         if (childNode == nullptr || parent == nullptr || grandParentNode == nullptr) return;
         if (getIsRed(parent) == 0) return; // Don't need to fix.
-        cout << "FIX " << childNode->word << endl;
 
         int grandSide = 0, firstSide = 0, secondSide = 0; // 0 - left, 1 - right (default left).
         Node* uncle = grandParentNode->right;
@@ -175,7 +174,6 @@ namespace RBT {
         newNode->parent = parent;
 // ======================================= Tirei o balanceamento da AVL ==================================================
         fixInsert(tree, newNode, parent, parent->parent);
-        printTree(tree);
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start);
         insResult.executionTime = duration.count()/1000;
