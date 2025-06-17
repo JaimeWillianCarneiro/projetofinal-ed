@@ -75,16 +75,6 @@ namespace TREE_UTILS {
         preOrderPrint(tree->root, 0, "", "");
     }
 
-int binarySearch(vector<int> documentIds, int docId, int start, int end) {
-    if (documentIds.empty()) {
-        cout << "Aviso: vetor de documentos vazio em binarySearch()." << endl;
-        return 0;
-    }
-    
-    // Stop condition.
-    if (start > end) {
-        return start;
-    }
 
 
     int binarySearch(vector<int> documentIds, int docId, int start, int end) {
@@ -159,7 +149,7 @@ int binarySearch(vector<int> documentIds, int docId, int start, int end) {
    
    
     // Função para coletar estatísticas avançadas da árvore
-void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance) {
+void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance,  int& maxDepthFound) {
     if (node== nullptr) {
         return;
     }
@@ -167,6 +157,7 @@ void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCo
     nodeCount++;
     totalDepth += currentDepth;
 
+    maxDepthFound = std::max(maxDepthFound, currentDepth); 
       // Só atualiza minDepth se for FOLHA
     if (node->left == nullptr && node->right == nullptr) {
         minDepth = std::min(minDepth, currentDepth);
@@ -175,8 +166,8 @@ void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCo
     int balance = getBalanceFactor(node);
     maxImbalance = max(maxImbalance, abs(balance));
 
-    collectTreeStats(node->left,  currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
-    collectTreeStats(node->right, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
+    collectTreeStats(node->left,  currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance, maxDepthFound);
+    collectTreeStats(node->right, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance, maxDepthFound);
 }
  
 // Função unificada para coletar todas as estatísticas
@@ -194,9 +185,11 @@ TreeStatistics collectAllStats(Node* root) {
     }
 
     int totalDepth = 0, nodeCount = 0, minDepth = INT_MAX, maxImbalance = 0;
-    collectTreeStats(root, 0, totalDepth, nodeCount, minDepth, maxImbalance);
+    int maxDepthFound = -1;
+    // collectTreeStats(root, 0, totalDepth, nodeCount, minDepth, maxImbalance);
+    collectTreeStats(root, 0, totalDepth, nodeCount, minDepth, maxImbalance, maxDepthFound);
 
-    stats.height = getHeight(root);
+    stats.height = maxDepthFound;
     stats.nodeCount = nodeCount;
     stats.averageDepth = nodeCount > 0 ? (double)totalDepth / nodeCount : 0.0;
     stats.minDepth = minDepth;
@@ -387,50 +380,6 @@ void exportEvolutionStatsToCSV(int max_docs,
         std::cout << "Estatísticas exportadas para " << outputFilename << std::endl;
     }
 
-    }
 
-
-void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
-    TreeStatistics stats = collectAllStats(tree->root);
-    
-     // Novos cálculos para print
-    double tree_density = (stats.height >= 0 && stats.nodeCount > 0) ? (double)stats.nodeCount / (pow(2, stats.height + 1) - 1) : 0.0;
-    int longest_branch = stats.height;
-    int shortest_branch = stats.minDepth;
-    int branch_difference = longest_branch - shortest_branch;
-    double branch_ratio = (shortest_branch != 0) ? static_cast<double>(longest_branch) / shortest_branch : (longest_branch == 0 ? 1.0 : -1.0 /* Infinito ou N/A */);
-
-    cout << "\n=== TODAS ESTATISTICAS ===" << endl;
-    cout << "------ Estruturais ------" << endl;
-    cout << "Altura da arvore: " << stats.height << endl;
-    cout << "Nos totais: " << stats.nodeCount << endl;
-    cout << "Profundidade media: " << stats.averageDepth << endl;
-    cout << "Profundidade minima: " << stats.minDepth << endl;
-    cout << "Fator de balanceamento maximo: " << stats.maxImbalance << endl;
-      // --- Adicionado as linhas de impressão para as variáveis ---
-    cout << "Densidade da arvore: " << tree_density << endl;
-    cout << "Tamanho do maior galho: " << longest_branch << endl;
-    cout << "Tamanho do menor galho: " << shortest_branch << endl;
-    cout << "Diferenca entre galhos: " << branch_difference << endl; // Impressão adicionada
-        
-    if (shortest_branch != 0) {
-            cout << "Razao maior/menor galho: " << branch_ratio << endl;
-        } else {
-            cout << "Razao maior/menor galho: N/A (menor galho eh zero ou indefinido)" << endl;
-        }
-    cout << "\n------ Desempenho ------" << endl;
-    cout << "Documentos indexados: " << n_docs << endl;
-    cout << "Tempo total indexacao: " << totalTime << " ms" << endl;
-    
-    // Cálculo do tempo médio de inserção aqui
-    double average_insertion_time = (stats.nodeCount > 0) ? totalTime / stats.nodeCount : 0.0;
-    cout << "Tempo medio de insercao por no: " << average_insertion_time << " ms" << endl;
-
-    
-    cout << "Ultima insercao:" << endl;
-    cout << "* Comparacoes: " << lastInsert.numComparisons << endl;
-    cout << "* Tempo: " << lastInsert.executionTime << " ms" << endl;
-    cout << "=========================" << endl;
-}
 
 }

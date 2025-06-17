@@ -30,6 +30,7 @@ void printMenu() {
 }
 
 // Prints menu stats options
+// Prints menu stats options
 void printMenuStats() {
     cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
     cout << "1. Tempo de insercao." << endl;
@@ -38,9 +39,11 @@ void printMenuStats() {
     cout << "2. Altura  e densidade da arvore." << endl;
     cout << "3. Tamanho dos galhos." << endl;
     cout << "4. Todas as estatisticas." << endl;
+    cout << "5. Exportar estatisticas para CSV." << endl;  
     cout << "Ou digite '\\q' para sair (ou ctrl + c)." << endl;
 
 }
+
 
 
 int main(int argc, char* argv[]) {
@@ -140,8 +143,8 @@ int main(int argc, char* argv[]) {
             // } 
             else if (input == "2") {
                 cout << "Altura da arvore: "  << stats.height << endl;
-                cout << "Densidade da arvore: " << (stats.nodeCount > 0 ? (double)stats.nodeCount / pow(2, stats.height + 1) : 0)  << endl;
-
+                double tree_density = (stats.height >= 0 && stats.nodeCount > 0) ? (double)stats.nodeCount / (pow(2, stats.height + 1) - 1) : 0.0;
+                cout << "Densidade da arvore: " << tree_density << endl;
             } else if (input == "3") {
                 cout << "Tamanho dos galhos: " <<  endl;
                 cout << " * Maior galho: " << stats.height<< endl;
@@ -156,8 +159,19 @@ int main(int argc, char* argv[]) {
                 cout << "Profundidade media: "  << stats.averageDepth << endl;
             } else if (input == "4") {
                 printAllStats(tree,  lastInsert, totalTime, n_docs);
-            
-                        } else if (input == "\\q") {
+                
+            }
+                else if (input == "5"){
+                // string filename;
+                // cout << "Digite o nome do arquivo CSV (ex: estatisticas.csv): ";
+                // cin >> filename;
+                // exportStatsToCSV(tree, filename, lastInsert, totalTime, n_docs);
+                // break;
+
+                cout << "Exportando estatisticas evolutivas (1-" << n_docs << " docs)" << endl;
+                TREE_UTILS::exportEvolutionStatsToCSV(n_docs, "docs", "RBT");
+            }
+                        else if (input == "\\q") {
                 break;
             } else {
                 cout << "Opcao invalida." << endl;
