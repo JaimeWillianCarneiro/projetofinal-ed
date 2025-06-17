@@ -84,6 +84,24 @@ namespace RBT {
         }
     }
 
+    bool checkBlackHeight(Node* node, int blackCount, int& expectedBlackCount) {
+    if (node == nullptr) {
+        // Stop condition: got to a leaf
+        if (expectedBlackCount == -1) {
+            expectedBlackCount = blackCount;
+            return true;
+        }
+        return blackCount == expectedBlackCount;
+    }
+
+    // Count the black nodes in the path
+    if (node->isRed == 0) blackCount++;
+
+    // Verify the same for the left and right
+    return checkBlackHeight(node->left, blackCount, expectedBlackCount) &&
+           checkBlackHeight(node->right, blackCount, expectedBlackCount);
+    }
+
 
     InsertResult insert(BinaryTree* tree, const string& word, int documentId) {
         InsertResult insResult = InsertResult{0, 0.0};

@@ -63,6 +63,15 @@ namespace RBT {
     int getUncleColor(Node* z);
 
     /**
+     * @brief Check height of the RBT
+     * @param node The current node (start with the root)
+     * @param blackCount The current count of black nodes
+     * @param expectedBlackCount The expected amount of black nodes (start with -1)
+     * @return If the RBT is right
+     */
+    bool checkBlackHeight(Node* node, int blackCount, int& expectedBlackCount);
+
+    /**
      * @brief Libera toda a memória da árvore RBT.
      * @param tree Ponteiro para a árvore.
      */
