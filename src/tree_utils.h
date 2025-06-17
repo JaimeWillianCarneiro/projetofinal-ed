@@ -300,8 +300,9 @@ namespace TREE_UTILS {
      * Esta informação é incluída na saída CSV.
      */
     void exportEvolutionStatsToCSV(int max_docs,
-                                  const std::string& basePath,
-                                  const std::string& treeType);
+                                   const std::string& basePath,
+                                   const std::string& treeType,
+                                   SearchResult (*searchFunc)(BinaryTree*, const std::string&));
     
     
     /**

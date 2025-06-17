@@ -10,6 +10,7 @@
 #include <math.h>
 #include <cmath> 
 #include <filesystem> // using std::cout;
+#include <random> // Para geração de números aleatórios para amostra de busca
 using std::endl;
 using namespace std;
 
@@ -271,7 +272,8 @@ std::vector<double> timeHistory;
 
 void exportEvolutionStatsToCSV(int max_docs, 
                                   const std::string& basePath,
-                                  const std::string& treeType) {
+                                  const std::string& treeType, 
+                                 SearchResult (*searchFunc)(BinaryTree*, const std::string&)) {
         if (max_docs <= 0) {
             std::cerr << "Número de documentos inválido." << std::endl;
             return;
@@ -307,11 +309,15 @@ void exportEvolutionStatsToCSV(int max_docs,
         }
 
    
-        csvFile << "Num_Docs,Altura,Total_Nos,Profundidade_Media,"
+                // --- CABEÇALHO DO CSV ATUALIZADO COM ESTATÍSTICAS DE BUSCA ---
+         csvFile << "Num_Docs,Altura,Total_Nos,Profundidade_Media,"
                   << "Profundidade_Minima,Max_Desbalanceamento,"
                   << "Tempo_Total_Indexacao,Tempo_Medio_Insercao,"
                   << "Densidade_Arvore,Maior_Galho,Menor_Galho,"
-                  << "Total_Comparacoes_Indexacao,Tipo_Arvore\n";
+                  << "Total_Comparacoes_Indexacao,"
+                  << "Tempo_Maximo_Busca_Amostra,Comparacoes_Total_Busca_Amostra," // RENOMEADO AQUI
+                  << "Tempo_Medio_Busca_Amostra_Por_Palavra,Comparacoes_Medias_Busca_Amostra_Por_Palavra,"
+                  << "Tipo_Arvore\n";
         // Ponteiros para funções específicas
         BinaryTree* (*createFunc)() = nullptr;
         void (*destroyFunc)(BinaryTree*) = nullptr;
@@ -329,16 +335,23 @@ void exportEvolutionStatsToCSV(int max_docs,
             createFunc = RBT::create;
             destroyFunc = RBT::destroy;
             insertFunc = RBT::insert;
-        }
+        }   
+
+
+        // Configuração para amostragem de palavras para busca
+        const int MAX_SEARCH_SAMPLE_SIZE = 1000; // Limite de palavras para buscar em cada iteração
+        std::random_device rd;
+        std::mt19937 g(rd());
 
         BinaryTree* tempTree = createFunc();
         
+         
         for (int num_docs_iter = 1; num_docs_iter <= max_docs; ++num_docs_iter) {
             destroyFunc(tempTree);
             tempTree = createFunc();
             
             double current_cumulative_insertion_time = 0.0; 
-            long long current_cumulative_comparisons = 0; // Nova variável para acumular as comparações
+            long long current_cumulative_comparisons = 0; 
             
             for (size_t i = 0; i < allInsertedDocuments.size(); ++i) { 
                 const auto& doc_entry = allInsertedDocuments[i];
@@ -348,7 +361,7 @@ void exportEvolutionStatsToCSV(int max_docs,
                     if (i < timeHistory.size()) {
                         current_cumulative_insertion_time += timeHistory[i];
                     }
-                    if (i < insertHistory.size()) { // Acumula comparações
+                    if (i < insertHistory.size()) { 
                         current_cumulative_comparisons += insertHistory[i].numComparisons;
                     }
                 } else {
@@ -356,13 +369,47 @@ void exportEvolutionStatsToCSV(int max_docs,
                 }
             }
             
-            TreeStatistics stats = collectAllStats(tempTree->root);
+            TreeStatistics stats = collectAllStats(tempTree->root); 
             
             double average_insertion_time = (stats.nodeCount > 0) ? current_cumulative_insertion_time / stats.nodeCount : 0.0;
             double tree_density = (stats.height >= 0 && stats.nodeCount > 0) ? (double)stats.nodeCount / (pow(2, stats.height + 1) - 1) : 0.0; 
             int longest_branch = stats.height;
             int shortest_branch = stats.minDepth;
+
+            // --- CÓDIGO PARA COLETAR ESTATÍSTICAS DE BUSCA (MODIFICADO) ---
+            double total_search_time_sample = 0.0; // Mantido para cálculo da média
+            double max_search_time_sample = 0.0;   // NOVO: para o tempo máximo
+            long long total_search_comparisons_sample = 0;
+            int actual_searches_performed = 0;
             
+            std::vector<std::string> words_for_current_search_sample;
+            
+            for(const auto& doc_entry : allInsertedDocuments) {
+                if (doc_entry.docId < num_docs_iter) {
+                    words_for_current_search_sample.push_back(doc_entry.word);
+                } else {
+                    break; 
+                }
+            }
+
+            if (words_for_current_search_sample.size() > MAX_SEARCH_SAMPLE_SIZE) {
+                std::shuffle(words_for_current_search_sample.begin(), words_for_current_search_sample.end(), g);
+                words_for_current_search_sample.resize(MAX_SEARCH_SAMPLE_SIZE);
+            }
+            
+            for (const string& word : words_for_current_search_sample) {
+                SearchResult sr = searchFunc(tempTree, word); 
+                total_search_time_sample += sr.executionTime;
+                max_search_time_sample = std::max(max_search_time_sample, sr.executionTime); // Atualiza o máximo
+                total_search_comparisons_sample += sr.numComparisons;
+                actual_searches_performed++;
+            }
+
+            double avg_search_time_per_word = (actual_searches_performed > 0) ? total_search_time_sample / actual_searches_performed : 0.0;
+            double avg_search_comparisons_per_word = (actual_searches_performed > 0) ? static_cast<double>(total_search_comparisons_sample) / actual_searches_performed : 0.0;
+            // --- FIM DO CÓDIGO DE ESTATÍSTICAS DE BUSCA ---
+
+
             // Escrever linha no CSV
             csvFile << num_docs_iter << ","
                       << stats.height << ","
@@ -375,7 +422,13 @@ void exportEvolutionStatsToCSV(int max_docs,
                       << tree_density << ","              
                       << longest_branch << ","            
                       << shortest_branch << ","           
-                      << current_cumulative_comparisons << "," // Usa o total acumulado de comparações
+                      << current_cumulative_comparisons << "," 
+                      // --- NOVOS CAMPOS DE BUSCA NO CSV (MODIFICADO) ---
+                      << max_search_time_sample << "," // AGORA É O TEMPO MÁXIMO
+                      << total_search_comparisons_sample << ","
+                      << avg_search_time_per_word << ","
+                      << avg_search_comparisons_per_word << ","
+                      // --- FIM DOS NOVOS CAMPOS ---
                       << treeType << "\n";
         }
 
@@ -384,7 +437,6 @@ void exportEvolutionStatsToCSV(int max_docs,
         
         std::cout << "Estatísticas exportadas para " << outputFilename << std::endl;
     }
-
 
 
 }

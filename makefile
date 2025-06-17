@@ -9,8 +9,8 @@ all: avl bst rbt
 # ============================
 # AVL Executable
 # ============================
-# O executável 'avl' precisa de seus próprios objetos mais tree_utils.o, data.o, E bst.o
-avl: main_avl.o avl.o tree_utils.o data.o bst.o
+# O executável 'avl' precisa de seus próprios objetos mais tree_utils.o, data.o, bst.o E rbt.o
+avl: main_avl.o avl.o tree_utils.o data.o bst.o rbt.o # <-- CORRIGIDO AQUI
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 main_avl.o: src/main_avl.cpp src/avl.h src/tree_utils.h src/data.h
@@ -22,8 +22,8 @@ avl.o: src/avl.cpp src/avl.h src/tree_utils.h
 # ============================
 # BST Executable
 # ============================
-# O executável 'bst' precisa de seus próprios objetos mais tree_utils.o, data.o, E avl.o
-bst: main_bst.o bst.o tree_utils.o data.o avl.o
+# O executável 'bst' precisa de seus próprios objetos mais tree_utils.o, data.o, avl.o E rbt.o
+bst: main_bst.o bst.o tree_utils.o data.o avl.o rbt.o # <-- CORRIGIDO AQUI
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 main_bst.o: src/main_bst.cpp src/bst.h src/tree_utils.h src/data.h
@@ -47,7 +47,7 @@ rbt.o: src/rbt.cpp src/rbt.h
 # ============================
 # Código Compartilhado
 # ============================
-tree_utils.o: src/tree_utils.cpp src/tree_utils.h src/avl.h src/bst.h
+tree_utils.o: src/tree_utils.cpp src/tree_utils.h src/avl.h src/bst.h src/rbt.h # <-- CORRIGIDO AQUI
 	$(CXX) $(CXXFLAGS) -c src/tree_utils.cpp -o $@
 
 data.o: src/data.cpp src/data.h src/tree_utils.h

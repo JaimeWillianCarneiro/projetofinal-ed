@@ -169,7 +169,7 @@ int main(int argc, char* argv[]) {
                 // break;
 
                 cout << "Exportando estatisticas evolutivas (1-" << n_docs << " docs)" << endl;
-                TREE_UTILS::exportEvolutionStatsToCSV(n_docs, "docs", "RBT");
+                TREE_UTILS::exportEvolutionStatsToCSV(n_docs, "docs", "BRT", RBT::search);
             }
                         else if (input == "\\q") {
                 break;

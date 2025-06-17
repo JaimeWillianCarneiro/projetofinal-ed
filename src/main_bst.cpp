@@ -160,7 +160,7 @@ int main(int argc, char* argv[]) {
             
             else if (input == "5"){ // Nova opção de exportar
                 cout << "Exportando estatisticas evolutivas (1-" << n_docs << " docs)" << endl;
-                TREE_UTILS::exportEvolutionStatsToCSV(n_docs, directory, "BST"); // <-- CORRIGIDO AQUI PARA "BST"
+                TREE_UTILS::exportEvolutionStatsToCSV(n_docs, "docs", "BST", BST::search); // <-- CORRIGIDO AQUI PARA "BST"
             }
                         else if (input == "\\q") {
                 break;
