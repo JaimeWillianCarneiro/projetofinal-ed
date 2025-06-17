@@ -14,10 +14,10 @@ avl: main_avl.o avl.o tree_utils.o data.o bst.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 main_avl.o: src/main_avl.cpp src/avl.h src/tree_utils.h src/data.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c src/main_avl.cpp -o $@
 
-avl.o: src/avl.cpp src/avl.h src/tree_utils.h # Adicionado tree_utils.h para consistência
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+avl.o: src/avl.cpp src/avl.h src/tree_utils.h
+	$(CXX) $(CXXFLAGS) -c src/avl.cpp -o $@
 
 # ============================
 # BST Executable
@@ -27,37 +27,34 @@ bst: main_bst.o bst.o tree_utils.o data.o avl.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 main_bst.o: src/main_bst.cpp src/bst.h src/tree_utils.h src/data.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c src/main_bst.cpp -o $@
 
-bst.o: src/bst.cpp src/bst.h src/tree_utils.h # Adicionado tree_utils.h para consistência
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+bst.o: src/bst.cpp src/bst.h src/tree_utils.h
+	$(CXX) $(CXXFLAGS) -c src/bst.cpp -o $@
 
 # ============================
-# Código Compartilhado (dependem de outros headers também)
-=======
 # RBT
 # ============================
-rbt: main_rbt.o rbt.o tree_utils.o data.o
-	$(CXX) -o rbt main_rbt.o rbt.o tree_utils.o data.o
+rbt: main_rbt.o rbt.o tree_utils.o data.o avl.o bst.o
+	$(CXX) $(CXXFLAGS) -o $@ $^
 
 main_rbt.o: src/main_rbt.cpp src/rbt.h src/tree_utils.h src/data.h
-	$(CXX) -c src/main_rbt.cpp -o main_rbt.o
+	$(CXX) $(CXXFLAGS) -c src/main_rbt.cpp -o $@
 
 rbt.o: src/rbt.cpp src/rbt.h
-	$(CXX) -c src/rbt.cpp -o rbt.o
+	$(CXX) $(CXXFLAGS) -c src/rbt.cpp -o $@
 
 # ============================
 # Código Compartilhado
 # ============================
-tree_utils.o: src/tree_utils.cpp src/tree_utils.h src/avl.h src/bst.h # Depende de ambos os headers
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+tree_utils.o: src/tree_utils.cpp src/tree_utils.h src/avl.h src/bst.h
+	$(CXX) $(CXXFLAGS) -c src/tree_utils.cpp -o $@
 
-data.o: src/data.cpp src/data.h src/tree_utils.h # Depende de tree_utils.h
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+data.o: src/data.cpp src/data.h src/tree_utils.h
+	$(CXX) $(CXXFLAGS) -c src/data.cpp -o $@
 
 # ============================
 # Limpeza
 # ============================
 clean:
 	del /Q *.o avl.exe bst.exe rbt.exe
-
