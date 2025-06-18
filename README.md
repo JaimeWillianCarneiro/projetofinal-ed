@@ -5,15 +5,16 @@ Integrantes: Carlos Daniel de Souza Lima, Gabriela Barbosa Souza, Gabrielly Este
 ---
 
 ## Índice
-
-* [Introdução](#-introdução)
-* [Instruções para Compilar e Executar](#-instruções-para-compilar-e-executar)
-* [Bibliotecas Utilizadas](#-bibliotecas-utilizadas)
-* [Como Usar](#-como-usar)
-* [Instruções para Compilar e Executar](#-instruções-para-compilar-e-executar)
-* [Estatísticas](#-estatísticas)
-* [Testes](#-testes)
-
+- [Introdução](#introdução)
+- [Bibliotecas Utilizadas](#bibliotecas-utilizadas)
+- [Instruções para Compilar e Executar](#instruções-para-compilar-e-executar)
+  - [Para compilar manualmente](#para-compilar-manualmente)
+- [Como usar](#como-usar)
+  - [Exemplo de uso](#exemplo-de-uso)
+- [Estatísticas](#estatísticas)
+- [Testes](#testes)
+  - [Passo a passo](#passo-a-passo)
+  
 ---
 
 ## Introdução
