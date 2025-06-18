@@ -294,7 +294,7 @@ void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double tota
         }
     cout << "\n------ Desempenho ------" << endl;
     cout << "Documentos indexados: " << n_docs << endl;
-    cout << "Tempo total indexacao: " << totalTime << " ms" << endl;
+    cout << "Tempo total insercao: " << totalTime << " ms" << endl;
     
     // Cálculo do tempo médio de inserção 
     double average_insertion_time = (stats.nodeCount > 0) ? totalTime / stats.nodeCount : 0.0;
@@ -403,7 +403,7 @@ void accumulateSearchStatsRecursive(Node* node, double& totalTime,
                                    const std::string& treeType, 
                                    SearchResult (*searchFunc)(BinaryTree*, const std::string&)) {
         if (max_docs <= 0) {
-            std::cerr << "Número de documentos inválido." << std::endl;
+            std::cerr << "Número de documentos invalido." << std::endl;
             return;
         }
 
@@ -439,7 +439,7 @@ void accumulateSearchStatsRecursive(Node* node, double& totalTime,
         
         csvFile << "Num_Docs,Altura,Total_Nos,Profundidade_Media,"
                   << "Profundidade_Minima,Max_Desbalanceamento,"
-                  << "Tempo_Total_Indexacao,Tempo_Medio_Insercao,"
+                  << "Tempo_Total_Insercao,Tempo_Medio_Insercao,"
                   << "Densidade_Arvore,Maior_Galho,Menor_Galho,"
                   << "Total_Comparacoes_Indexacao,"
                   << "Tempo_Maximo_Busca_Amostra,Comparacoes_Total_Busca_Amostra," 
