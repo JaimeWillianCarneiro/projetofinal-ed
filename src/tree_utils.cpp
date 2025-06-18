@@ -201,7 +201,72 @@ TreeStatistics collectAllStats(Node* root) {
     return stats;
 }
 
-void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
+
+
+ void printSearchStatsSample(BinaryTree* tree, int n_docs, SearchResult (*searchFunc)(BinaryTree*, const std::string&)) {
+        if (searchFunc != nullptr && tree != nullptr && tree->root != nullptr) {
+            const int MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT = 100; // Amostra menor para print no console
+            std::random_device rd;
+            std::mt19937 g(rd()); // Gerador de números aleatórios
+
+            double total_search_time_sample = 0.0;
+            double max_search_time_sample = 0.0;
+            long long total_search_comparisons_sample = 0;
+            int actual_searches_performed = 0;
+            
+            std::vector<std::string> words_for_current_search_sample;
+            
+            // Pega palavras que definitivamente estão na árvore atual.
+            // Considera palavras de allInsertedDocuments até o n_docs atual para garantir que existem na 'tree'.
+            for(const auto& doc_entry : allInsertedDocuments) {
+                 if (doc_entry.docId < n_docs) {
+                    words_for_current_search_sample.push_back(doc_entry.word);
+                } else {
+                    break;
+                }
+            }
+
+            // Se não há palavras na amostra (ex: n_docs muito pequeno ou árvore vazia)
+            if (words_for_current_search_sample.empty()) {
+                cout << "\n------ Desempenho (Busca - Amostra) ------" << endl;
+                cout << "Nao ha palavras suficientes para amostra de busca (arvore vazia ou n_docs muito pequeno)." << endl;
+            } else {
+                // Embaralha e redimensiona a amostra se for muito grande
+                if (words_for_current_search_sample.size() > MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT) {
+                    std::shuffle(words_for_current_search_sample.begin(), words_for_current_search_sample.end(), g);
+                    words_for_current_search_sample.resize(MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT);
+                }
+                
+                // Realiza as buscas na árvore 'tree'
+                for (const string& word : words_for_current_search_sample) {
+                    SearchResult sr = searchFunc(tree, word); // Chama a função de busca passada
+                    total_search_time_sample += sr.executionTime;
+                    max_search_time_sample = std::max(max_search_time_sample, sr.executionTime);
+                    total_search_comparisons_sample += sr.numComparisons;
+                    actual_searches_performed++;
+                }
+
+                double avg_search_time_per_word = (actual_searches_performed > 0) ? total_search_time_sample / actual_searches_performed : 0.0;
+                double avg_search_comparisons_per_word = (actual_searches_performed > 0) ? static_cast<double>(total_search_comparisons_sample) / actual_searches_performed : 0.0;
+
+                cout << "\n------ Desempenho (Busca - Amostra) ------" << endl;
+                cout << "Buscas realizadas na amostra: " << actual_searches_performed << endl;
+                cout << "Tempo Maximo de Busca na amostra: " << max_search_time_sample << " ms" << endl;
+                cout << "Tempo Total de Busca na amostra: " << total_search_time_sample << " ms" << endl;
+                cout << "Tempo Medio de Busca por palavra: " << avg_search_time_per_word << " ms" << endl;
+                cout << "Comparacoes Totais de Busca na amostra: " << total_search_comparisons_sample << endl;
+                cout << "Comparacoes Medias de Busca por palavra: " << avg_search_comparisons_per_word << endl;
+            }
+        } else {
+            cout << "\n------ Desempenho (Busca - Amostra) ------" << endl;
+            cout << "Funcionalidade de busca nao disponivel (searchFunc e/ou arvore invalida)." << endl;
+        }
+
+    
+    }
+
+    
+void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs, SearchResult (*searchFunc)(BinaryTree*, const std::string&)) {
     TreeStatistics stats = collectAllStats(tree->root);
     
      // Novos cálculos para print
@@ -242,6 +307,72 @@ void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double tota
     cout << "* Comparacoes: " << lastInsert.numComparisons << endl;
     cout << "* Tempo: " << lastInsert.executionTime << " ms" << endl;
     cout << "=========================" << endl;
+
+
+     
+        // --- CÓDIGO PARA COLETAR E IMPRIMIR ESTATÍSTICAS DE BUSCA ---
+        // Condição para garantir que a função de busca não é nula e a árvore não está vazia
+        if (searchFunc != nullptr && tree != nullptr && tree->root != nullptr) {
+            const int MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT = 100; // Amostra menor para print no console
+            std::random_device rd;
+            std::mt19937 g(rd()); // Gerador de números aleatórios
+
+            double total_search_time_sample = 0.0;
+            double max_search_time_sample = 0.0;
+            long long total_search_comparisons_sample = 0;
+            int actual_searches_performed = 0;
+            
+            std::vector<std::string> words_for_current_search_sample;
+            
+            // Pega palavras que definitivamente estão na árvore atual.
+            // Considera palavras de allInsertedDocuments até o n_docs atual para garantir que existem na 'tree'.
+            for(const auto& doc_entry : allInsertedDocuments) {
+                 if (doc_entry.docId < n_docs) {
+                    words_for_current_search_sample.push_back(doc_entry.word);
+                } else {
+                    break; // Se allInsertedDocuments está ordenado por docId, podemos parar
+                }
+            }
+
+            // Se não há palavras na amostra (ex: n_docs muito pequeno ou árvore vazia)
+            if (words_for_current_search_sample.empty()) {
+                cout << "\n------ Desempenho (Busca - Amostra) ------" << endl;
+                cout << "Nao ha palavras suficientes para amostra de busca (arvore vazia ou n_docs muito pequeno)." << endl;
+            } else {
+                // Embaralha e redimensiona a amostra se for muito grande
+                if (words_for_current_search_sample.size() > MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT) {
+                    std::shuffle(words_for_current_search_sample.begin(), words_for_current_search_sample.end(), g);
+                    words_for_current_search_sample.resize(MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT);
+                }
+                
+                // Realiza as buscas na árvore 'tree'
+                for (const string& word : words_for_current_search_sample) {
+                    SearchResult sr = searchFunc(tree, word); // Chama a função de busca passada
+                    total_search_time_sample += sr.executionTime;
+                    max_search_time_sample = std::max(max_search_time_sample, sr.executionTime);
+                    total_search_comparisons_sample += sr.numComparisons;
+                    actual_searches_performed++;
+                }
+
+                double avg_search_time_per_word = (actual_searches_performed > 0) ? total_search_time_sample / actual_searches_performed : 0.0;
+                double avg_search_comparisons_per_word = (actual_searches_performed > 0) ? static_cast<double>(total_search_comparisons_sample) / actual_searches_performed : 0.0;
+
+                cout << "\n------ Desempenho (Busca - Amostra) ------" << endl;
+                cout << "Buscas realizadas na amostra: " << actual_searches_performed << endl;
+                cout << "Tempo Maximo de Busca na amostra: " << max_search_time_sample << " ms" << endl;
+                cout << "Tempo Total de Busca na amostra: " << total_search_time_sample << " ms" << endl;
+                cout << "Tempo Medio de Busca por palavra: " << avg_search_time_per_word << " ms" << endl;
+                cout << "Comparacoes Totais de Busca na amostra: " << total_search_comparisons_sample << endl;
+                cout << "Comparacoes Medias de Busca por palavra: " << avg_search_comparisons_per_word << endl;
+            }
+        } else {
+            // Mensagem caso a função de busca não seja fornecida ou a árvore esteja vazia
+            cout << "\n------ Desempenho (Busca - Amostra) ------" << endl;
+            cout << "Funcionalidade de busca nao disponivel (searchFunc e/ou arvore invalida)." << endl;
+        }
+
+
+        cout << "=========================" << endl;
 }
 
 
