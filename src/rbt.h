@@ -57,6 +57,12 @@ namespace RBT {
      */
     bool checkBlackHeight(Node* node, int blackCount, int& expectedBlackCount);
 
+
+    /**
+     * @brief Libera a memória de um nó.
+     * @param node Ponteiro para o nó.
+     */
+    void destroyNode(Node* node);
     /**
      * @brief Libera toda a memória da árvore RBT.
      * @param tree Ponteiro para a árvore.

@@ -39,6 +39,12 @@ namespace BST {
     */
    SearchResult search(BinaryTree* tree, const string& word);
     
+
+   /**
+     * @brief Libera a memória de um nó.
+     * @param node Ponteiro para o nó.
+     */
+    void destroyNode(Node* node);
     
     /**
      * @brief Destrói completamente uma árvore binária e libera toda a memória associada
