@@ -40,6 +40,13 @@ void testInsertions(BinaryTree* tree) {
     cout << "\n Arvore apos novas insercoes \n";
     RBT::printTree(tree);
     cout << "\n";
+
+    //Verifica se a árvore ainda é uma RBT válida
+    if (isValidRBT(tree)) {
+        cout << "A arvore satisfaz as propriedades de uma Red-Black Tree.\n";
+    } else {
+        cout << "A arvore viola as propriedades de uma Red-Black Tree.\n";
+    }
 }
 
 void testSearches(BinaryTree* tree) {

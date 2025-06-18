@@ -149,6 +149,44 @@ namespace RBT {
             checkBlackHeight(node->right, blackCount, expectedBlackCount);
     }
 
+    // Verifica se a altura preta eh constante em todo no nos caminhos ate uma folha
+    bool validBlackHeight(Node* node) {
+        if (!node) return true;
+
+        int expectedBlackCount = -1;
+        if (!checkBlackHeight(node, 0, expectedBlackCount))
+            return false;
+
+        return validBlackHeight(node->left) &&
+            validBlackHeight(node->right);
+    }
+
+    // Verifica se algum no vermelho tem filho vermelho
+    bool noDoubleRed(Node* node) {
+        if (!node) return true;
+        if (node->isRed == 1) {
+            if ((node->left && node->left->isRed == 1) ||
+                (node->right && node->right->isRed == 1))
+                return false;
+        }
+        return noDoubleRed(node->left) && noDoubleRed(node->right);
+    }
+
+    // Verifica se arvore eh uma Red Black Tree valida
+    bool isValidRBT(BinaryTree* tree) {
+        if (!tree || !tree->root) return true;
+
+        // Propriedade: raiz deve ser preta
+        if (tree->root->isRed == 1)
+            return false;
+
+        // Propriedade: nenhum no vermelho tem filho vermelho
+        if (!noDoubleRed(tree->root))
+            return false;
+
+        // Propriedade: todos os nos tem altura preta constante nos caminhos ate folhas
+        return validBlackHeight(tree->root);
+    }
 
     InsertResult insert(BinaryTree* tree, const string& word, int documentId) {
         InsertResult insResult = InsertResult{0, 0.0};
