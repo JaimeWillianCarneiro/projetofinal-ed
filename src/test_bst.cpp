@@ -72,11 +72,30 @@ void testSearches(BinaryTree* tree) {
     printSearchResult(search(tree, "jaime"), "jaime");
 }
 
+void testSpecialCases() {
+    cout << "\n===== TESTES DE CASOS ESPECIAIS =====\n";
+    BinaryTree* tree = create();
+    
+    // Teste com árvore vazia
+    cout << "\n[1] Testando arvore vazia:\n";
+    printSearchResult(search(tree, "vazio"), "vazio");
+    
+    cout << "\n[3] Testando insercao ordenada (pior caso BST):\n";
+    insert(tree, "a", 100);
+    insert(tree, "b", 100);
+    insert(tree, "c", 100);
+    insert(tree, "d", 100);
+    printTreeWithTitle(tree, "Arvore com nos em ordem");
+    
+    destroy(tree);
+}
+
 int main() {
     BinaryTree* tree = create();
     testInsertions1(tree);
     testInsertions2(tree);
     testSearches(tree);
+    testSpecialCases();
 
     return 0;
 }
