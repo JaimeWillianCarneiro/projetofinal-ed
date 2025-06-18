@@ -168,34 +168,6 @@ namespace TREE_UTILS {
 
 
 
-
-
-
-  
-
-  
-
-
-
-    /**
- * @brief Realiza um percurso em-ordem (in-order traversal) na árvore para imprimir as palavras e seus documentos associados
- * @param node Nó raiz da subárvore a ser impressa (pode ser nullptr)
- * @details Esta função auxiliar recursiva percorre a árvore em ordem alfabética (esquerda-raiz-direita) e para cada nó encontrado:
- *          1. Imprime a palavra do nó
- *          2. Imprime a lista de IDs de documentos onde a palavra aparece, separados por vírgulas
- *          3. Coloca cada entrada em uma nova linha
- * @pre Caso o parâmetro node seja nullptr, a função retorna silenciosamente
- * @post Não modifica a estrutura da árvore ou seus dados
- * @note Formato de saída:
- *       palavra1: id1, id2, id3
- *       palavra2: id1, id4
- *       palavra3: id5
- */
-
-
-
-    
-
        /**
      * @brief Print Tree in directory format.
      * @param tree BST to be printed.
@@ -203,7 +175,6 @@ namespace TREE_UTILS {
     void printTree(BinaryTree* tree);
 
     int binarySearch(std::vector<int> documentIds, int docId, int start, int end);
-    
     
     
      /**
@@ -318,9 +289,6 @@ namespace TREE_UTILS {
      */
     void rebuildTreeUpToNDocs(BinaryTree* tree, int n, bool isAVL);
 
-
-
-   
 
 }
 

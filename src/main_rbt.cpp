@@ -29,7 +29,7 @@ void printMenu() {
     cout << "Ou digite '\\q' para sair. (ou ctrl + c)" << endl;
 }
 
-// Prints menu stats options
+
 // Prints menu stats options
 void printMenuStats() {
     cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
