@@ -1,5 +1,5 @@
 // test_avl.cpp
-// Testes para Arvore AVL com impressao antes/depois das rotacoes
+// Testes unitarios e exemplos para implementacao da Arvore AVL
 
 #include <iostream>
 #include "avl.h"
@@ -16,143 +16,124 @@ void printSearchResult(const SearchResult& result, const string& word) {
         }
         cout << endl;
     } else {
-        cout << "nao encontrada" << endl;
+        cout << "esta palavra nao esta inclusa" << endl;
     }
 }
 
-void printTreeWithTitle(BinaryTree* tree, const string& title) {
-    cout << "\n=== " << title << " ===\n";
-    printTree(tree);
-    cout << "------------------------\n";
-}
-
-void testBusca(BinaryTree* tree) {
-    cout << "\n***** TESTANDO BUSCAS *****\n";
-    
-    // Teste com palavras existentes
-    printSearchResult(search(tree, "banana"), "banana");
-    printSearchResult(search(tree, "maca"), "maca");
-    printSearchResult(search(tree, "laranja"), "laranja");
-    
-    // Teste com palavras não existentes
-    printSearchResult(search(tree, "abacaxi"), "abacaxi");
-    printSearchResult(search(tree, "30"), "30"); 
-    printSearchResult(search(tree, "xyz"), "xyz");
-}
-
-void testCasesComPalavras() {
-    cout << "\n***** TESTES COM PALAVRAS *****\n";
-    BinaryTree* tree = create();
-
-    // Primeiras inserções
+void testInsertions(BinaryTree* tree) {
     insert(tree, "banana", 101);
     insert(tree, "maca", 102);
     insert(tree, "laranja", 103);
     insert(tree, "pera", 104);
     insert(tree, "uva", 105);
-    
-    printTreeWithTitle(tree, "Arvore apos insercao inicial");
 
-    // Mais inserções 
-    cout << "\nInserindo mais palavras...\n";
+    cout << "\n Arvore apos insercao inicial \n";
+    printTree(tree);
+    cout << "\n";
+
     insert(tree, "abacate", 106);
     insert(tree, "kiwi", 107);
     insert(tree, "morango", 108);
-    
-    printTreeWithTitle(tree, "Arvore apos novas insercoes");
 
-    // Teste de busca
-    testBusca(tree);
-    
-    destroy(tree);
+    cout << "\n Arvore apos novas insercoes \n";
+    printTree(tree);
+    cout << "\n";
 }
 
-void testRotationCases() {
-    cout << "\n***** TESTANDO ROTACOES DA AVL *****\n";
+void testSearches(BinaryTree* tree) {
+    cout << "\n Buscas: \n";
 
-    // Caso 1: Rotacao Simples a Direita 
+    // Testes com palavras existentes
+    printSearchResult(search(tree, "banana"), "banana");
+    printSearchResult(search(tree, "maca"), "maca");
+    printSearchResult(search(tree, "laranja"), "laranja");
+
+    // Testes com palavras não existentes
+    printSearchResult(search(tree, "abacaxi"), "abacaxi");
+    printSearchResult(search(tree, "30"), "30");
+    printSearchResult(search(tree, "xyz"), "xyz");
+
+}
+
+void testSpecialCases() {
+    cout << "\n Casos especiais: rotacoes da AVL\n";
+
+    // Caso 1: rotacao simples a direita
     {
-        cout << "\n>>> Caso 1: Rotacao a Direita <<<\n";
+        cout << "\n Teste 1: rotacao a direita\n";
         BinaryTree* tree = create();
-        
-        cout << "\n[1] Inserindo '30'...\n";
+
+        cout << "\n Inserindo: 30, 20, 10\n";
         insert(tree, "30", 1);
-        printTreeWithTitle(tree, "Arvore apos inserir 30");
-        
-        cout << "\n[2] Inserindo '20'...\n";
         insert(tree, "20", 1);
-        printTreeWithTitle(tree, "Arvore apos inserir 20");
-        
-        cout << "\n[3] Inserindo '10' (DEVE CAUSAR ROTACAO A DIREITA)...\n";
         insert(tree, "10", 1);
-        printTreeWithTitle(tree, "Arvore apos rotacao");
+
+        cout << "\n Arvore apos rotacao \n";
+        printTree(tree);
+        cout << "\n";
 
         destroy(tree);
     }
 
-    // Caso 2: Rotacao Simples a Esquerda 
+    // Caso 2: rotacao simples a esquerda
     {
-        cout << "\n>>> Caso 2: Rotacao a Esquerda <<<\n";
+        cout << "\n Teste 2: rotacao a esquerda\n";
         BinaryTree* tree = create();
-        
-        cout << "\n[1] Inserindo '10'...\n";
+
+        cout << "\n Inserindo: 10, 20, 30\n";
         insert(tree, "10", 1);
-        printTreeWithTitle(tree, "Arvore apos inserir 10");
-        
-        cout << "\n[2] Inserindo '20'...\n";
         insert(tree, "20", 1);
-        printTreeWithTitle(tree, "Arvore apos inserir 20");
-        
-        cout << "\n[3] Inserindo '30' (DEVE CAUSAR ROTACAO A ESQUERDA)...\n";
         insert(tree, "30", 1);
-        printTreeWithTitle(tree, "Arvore apos rotacao");
+
+        cout << "\n Arvore apos rotacao \n";
+        printTree(tree);
+        cout << "\n";
 
         destroy(tree);
     }
 
-    // Caso 3: Rotacao Dupla Esquerda-Direita 
+    // Caso 3: rotacao dupla esquerda-direita
     {
-        cout << "\n>>> Caso 3: Rotacao Esquerda-Direita <<<\n";
+        cout << "\n Teste 3: rotacao esquerda-direita\n";
         BinaryTree* tree = create();
-        
-        cout << "\n[1] Inserindo '30'...\n";
+
+        cout << "\n Inserindo: 30, 10, 20\n";
         insert(tree, "30", 1);
-        printTreeWithTitle(tree, "Arvore apos inserir 30");
-        
-        cout << "\n[2] Inserindo '10'...\n";
         insert(tree, "10", 1);
-        printTreeWithTitle(tree, "Arvore apos inserir 10");
-        
-        cout << "\n[3] Inserindo '20' (DEVE CAUSAR ROTACAO DUPLA ESQ-DIR)...\n";
         insert(tree, "20", 1);
-        printTreeWithTitle(tree, "Arvore apos rotacao");
+
+        cout << "\n Arvore apos rotacao \n";
+        printTree(tree);
+        cout << "\n";
 
         destroy(tree);
     }
 
-    // Caso 4: Rotacao Dupla Direita-Esquerda 
+    // Caso 4: rotacao dupla direita-esquerda
     {
-        cout << "\n>>> Caso 4: Rotacao Direita-Esquerda <<<\n";
+        cout << "\n Teste 4: rotacao direita-esquerda\n";
         BinaryTree* tree = create();
-        
-        cout << "\n[1] Inserindo '10'...\n";
+
+        cout << "\n Inserindo: 10, 30, 20\n";
         insert(tree, "10", 1);
-        printTreeWithTitle(tree, "Arvore apos inserir 10");
-        
-        cout << "\n[2] Inserindo '30'...\n";
         insert(tree, "30", 1);
-        printTreeWithTitle(tree, "Arvore apos inserir 30");
-        
-        cout << "\n[3] Inserindo '20' (DEVE CAUSAR ROTACAO DUPLA DIR-ESQ)...\n";
         insert(tree, "20", 1);
-        printTreeWithTitle(tree, "Arvore apos rotacao");
+
+        cout << "\n Arvore apos rotacao \n";
+        printTree(tree);
+        cout << "\n";
 
         destroy(tree);
     }
 }
 
 int main() {
-    testRotationCases(); 
-    testCasesComPalavras();  
+    BinaryTree* tree = create();
+
+    testInsertions(tree);
+    testSearches(tree);
+    testSpecialCases();
+
+    destroy(tree);
     return 0;
 }
