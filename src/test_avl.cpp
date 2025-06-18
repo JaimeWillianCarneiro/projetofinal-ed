@@ -53,8 +53,8 @@ void testCasesComPalavras() {
     
     printTreeWithTitle(tree, "Arvore apos insercao inicial");
 
-    // Mais inserções (pode causar rotações)
-    cout << "\nInserindo mais palavras (pode causar rotacoes)...\n";
+    // Mais inserções 
+    cout << "\nInserindo mais palavras...\n";
     insert(tree, "abacate", 106);
     insert(tree, "kiwi", 107);
     insert(tree, "morango", 108);
