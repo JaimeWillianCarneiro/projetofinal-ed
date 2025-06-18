@@ -265,7 +265,7 @@ TreeStatistics collectAllStats(Node* root) {
     
     }
 
-    
+
 void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs, SearchResult (*searchFunc)(BinaryTree*, const std::string&)) {
     TreeStatistics stats = collectAllStats(tree->root);
     
@@ -400,11 +400,12 @@ void accumulateSearchStatsRecursive(Node* node, double& totalTime,
 std::vector<Document> allInsertedDocuments;
 std::vector<InsertResult> insertHistory;
 std::vector<double> timeHistory;
-
-void exportEvolutionStatsToCSV(int max_docs, 
-                                  const std::string& basePath,
-                                  const std::string& treeType, 
-                                 SearchResult (*searchFunc)(BinaryTree*, const std::string&)) {
+// Definição da função exportEvolutionStatsToCSV (OTIMIZADA PARA CONSTRUÇÃO INCREMENTAL)
+    // SEM O PARAMETRO APPENDMODE
+    void exportEvolutionStatsToCSV(int max_docs, 
+                                   const std::string& basePath,
+                                   const std::string& treeType, 
+                                   SearchResult (*searchFunc)(BinaryTree*, const std::string&)) { // SEM appendMode aqui
         if (max_docs <= 0) {
             std::cerr << "Número de documentos inválido." << std::endl;
             return;
@@ -428,28 +429,29 @@ void exportEvolutionStatsToCSV(int max_docs,
         }
 
         std::string filename;
-        std::cout << "Digite o nome do arquivo para exportar (sem extensão): ";
+        std::cout << "Digite o nome do arquivo para exportar (sem extensao): ";
         std::cin >> filename;
         
         std::string outputFilename = outputDirectory + filename + ".csv";
 
-        std::ofstream csvFile(outputFilename);
+        // AQUI ESTÁ A MUDANÇA: SEMPRE SOBRESCRITOR E SEMPRE ESCREVE O CABEÇALHO
+        std::ofstream csvFile(outputFilename); // Abre em modo de sobrescrever
         if (!csvFile.is_open()) {
-            std::cerr << "Erro ao abrir arquivo " << outputFilename << ". Não foi possível salvar." << std::endl;
+            std::cerr << "Erro ao abrir arquivo " << outputFilename << ". Nao foi possível salvar." << std::endl;
             return;
         }
-
    
-                // --- CABEÇALHO DO CSV ATUALIZADO COM ESTATÍSTICAS DE BUSCA ---
-         csvFile << "Num_Docs,Altura,Total_Nos,Profundidade_Media,"
+        // CABEÇALHO DO CSV (sempre escrito, pois o arquivo é sobrescrito)
+        csvFile << "Num_Docs,Altura,Total_Nos,Profundidade_Media,"
                   << "Profundidade_Minima,Max_Desbalanceamento,"
                   << "Tempo_Total_Indexacao,Tempo_Medio_Insercao,"
                   << "Densidade_Arvore,Maior_Galho,Menor_Galho,"
                   << "Total_Comparacoes_Indexacao,"
-                  << "Tempo_Maximo_Busca_Amostra,Comparacoes_Total_Busca_Amostra," // RENOMEADO AQUI
-                  << "Tempo_Medio_Busca_Amostra_Por_Palavra,Comparacoes_Medias_Busca_Amostra_Por_Palavra,"
+                  << "Tempo_Maximo_Busca_Amostra,Comparacoes_Total_Busca_Amostra," 
+                  << "Tempo_Medio_Busca_Amostra_Por_Palavra,Comparacoes_Medias_Busca_Amostra_Por_Palavra," 
                   << "Tipo_Arvore\n";
-        // Ponteiros para funções específicas
+
+        // Ponteiros para funções específicas (mantidos)
         BinaryTree* (*createFunc)() = nullptr;
         void (*destroyFunc)(BinaryTree*) = nullptr;
         InsertResult (*insertFunc)(BinaryTree*, const std::string&, int) = nullptr;
@@ -458,7 +460,7 @@ void exportEvolutionStatsToCSV(int max_docs,
             createFunc = AVL::create;
             destroyFunc = AVL::destroy;
             insertFunc = AVL::insert;
-        } else if (treeType == "BST") { // Adicionado para BST
+        } else if (treeType == "BST") {
             createFunc = BST::create;
             destroyFunc = BST::destroy;
             insertFunc = BST::insert;
@@ -466,74 +468,74 @@ void exportEvolutionStatsToCSV(int max_docs,
             createFunc = RBT::create;
             destroyFunc = RBT::destroy;
             insertFunc = RBT::insert;
-        }   
-
-
-        // Configuração para amostragem de palavras para busca
-        const int MAX_SEARCH_SAMPLE_SIZE = 1000; // Limite de palavras para buscar em cada iteração
+        } 
+        
+        // Configuração para amostragem de palavras para busca (otimizada)
+        const int MAX_SEARCH_SAMPLE_SIZE = 1000; // Limite de palavras para buscar em cada iteração no CSV
         std::random_device rd;
         std::mt19937 g(rd());
 
-        BinaryTree* tempTree = createFunc();
-        
-         
+        BinaryTree* tempTree = createFunc(); // Cria a árvore UMA VEZ antes do loop
+        size_t last_word_index_processed = 0; // Controla até onde allInsertedDocuments foi processado
+
         for (int num_docs_iter = 1; num_docs_iter <= max_docs; ++num_docs_iter) {
-            destroyFunc(tempTree);
-            tempTree = createFunc();
-            
-            double current_cumulative_insertion_time = 0.0; 
-            long long current_cumulative_comparisons = 0; 
-            
-            for (size_t i = 0; i < allInsertedDocuments.size(); ++i) { 
-                const auto& doc_entry = allInsertedDocuments[i];
-                if (doc_entry.docId < num_docs_iter) { 
-                    insertFunc(tempTree, doc_entry.word, doc_entry.docId);
-                    
-                    if (i < timeHistory.size()) {
-                        current_cumulative_insertion_time += timeHistory[i];
-                    }
-                    if (i < insertHistory.size()) { 
-                        current_cumulative_comparisons += insertHistory[i].numComparisons;
-                    }
-                } else {
-                    break; 
+            // --- OTIMIZAÇÃO PRINCIPAL: CONSTRUÇÃO INCREMENTAL DA ÁRVORE ---
+            // Adiciona APENAS as palavras do novo documento (num_docs_iter - 1)
+            // Este loop substitui o antigo destroy/create e o loop de reconstrução completa.
+            while (last_word_index_processed < allInsertedDocuments.size() && 
+                   allInsertedDocuments[last_word_index_processed].docId < num_docs_iter) {
+                
+                const auto& doc_entry = allInsertedDocuments[last_word_index_processed];
+                insertFunc(tempTree, doc_entry.word, doc_entry.docId); 
+                
+                last_word_index_processed++;
+            }
+            // Agora tempTree contém as palavras dos docs 0 até num_docs_iter-1
+
+            // --- RECALCULAR current_cumulative_insertion_time E current_cumulative_comparisons AQUI ---
+            // Eles precisam refletir o total acumulado até o num_docs_iter atual.
+            double total_indexing_time_for_current_docs = 0.0;
+            long long total_indexing_comparisons_for_current_docs = 0;
+            // Acumula do histórico de inserção (que é por palavra) até o ponto atual
+            for(size_t j=0; j < last_word_index_processed; ++j) {
+                if (j < timeHistory.size()) {
+                    total_indexing_time_for_current_docs += timeHistory[j];
+                }
+                if (j < insertHistory.size()) {
+                    total_indexing_comparisons_for_current_docs += insertHistory[j].numComparisons;
                 }
             }
-            
+            // FIM DO RECALCULO
+
             TreeStatistics stats = collectAllStats(tempTree->root); 
             
-            double average_insertion_time = (stats.nodeCount > 0) ? current_cumulative_insertion_time / stats.nodeCount : 0.0;
+            double current_average_insertion_time = (stats.nodeCount > 0) ? total_indexing_time_for_current_docs / stats.nodeCount : 0.0;
             double tree_density = (stats.height >= 0 && stats.nodeCount > 0) ? (double)stats.nodeCount / (pow(2, stats.height + 1) - 1) : 0.0; 
             int longest_branch = stats.height;
             int shortest_branch = stats.minDepth;
 
-            // --- CÓDIGO PARA COLETAR ESTATÍSTICAS DE BUSCA (MODIFICADO) ---
-            double total_search_time_sample = 0.0; // Mantido para cálculo da média
-            double max_search_time_sample = 0.0;   // NOVO: para o tempo máximo
+            // --- CÓDIGO PARA COLETAR ESTATÍSTICAS DE BUSCA (OTIMIZADO) ---
+            double total_search_time_sample = 0.0; 
+            double max_search_time_sample = 0.0;   
             long long total_search_comparisons_sample = 0;
             int actual_searches_performed = 0;
             
-            std::vector<std::string> words_for_current_search_sample;
-            
-            for(const auto& doc_entry : allInsertedDocuments) {
-                if (doc_entry.docId < num_docs_iter) {
-                    words_for_current_search_sample.push_back(doc_entry.word);
-                } else {
-                    break; 
-                }
-            }
+            size_t current_tree_word_count = last_word_index_processed; 
 
-            if (words_for_current_search_sample.size() > MAX_SEARCH_SAMPLE_SIZE) {
-                std::shuffle(words_for_current_search_sample.begin(), words_for_current_search_sample.end(), g);
-                words_for_current_search_sample.resize(MAX_SEARCH_SAMPLE_SIZE);
-            }
-            
-            for (const string& word : words_for_current_search_sample) {
-                SearchResult sr = searchFunc(tempTree, word); 
-                total_search_time_sample += sr.executionTime;
-                max_search_time_sample = std::max(max_search_time_sample, sr.executionTime); // Atualiza o máximo
-                total_search_comparisons_sample += sr.numComparisons;
-                actual_searches_performed++;
+            if (current_tree_word_count > 0) {
+                std::uniform_int_distribution<size_t> dist(0, current_tree_word_count - 1);
+                int num_samples_to_take = std::min(MAX_SEARCH_SAMPLE_SIZE, (int)current_tree_word_count);
+
+                for (int k = 0; k < num_samples_to_take; ++k) {
+                    size_t random_index = dist(g);
+                    const string& word = allInsertedDocuments[random_index].word;
+
+                    SearchResult sr = searchFunc(tempTree, word); 
+                    total_search_time_sample += sr.executionTime;
+                    max_search_time_sample = std::max(max_search_time_sample, sr.executionTime); 
+                    total_search_comparisons_sample += sr.numComparisons;
+                    actual_searches_performed++;
+                }
             }
 
             double avg_search_time_per_word = (actual_searches_performed > 0) ? total_search_time_sample / actual_searches_performed : 0.0;
@@ -548,22 +550,20 @@ void exportEvolutionStatsToCSV(int max_docs,
                       << stats.averageDepth << ","
                       << stats.minDepth << ","
                       << stats.maxImbalance << ","
-                      << current_cumulative_insertion_time << ","
-                      << average_insertion_time << ","    
+                      << total_indexing_time_for_current_docs << "," 
+                      << current_average_insertion_time << ","    
                       << tree_density << ","              
                       << longest_branch << ","            
                       << shortest_branch << ","           
-                      << current_cumulative_comparisons << "," 
-                      // --- NOVOS CAMPOS DE BUSCA NO CSV (MODIFICADO) ---
-                      << max_search_time_sample << "," // AGORA É O TEMPO MÁXIMO
+                      << total_indexing_comparisons_for_current_docs << "," 
+                      << max_search_time_sample << "," 
                       << total_search_comparisons_sample << ","
                       << avg_search_time_per_word << ","
                       << avg_search_comparisons_per_word << ","
-                      // --- FIM DOS NOVOS CAMPOS ---
                       << treeType << "\n";
         }
 
-        destroyFunc(tempTree); 
+        destroyFunc(tempTree); // Destrói a árvore apenas no final
         csvFile.close();
         
         std::cout << "Estatísticas exportadas para " << outputFilename << std::endl;
