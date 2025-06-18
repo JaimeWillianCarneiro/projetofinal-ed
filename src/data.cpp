@@ -51,7 +51,7 @@ namespace DATA {
     void readFilesFromDirectory(int number_files, string directory,
                                 BinaryTree* tree,
                                 InsertResult& stats,
-                                InsertFunction insertFn) { // 5 PARÂMETROS
+                                InsertFunction insertFn) { 
         // Limpar as variáveis globais do histórico antes de iniciar a nova leitura
         TREE_UTILS::allInsertedDocuments.clear();
         TREE_UTILS::insertHistory.clear();
@@ -59,7 +59,7 @@ namespace DATA {
 
         for (int i = 0; i < number_files; i++) {
             string address = directory + to_string(i) + ".txt";
-            // Chamada para readDataFromFile (5 PARÂMETROS)
+          
             readDataFromFile(address, i, tree, stats, insertFn);
         }
     }

@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "iostream": "cpp"
+    },
+    "files.watcherExclude": {
+        "**/target": true
+    }
+}
