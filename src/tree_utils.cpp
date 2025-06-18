@@ -566,7 +566,7 @@ std::vector<double> timeHistory;
         destroyFunc(tempTree); // Destrói a árvore apenas no final
         csvFile.close();
         
-        std::cout << "Estatísticas exportadas para " << outputFilename << std::endl;
+        std::cout << "Estatisticas exportadas para " << outputFilename << std::endl;
     }
 
 
