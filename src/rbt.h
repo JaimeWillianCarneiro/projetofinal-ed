@@ -23,6 +23,25 @@ namespace RBT {
     BinaryTree* create();
 
     /**
+     * @brief Recursive Pre-Order traversal to print the node and its sons in directory format.
+     * @param node Node to be processed.
+     * @param height Height of the node.
+     */
+    void preOrderPrint(Node* node, int height);
+
+     /**
+     * @brief Print Tree in directory format.
+     * @param tree BST to be printed.
+     */
+    void printTree(BinaryTree* tree);
+
+    /**
+     * @brief Check if a node exists, returning safety his color.
+     * @param node Node to get color.
+     */
+    int getIsRed(Node* node);
+
+    /**
      * @brief Insert a word in RBT and update or create a list of documents where this word appears.
      * @param tree RBT where to insert the word.
      * @param word Alias for the word to be inserted.

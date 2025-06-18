@@ -105,12 +105,20 @@ namespace TREE_UTILS {
     void printIndex(BinaryTree* tree);
 
 
+    /**
+     * @brief Recursive Pre-Order traversal to print the node and its sons in directory format.
+     * @param node Node to be processed.
+     * @param height Height of the node.
+     */
+    void preOrderPrint(Node* node, int height);
 
+    
      /**
      * @brief Print Tree in directory format.
      * @param tree BST to be printed.
      */
     void printTree(BinaryTree* tree);
+
 
       /**
      * @brief Realiza busca binária em um vetor de IDs de documentos
@@ -125,15 +133,6 @@ namespace TREE_UTILS {
      * @note Função auxiliar usada durante a inserção de documentos
      */
     int binarySearch(std::vector<int> documentIds, int docId, int start, int end);
-
-
-    /**
-     * @brief Recursive Pre-Order traversal to print the node and its sons in directory format.
-     * @param node Node to be processed.
-     * @param height Height of the node.
-     */
-    void preOrderPrint(Node* node, int height);
-
    
 
     /**

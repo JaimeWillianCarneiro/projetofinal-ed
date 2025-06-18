@@ -105,7 +105,7 @@ int main(int argc, char* argv[]) {
                 cout << "Tempo (ms): " << result.executionTime << endl;
                 
             } else if (input == "2") {
-                printTree(tree);
+                RBT::printTree(tree);
                 
             } else if (input == "3") {
                 printIndex(tree);

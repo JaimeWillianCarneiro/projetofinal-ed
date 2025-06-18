@@ -34,6 +34,42 @@ namespace RBT {
         return tree;
     }
 
+    void preOrderPrint(Node* node, int height, string paths, string prefix) {
+        // Stop condition
+        if (node == nullptr) {
+            return;
+        }
+
+        // Process father
+        string RED = "\033[31m";
+        string BLACK = "\033[30m";
+        string RESET = "\033[0m";
+        if (node->isRed == 1) cout << paths << prefix << RED << node->word << RESET << endl;
+        else cout << paths << prefix << BLACK << node->word << RESET << endl;
+        if (prefix == "|-- ") {
+            paths += "|   ";
+        } else if (prefix == "*-- ") {
+            paths += "    ";
+        }
+
+        prefix = "*-- ";
+        // Process sons
+        if (node->left != nullptr) {
+            if (node->right != nullptr) {
+                prefix = "|-- ";
+            }
+            preOrderPrint(node->left, height+1, paths, prefix);
+            prefix = "*-- ";
+        }
+        preOrderPrint(node->right, height+1, paths, prefix);
+    }
+    
+    // Implements pre-order transverse recursive to print Tree
+    void printTree(BinaryTree* tree) {
+        if (tree == nullptr) return;
+        preOrderPrint(tree->root, 0, "", "");
+    }
+
     int getIsRed(Node* node){
         return node != nullptr ? node->isRed : -1;
     }
