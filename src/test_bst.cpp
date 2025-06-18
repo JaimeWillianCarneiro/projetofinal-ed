@@ -20,14 +20,7 @@ void printSearchResult(const SearchResult& result, const string& word) {
     }
 }
 
-void printTreeWithTitle(BinaryTree* tree, const string& title) {
-    cout << "\n=== " << title << " ===\n";
-    printTree(tree);
-    cout << "------------------------\n";
-}
-
 void testInsertions1(BinaryTree* tree) {
-    cout << "\n[1] Inserindo palavras...\n";
     insert(tree, "penso", 1);
     insert(tree, "logo", 1);
     insert(tree, "existo", 1);
@@ -35,12 +28,13 @@ void testInsertions1(BinaryTree* tree) {
     insert(tree, "seja", 2);
     insert(tree, "a", 2);
     insert(tree, "mudanca", 2);
-    
-    printTreeWithTitle(tree, "Arvore apos insercao inicial");
+
+    cout << "\n Arvore apos insercao inicial \n";
+    printTree(tree);
+    cout << "\n";
 }
 
 void testInsertions2(BinaryTree* tree) {
-    cout << "\n[2] Inserindo palavras...\n";
     insert(tree, "a", 4);
     insert(tree, "felicidade", 4);
     insert(tree, "esta", 4);
@@ -53,11 +47,13 @@ void testInsertions2(BinaryTree* tree) {
     insert(tree, "tempo", 6);
     insert(tree, "nao", 6);
     
-    printTreeWithTitle(tree, "Arvore apos novas insercoes");
+    cout << "\n Arvore apos novas insercoes \n";
+    printTree(tree);
+    cout << "\n";
 }
 
 void testSearches(BinaryTree* tree) {
-    cout << "\n***** TESTANDO BUSCAS *****\n";
+    cout << "\n Buscas: \n";
     
     printSearchResult(search(tree, "tempo"), "tempo");
     printSearchResult(search(tree, "que"), "que");
@@ -73,20 +69,22 @@ void testSearches(BinaryTree* tree) {
 }
 
 void testSpecialCases() {
-    cout << "\n===== TESTES DE CASOS ESPECIAIS =====\n";
+    cout << "\n Casos especiais:\n";
     BinaryTree* tree = create();
     
     // Teste com árvore vazia
-    cout << "\n[1] Testando arvore vazia:\n";
-    printSearchResult(search(tree, "vazio"), "vazio");
+    cout << "\n Testando arvore vazia:\n";
+    printSearchResult(search(tree, "amor"), "amor");
     
-    cout << "\n[3] Testando insercao ordenada (pior caso BST):\n";
+    cout << "\n Testando insercao ordenada (pior caso na BST):\n";
     insert(tree, "a", 100);
     insert(tree, "b", 100);
     insert(tree, "c", 100);
     insert(tree, "d", 100);
-    printTreeWithTitle(tree, "Arvore com nos em ordem");
-    
+
+    cout << "\n Arvore com nos em ordem \n";
+    printTree(tree);
+    cout << "\n";
     destroy(tree);
 }
 
