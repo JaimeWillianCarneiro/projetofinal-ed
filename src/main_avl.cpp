@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
     auto start = chrono::high_resolution_clock::now();
     
     
-    readFilesFromDirectory(n_docs, directory, tree, lastInsert, AVL::insert); // OU BST::insert
+    readFilesFromDirectory(n_docs, directory, tree, lastInsert, AVL::insert); // OU BST::insert ou RBT::insert
     auto end = chrono::high_resolution_clock::now();
     double totalTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
     
@@ -132,14 +132,7 @@ int main(int argc, char* argv[]) {
                 cout << " * Tempo medio: " << totalTime/stats.nodeCount <<  endl;
                 cout << " * Tempo total: " << totalTime << " ms" <<  endl;
             } 
-            // else if (input == "2") {
-            //     cout << "Tempo de busca: " << endl;
-            //     cout << " * Tempo medio: " << endl;
-            //     cout << " * Tempo total: " << totalTime << " ms" << endl;
-
-            // } else if (input == "3") {
-            //     cout << "Numero de comparacoes por operacao: " << endl;
-            // } 
+          
             else if (input == "2") {
                 cout << "Altura da arvore: "  << stats.height << endl;
                 cout << "Densidade da arvore: " << (stats.nodeCount > 0 ? (double)stats.nodeCount / pow(2, stats.height + 1) : 0)  << endl;

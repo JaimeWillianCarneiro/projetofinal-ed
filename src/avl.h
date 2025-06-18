@@ -38,6 +38,12 @@ namespace AVL {
     SearchResult search(BinaryTree* tree, const string& word);
 
     /**
+     * @brief Libera a memória de um nó.
+     * @param node Ponteiro para o nó.
+     */
+    void destroyNode(Node* node);
+
+    /**
      * @brief Libera toda a memória da árvore AVL.
      * @param tree Ponteiro para a árvore.
      */
