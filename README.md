@@ -13,8 +13,7 @@ Integrantes: Carlos Daniel de Souza Lima, Gabriela Barbosa Souza, Gabrielly Este
   - [Exemplo de uso](#exemplo-de-uso)
 - [Estatísticas](#estatísticas)
 - [Testes](#testes)
-  - [Passo a passo](#passo-a-passo)
-  
+
 ---
 
 ## Introdução
@@ -134,43 +133,31 @@ Ao usar o modo stats, o programa irá inserir todas as palavras dos documentos e
 O projeto inclui testes unitários para validar as funcionalidades de inserção e busca de cada árvore.
 Compile e execute no terminal os arquivos contendo os testes unitários da seguinte forma:
 
-### Passo a passo:
-
-1. Abra o terminal na pasta `src` do projeto (projetofinal-ed\src).
-
-2. Compile os arquivos com o comando:
-
 * Para BST:
 ```bash
-g++ -std=c++17 -Wall -o test_bst test_rbt.cpp data.cpp tree_utils.cpp bst.cpp avl.cpp rbt.cpp
+g++ -std=c++17 -Wall -o test_bst src/test_bst.cpp src/data.cpp src/tree_utils.cpp src/avl.cpp src/bst.cpp src/rbt.cpp
 ./test_bst
 ```
 
 * Para AVL:
 ```bash
-g++ -std=c++17 -Wall -o test_avl test_rbt.cpp data.cpp tree_utils.cpp bst.cpp avl.cpp rbt.cpp
+g++ -std=c++17 -Wall -o test_avl src/test_avl.cpp src/data.cpp src/tree_utils.cpp src/avl.cpp src/bst.cpp src/rbt.cpp
 ./test_avl
 ```
 
 * Para RBT:
 ```bash
-g++ -std=c++17 -Wall -o test_rbt test_rbt.cpp data.cpp tree_utils.cpp bst.cpp avl.cpp rbt.cpp
+g++ -std=c++17 -Wall -o test_rbt src/test_rbt.cpp src/data.cpp src/tree_utils.cpp src/avl.cpp src/bst.cpp src/rbt.cpp
 ./test_rbt
 ```
 
-3. Para deletar os executáveis:
-* Com `Makefile`:
+- Para deletar os executáveis:
 ```bash
- mingw32-make clean
-```
-
-* Manulamente
-```bash
-del src/test_bst.exe
+del test_bst.exe
 ```
 ```bash
-del src/test_avl.exe
+del test_avl.exe
 ```
 ```bash
-del src/test_rbt.exe
+del test_rbt.exe
 ```
