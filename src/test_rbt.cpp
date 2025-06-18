@@ -19,7 +19,6 @@ void printSearchResult(const SearchResult& result, const string& word) {
 }
 
 int main() {
-    cout << "\nCriando arvore Rubro-Negra..." << endl;
     BinaryTree* tree = create(); // Teste de criação da árvore 
 
     // Teste de inserção de várias palavras em diferentes documentos (insert)
@@ -97,7 +96,6 @@ int main() {
     insert(tree, "o", 9);
     insert(tree, "passo", 9);
 
-    cout << "Mostra a arvore!" << endl;
     printTree(tree);
 
     // Teste de busca de palavras presentes e ausentes na árvore (search)
