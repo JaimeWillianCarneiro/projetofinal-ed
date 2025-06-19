@@ -76,6 +76,15 @@ namespace RBT {
      */
     bool checkBlackHeight(Node* node, int blackCount, int& expectedBlackCount);
 
+    /**
+     * @brief Verifica se a arvore satisfaz as propriedades da RBT:
+     *        - Raiz preta
+     *        - Nenhum no vermelho tem filho vermelho
+     *        - Todos os caminhos da raiz ate as folhas tem o mesmo numero de nos pretos
+     * @param tree Ponteiro para a árvore a ser verificada.
+     * @return true se a arvore for uma RBT valida, false caso contrario.
+     */
+    bool isValidRBT(BinaryTree* tree);
 
     /**
      * @brief Libera a memória de um nó.
