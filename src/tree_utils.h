@@ -244,8 +244,6 @@ namespace TREE_UTILS {
 
     */void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs, SearchResult (*searchFunc)(BinaryTree*, const std::string&));
 
-<<<<<<< HEAD
-
 
     /**
  * @brief Calcula e exibe estatísticas detalhadas de desempenho de busca para uma amostra de palavras.
