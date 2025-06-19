@@ -21,15 +21,6 @@ namespace AVL {
     BinaryTree* create();
 
     /**
-     * @brief Rotate parent and son in a specific side.
-     * @param parent Parent of relashionship.
-     * @param son Son of relashionship.
-     * @param grandSide Parent's where the grandFather is.
-     * @param rotateSide Side to apply rotate.
-     */
-    void sideRotate(Node* parent, Node* son, int grandSide, int rotateSide);
-
-    /**
      * @brief Insert a word in AVL and update or create a list of documents where this word appears.
      * @param tree BST where to insert the word.
      * @param word Alias for the word to be inserted.
@@ -47,13 +38,16 @@ namespace AVL {
     SearchResult search(BinaryTree* tree, const string& word);
 
     /**
+     * @brief Libera a memória de um nó.
+     * @param node Ponteiro para o nó.
+     */
+    void destroyNode(Node* node);
+
+    /**
      * @brief Libera toda a memória da árvore AVL.
      * @param tree Ponteiro para a árvore.
      */
     void destroy(BinaryTree* tree);
-
-    
-    
 }
 
 #endif

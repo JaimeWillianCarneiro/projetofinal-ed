@@ -1,9 +1,16 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <fstream>
 #include "tree_utils.h"
 #include <algorithm>
-using std::cout;
+#include "avl.h"
+#include "bst.h"
+#include "rbt.h"
+#include <math.h>
+#include <cmath> 
+#include <filesystem> // using std::cout;
+#include <random> // Para geração de números aleatórios para amostra de busca
 using std::endl;
 using namespace std;
 
@@ -70,147 +77,81 @@ namespace TREE_UTILS {
         preOrderPrint(tree->root, 0, "", "");
     }
 
-//     // Right -> Center -> Left.
-//     void inverseOrderTransversePrint(Node* node, int depth, vector<int> maxWordForNivel, vector<int> restos[]) {
-//     if (depth == maxWordForNivel.size()) {
-//         depth--;
-//         restos[1][depth] = restos[0][depth]/2;
+
+
+    int binarySearch(vector<int> documentIds, int docId, int start, int end) {
+        if (documentIds.empty()) {
+            cout << "Aviso: vetor de documentos vazio em binarySearch()." << endl;
+            return 0;
+        }
         
-//         for (int eachNivel = 0; eachNivel < maxWordForNivel.size()-1; eachNivel++) {
-//             cout << string(maxWordForNivel[eachNivel] + 3, ' ');
-//             if (restos[1][eachNivel] != 0) {
-//                 restos[1][eachNivel]--;
-//                 cout << "|";
-//             } else cout << " ";
-//         }
-//         restos[1][depth]--;
-//         cout << endl;
-//         return;
-//     }
-//     // Ignore null nodes.
-//     Node* right = nullptr;
-//     Node* left = nullptr;
-//     string word = "";
-//     string side = "    ";
-//     if (node != nullptr) {
-//         right = node->right;
-//         left = node->left;
-//         word = node->word;
-//         side = "--- ";
-//     }
-//     // Process right son first (right subtree allway appear first in the lines).
-//     inverseOrderTransversePrint(right, depth+1, maxWordForNivel, restos);
-//     if (restos[1][depth-1] == 0) restos[1][depth-1] = restos[0][depth-1]/2;
-
-//     for (int eachNivel = 0; eachNivel < depth; eachNivel++) {
-//         cout << string(maxWordForNivel[eachNivel] + 3, ' ');
-//         if (restos[1][eachNivel] != 0) {
-//             restos[1][eachNivel]--;
-//             cout << "|";
-//         } else cout << " ";
-//     }
-//     if (maxWordForNivel[depth] > 3) side.resize(maxWordForNivel[depth], ' ');
-//     cout << side << word;
-//     for (int eachNivel = depth+1; eachNivel < maxWordForNivel.size(); eachNivel++) {
-//         cout << string(maxWordForNivel[eachNivel] + 3, ' ');
-//         if (restos[1][eachNivel] != 0) {
-//             restos[1][eachNivel]--;
-//             if (node != nullptr) cout << "|";
-//             else cout << " ";
-//         } else cout << " ";
-//     }
-//     cout << endl;
-//     restos[1][depth] = restos[0][depth]/2;
-//     // After process node, process left subtree.
-//     inverseOrderTransversePrint(left, depth+1, maxWordForNivel, restos);
-// }
-
-// void bfsPrintLateral(Node* root) {
-//     if (root == nullptr) return;
-//     int depth = -1;
-//     vector<Node*> q;
-//     vector<int> maxWordForNivel;
-//     q.push_back(root);
-//     bool again = (root != nullptr);
-    
-//     // Get max size word for each level.
-//     while (again) {
-//         maxWordForNivel.push_back(0);
-//         again = false;
-//         depth++;
-//         int temp = q.size();
-//         for (int each_item_q = 0; each_item_q < temp; each_item_q++) {
-//             if (q[0] == nullptr) {
-//                 q.erase(q.begin());
-//                 continue;
-//             }
-//             again = true;
-//             maxWordForNivel[depth] = maxWordForNivel[depth] < q[0]->word.size() ? q[0]->word.size() : maxWordForNivel[depth];
-//             q.push_back(q[0]->left);
-//             q.push_back(q[0]->right);
-//             q.erase(q.begin());
-//         }
-//     }
-//     depth--;
-//     maxWordForNivel.pop_back();
-//     Node* current = root;
-//     vector<int> restos[2];
-//     for (int i = 0, restoMaximo = 1; i <= maxWordForNivel.size(); i++) {
-//         restos[0].insert(restos[0].begin(), restoMaximo);
-//         restos[1].push_back(0);
-//         restoMaximo *= 2;
-//     }
-
-//     // Use inverser order transverse to print
-//     inverseOrderTransversePrint(current, 0, maxWordForNivel, restos);
-// }
-
-// // Use bfs with an 'inverse_order' transverse to print tree on left to right.
-// void printTreeLateral(BinaryTree* tree) {
-//     bfsPrintLateral(tree->root);
-// }
+        // Stop condition.
+        if (start > end) {
+            return start;
+        }
 
 
-int binarySearch(vector<int> documentIds, int docId, int start, int end) {
-    if (documentIds.empty()) {
-        cout << "Aviso: vetor de documentos vazio em binarySearch()." << endl;
-        return 0;
-    }
-    
-    // Stop condition.
-    if (start > end) {
-        return start;
+        int mid = (start + end) / 2;
+        if (docId == documentIds[mid]) {
+            return -1;
+        }else if (docId > documentIds[mid]) {
+            return binarySearch(documentIds, docId, mid+1, end);
+        } else {
+            return binarySearch(documentIds, docId, start, mid-1);
+        }
     }
 
-    int mid = (start + end) / 2;
-    if (docId == documentIds[mid]) {
-        return -1;
-    }else if (docId > documentIds[mid]) {
-        return binarySearch(documentIds, docId, mid+1, end);
-    } else {
-        return binarySearch(documentIds, docId, start, mid-1);
-    }
-}
-
-
+    // Retorna a altura de um nó (ou -1 se for nulo)
     int getHeight(Node* node) {
-    return node ? node->height : -1;
-}
+        return node ? node->height : -1;
+    }
+   
+    // Atualiza a altura de um nó com base nas alturas dos filhos
+    void updateHeight(Node* node) {
+        if(node == nullptr) return;
 
+        node->height = std::max(getHeight(node->left), getHeight(node->right)) + 1;
+    }
 
-
-
-// Retorna o fator de balanceamento de um nó (esq - dir)
+    // Retorna o fator de balanceamento de um nó (esq - dir)
     int getBalanceFactor(Node* node) {
-    return node ? getHeight(node->left) - getHeight(node->right) : 0;
-}
+        return node ? getHeight(node->left) - getHeight(node->right) : 0;
+    }
 
 
 
+    void sideRotate(Node* parent, Node* son, int grandSide, int rotateSide) {
+        if (parent == nullptr || son == nullptr) return;
+
+        // Swap son and parent, making the parent inherit the grandchildren on the opposite side of the rotation.
+        if (rotateSide == 0) {
+            parent->right = son->left;
+            if (parent->right != nullptr) parent->right->parent = parent;
+            son->left = parent;
+        } else {
+            parent->left = son->right;
+            if (parent->left != nullptr) parent->left->parent = parent;
+            son->right = parent;
+        }
+        // The parent's parent inherit the son as his son.
+        son->parent = parent->parent;
+        if (grandSide == 0) {
+            son->parent->right = son;
+        } else if (grandSide == 1) {
+            son->parent->left = son;
+        }
+        parent->parent = son;
+        // Update height of nodes.
+        updateHeight(parent);
+        updateHeight(son);
+    }
 
 
+
+   
+   
     // Função para coletar estatísticas avançadas da árvore
-void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance) {
+void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCount, int& minDepth, int& maxImbalance,  int& maxDepthFound) {
     if (node== nullptr) {
         return;
     }
@@ -218,6 +159,7 @@ void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCo
     nodeCount++;
     totalDepth += currentDepth;
 
+    maxDepthFound = std::max(maxDepthFound, currentDepth); 
       // Só atualiza minDepth se for FOLHA
     if (node->left == nullptr && node->right == nullptr) {
         minDepth = std::min(minDepth, currentDepth);
@@ -225,11 +167,12 @@ void collectTreeStats(Node* node, int currentDepth, int& totalDepth, int& nodeCo
     
     int balance = getBalanceFactor(node);
     maxImbalance = max(maxImbalance, abs(balance));
-    
-    collectTreeStats(node->left,  currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
-    collectTreeStats(node->right, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance);
+
+    collectTreeStats(node->left,  currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance, maxDepthFound);
+    collectTreeStats(node->right, currentDepth + 1, totalDepth, nodeCount, minDepth, maxImbalance, maxDepthFound);
 }
-        // Função unificada para coletar todas as estatísticas
+ 
+// Função unificada para coletar todas as estatísticas
 TreeStatistics collectAllStats(Node* root) {
     TreeStatistics stats;
     if (root == nullptr) {
@@ -237,26 +180,101 @@ TreeStatistics collectAllStats(Node* root) {
         stats.nodeCount = 0;
         stats.averageDepth = 0.0;
         stats.minDepth = 0;
+        stats.docCount = 0;         
+        stats.insertionTime = 0.0; 
         stats.maxImbalance = 0;
         return stats;
     }
 
     int totalDepth = 0, nodeCount = 0, minDepth = INT_MAX, maxImbalance = 0;
-    collectTreeStats(root, 0, totalDepth, nodeCount, minDepth, maxImbalance);
+    int maxDepthFound = -1;
+    collectTreeStats(root, 0, totalDepth, nodeCount, minDepth, maxImbalance, maxDepthFound);
 
-    stats.height = getHeight(root);
+    stats.height = maxDepthFound;
     stats.nodeCount = nodeCount;
     stats.averageDepth = nodeCount > 0 ? (double)totalDepth / nodeCount : 0.0;
     stats.minDepth = minDepth;
     stats.maxImbalance = maxImbalance;
-
+    stats.docCount = nodeCount;      
+    stats.insertionTime = 0.0;   
     return stats;
 }
 
 
-void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs) {
+
+ void printSearchStatsSample(BinaryTree* tree, int n_docs, SearchResult (*searchFunc)(BinaryTree*, const std::string&)) {
+        if (searchFunc != nullptr && tree != nullptr && tree->root != nullptr) {
+            const int MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT = 100; // Amostra menor para print no console
+            std::random_device rd;
+            std::mt19937 g(rd()); // Gerador de números aleatórios
+
+            double total_search_time_sample = 0.0;
+            double max_search_time_sample = 0.0;
+            long long total_search_comparisons_sample = 0;
+            int actual_searches_performed = 0;
+            
+            std::vector<std::string> words_for_current_search_sample;
+            
+            // Pega palavras que definitivamente estão na árvore atual.
+            // Considera palavras de allInsertedDocuments até o n_docs atual para garantir que existem na 'tree'.
+            for(const auto& doc_entry : allInsertedDocuments) {
+                 if (doc_entry.docId < n_docs) {
+                    words_for_current_search_sample.push_back(doc_entry.word);
+                } else {
+                    break;
+                }
+            }
+
+            // Se não há palavras na amostra (ex: n_docs muito pequeno ou árvore vazia)
+            if (words_for_current_search_sample.empty()) {
+                cout << "\n------ Desempenho (Busca - Amostra) ------" << endl;
+                cout << "Nao ha palavras suficientes para amostra de busca (arvore vazia ou n_docs muito pequeno)." << endl;
+            } else {
+                // Embaralha e redimensiona a amostra se for muito grande
+                if (words_for_current_search_sample.size() > MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT) {
+                    std::shuffle(words_for_current_search_sample.begin(), words_for_current_search_sample.end(), g);
+                    words_for_current_search_sample.resize(MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT);
+                }
+                
+                // Realiza as buscas na árvore 'tree'
+                for (const string& word : words_for_current_search_sample) {
+                    SearchResult sr = searchFunc(tree, word); // Chama a função de busca passada
+                    total_search_time_sample += sr.executionTime;
+                    max_search_time_sample = std::max(max_search_time_sample, sr.executionTime);
+                    total_search_comparisons_sample += sr.numComparisons;
+                    actual_searches_performed++;
+                }
+
+                double avg_search_time_per_word = (actual_searches_performed > 0) ? total_search_time_sample / actual_searches_performed : 0.0;
+                double avg_search_comparisons_per_word = (actual_searches_performed > 0) ? static_cast<double>(total_search_comparisons_sample) / actual_searches_performed : 0.0;
+
+                cout << "\n------ Desempenho (Busca - Amostra) ------" << endl;
+                cout << "Buscas realizadas na amostra: " << actual_searches_performed << endl;
+                cout << "Tempo Maximo de Busca na amostra: " << max_search_time_sample << " ms" << endl;
+                cout << "Tempo Total de Busca na amostra: " << total_search_time_sample << " ms" << endl;
+                cout << "Tempo Medio de Busca por palavra: " << avg_search_time_per_word << " ms" << endl;
+                cout << "Comparacoes Totais de Busca na amostra: " << total_search_comparisons_sample << endl;
+                cout << "Comparacoes Medias de Busca por palavra: " << avg_search_comparisons_per_word << endl;
+            }
+        } else {
+            cout << "\n------ Desempenho (Busca - Amostra) ------" << endl;
+            cout << "Funcionalidade de busca nao disponivel (searchFunc e/ou arvore invalida)." << endl;
+        }
+
+    
+    }
+
+
+void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs, SearchResult (*searchFunc)(BinaryTree*, const std::string&)) {
     TreeStatistics stats = collectAllStats(tree->root);
     
+     // Novos cálculos para print
+    double tree_density = (stats.height >= 0 && stats.nodeCount > 0) ? (double)stats.nodeCount / (pow(2, stats.height + 1) - 1) : 0.0;
+    int longest_branch = stats.height;
+    int shortest_branch = stats.minDepth;
+    int branch_difference = longest_branch - shortest_branch;
+    double branch_ratio = (shortest_branch != 0) ? static_cast<double>(longest_branch) / shortest_branch : (longest_branch == 0 ? 1.0 : -1.0 /* Infinito ou N/A */);
+
     cout << "\n=== TODAS ESTATISTICAS ===" << endl;
     cout << "------ Estruturais ------" << endl;
     cout << "Altura da arvore: " << stats.height << endl;
@@ -264,15 +282,282 @@ void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double tota
     cout << "Profundidade media: " << stats.averageDepth << endl;
     cout << "Profundidade minima: " << stats.minDepth << endl;
     cout << "Fator de balanceamento maximo: " << stats.maxImbalance << endl;
-    
+    cout << "Densidade da arvore: " << tree_density << endl;
+    cout << "Tamanho do maior galho: " << longest_branch << endl;
+    cout << "Tamanho do menor galho: " << shortest_branch << endl;
+    cout << "Diferenca entre galhos: " << branch_difference << endl; 
+        
+    if (shortest_branch != 0) {
+            cout << "Razao maior/menor galho: " << branch_ratio << endl;
+        } else {
+            cout << "Razao maior/menor galho: N/A (menor galho eh zero ou indefinido)" << endl;
+        }
     cout << "\n------ Desempenho ------" << endl;
     cout << "Documentos indexados: " << n_docs << endl;
-    cout << "Tempo total indexacao: " << totalTime << " ms" << endl;
+    cout << "Tempo total insercao: " << totalTime << " ms" << endl;
+    
+    // Cálculo do tempo médio de inserção 
+    double average_insertion_time = (stats.nodeCount > 0) ? totalTime / stats.nodeCount : 0.0;
+    cout << "Tempo medio de insercao por no: " << average_insertion_time << " ms" << endl;
+
+    
     cout << "Ultima insercao:" << endl;
     cout << "* Comparacoes: " << lastInsert.numComparisons << endl;
     cout << "* Tempo: " << lastInsert.executionTime << " ms" << endl;
     cout << "=========================" << endl;
+
+
+    
+        // Condição para garantir que a função de busca não é nula e a árvore não está vazia
+        if (searchFunc != nullptr && tree != nullptr && tree->root != nullptr) {
+            const int MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT = 100; // Amostra menor para print no console
+            std::random_device rd;
+            std::mt19937 g(rd()); // Gerador de números aleatórios
+
+            double total_search_time_sample = 0.0;
+            double max_search_time_sample = 0.0;
+            long long total_search_comparisons_sample = 0;
+            int actual_searches_performed = 0;
+            
+            std::vector<std::string> words_for_current_search_sample;
+            
+            // Pega palavras que definitivamente estão na árvore atual.
+            // Considera palavras de allInsertedDocuments até o n_docs atual para garantir que existem na 'tree'.
+            for(const auto& doc_entry : allInsertedDocuments) {
+                 if (doc_entry.docId < n_docs) {
+                    words_for_current_search_sample.push_back(doc_entry.word);
+                } else {
+                    break; // Se allInsertedDocuments está ordenado por docId, podemos parar
+                }
+            }
+
+            // Se não há palavras na amostra (ex: n_docs muito pequeno ou árvore vazia)
+            if (words_for_current_search_sample.empty()) {
+                cout << "\n------ Desempenho (Busca - Amostra) ------" << endl;
+                cout << "Nao ha palavras suficientes para amostra de busca (arvore vazia ou n_docs muito pequeno)." << endl;
+            } else {
+                // Embaralha e redimensiona a amostra se for muito grande
+                if (words_for_current_search_sample.size() > MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT) {
+                    std::shuffle(words_for_current_search_sample.begin(), words_for_current_search_sample.end(), g);
+                    words_for_current_search_sample.resize(MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT);
+                }
+                
+                // Realiza as buscas na árvore 'tree'
+                for (const string& word : words_for_current_search_sample) {
+                    SearchResult sr = searchFunc(tree, word); // Chama a função de busca passada
+                    total_search_time_sample += sr.executionTime;
+                    max_search_time_sample = std::max(max_search_time_sample, sr.executionTime);
+                    total_search_comparisons_sample += sr.numComparisons;
+                    actual_searches_performed++;
+                }
+
+                double avg_search_time_per_word = (actual_searches_performed > 0) ? total_search_time_sample / actual_searches_performed : 0.0;
+                double avg_search_comparisons_per_word = (actual_searches_performed > 0) ? static_cast<double>(total_search_comparisons_sample) / actual_searches_performed : 0.0;
+
+                cout << "\n------ Desempenho (Busca - Amostra) ------" << endl;
+                cout << "Buscas realizadas na amostra: " << actual_searches_performed << endl;
+                cout << "Tempo Maximo de Busca na amostra: " << max_search_time_sample << " ms" << endl;
+                cout << "Tempo Total de Busca na amostra: " << total_search_time_sample << " ms" << endl;
+                cout << "Tempo Medio de Busca por palavra: " << avg_search_time_per_word << " ms" << endl;
+                cout << "Comparacoes Totais de Busca na amostra: " << total_search_comparisons_sample << endl;
+                cout << "Comparacoes Medias de Busca por palavra: " << avg_search_comparisons_per_word << endl;
+            }
+        } else {
+            // Mensagem caso a função de busca não seja fornecida ou a árvore esteja vazia
+            cout << "\n------ Desempenho (Busca - Amostra) ------" << endl;
+            cout << "Funcionalidade de busca nao disponivel (searchFunc e/ou arvore invalida)." << endl;
+        }
+
+
+        cout << "=========================" << endl;
 }
+
+
+// Função auxiliar recursiva para acumular estatísticas de busca
+void accumulateSearchStatsRecursive(Node* node, double& totalTime, 
+                                  int& totalComparisons, int& totalSearches) {
+    if (!node) return;
+    
+    // Percorre a subárvore esquerda
+    accumulateSearchStatsRecursive(node->left, totalTime, totalComparisons, totalSearches);
+    
+    // Processa o nó atual
+    if (node->searchCount > 0) {
+        totalTime += node->totalSearchTime;
+        totalComparisons += node->totalSearchComparisons;
+        totalSearches += node->searchCount;
+    }
+    
+    // Percorre a subárvore direita
+    accumulateSearchStatsRecursive(node->right, totalTime, totalComparisons, totalSearches);
+}
+
+
+    // Variáveis globais para histórico
+    std::vector<Document> allInsertedDocuments;
+    std::vector<InsertResult> insertHistory;
+    std::vector<double> timeHistory;
+
+    void exportEvolutionStatsToCSV(int max_docs, 
+                                   const std::string& basePath,
+                                   const std::string& treeType, 
+                                   SearchResult (*searchFunc)(BinaryTree*, const std::string&)) {
+        if (max_docs <= 0) {
+            std::cerr << "Número de documentos invalido." << std::endl;
+            return;
+        }
+
+        std::string path = basePath;
+        if (!path.empty() && path.back() != '/') {
+            path += "/";
+        }
+
+        std::string outputDirectory = "docs/"; 
+        
+        if (!std::filesystem::exists(outputDirectory)) {
+            try {
+                std::filesystem::create_directory(outputDirectory);
+                cout << "Diretorio '" << outputDirectory << "' criado com sucesso." << endl;
+            } catch (const std::filesystem::filesystem_error& e) {
+                std::cerr << "Erro ao criar diretorio '" << outputDirectory << "': " << e.what() << endl;
+                return;
+            }
+        }
+
+        std::string filename;
+        std::cout << "Digite o nome do arquivo para exportar (sem extensao): ";
+        std::cin >> filename;
+        
+        std::string outputFilename = outputDirectory + filename + ".csv";
+
+        std::ofstream csvFile(outputFilename);
+        if (!csvFile.is_open()) {
+            std::cerr << "Erro ao abrir arquivo " << outputFilename << ". Nao foi possível salvar." << std::endl;
+            return;
+        }
+   
+        
+        csvFile << "Num_Docs,Altura,Total_Nos,Profundidade_Media,"
+                  << "Profundidade_Minima,Max_Desbalanceamento,"
+                  << "Tempo_Total_Insercao,Tempo_Medio_Insercao,"
+                  << "Densidade_Arvore,Maior_Galho,Menor_Galho,"
+                  << "Total_Comparacoes_Indexacao,"
+                  << "Tempo_Maximo_Busca_Amostra,Comparacoes_Total_Busca_Amostra," 
+                  << "Tempo_Medio_Busca_Amostra_Por_Palavra,Comparacoes_Medias_Busca_Amostra_Por_Palavra," 
+                  << "Tipo_Arvore\n";
+
+        // Ponteiros para funções específicas (mantidos)
+        BinaryTree* (*createFunc)() = nullptr;
+        void (*destroyFunc)(BinaryTree*) = nullptr;
+        InsertResult (*insertFunc)(BinaryTree*, const std::string&, int) = nullptr;
+
+        if (treeType == "AVL") {
+            createFunc = AVL::create;
+            destroyFunc = AVL::destroy;
+            insertFunc = AVL::insert;
+        } else if (treeType == "BST") {
+            createFunc = BST::create;
+            destroyFunc = BST::destroy;
+            insertFunc = BST::insert;
+        } else {
+            createFunc = RBT::create;
+            destroyFunc = RBT::destroy;
+            insertFunc = RBT::insert;
+        } 
+        
+        // Configuração para amostragem de palavras para busca (otimizada)
+        const int MAX_SEARCH_SAMPLE_SIZE = 2000; // Limite de palavras para buscar em cada iteração no CSV
+        std::random_device rd;
+        std::mt19937 g(rd());
+
+        BinaryTree* tempTree = createFunc(); // Cria a árvore UMA VEZ antes do loop
+        size_t last_word_index_processed = 0; // Controla até onde allInsertedDocuments foi processado
+
+        for (int num_docs_iter = 1; num_docs_iter <= max_docs; ++num_docs_iter) {
+           
+            while (last_word_index_processed < allInsertedDocuments.size() && 
+                   allInsertedDocuments[last_word_index_processed].docId < num_docs_iter) {
+                
+                const auto& doc_entry = allInsertedDocuments[last_word_index_processed];
+                insertFunc(tempTree, doc_entry.word, doc_entry.docId); 
+                
+                last_word_index_processed++;
+            }
+            //  tempTree contém as palavras dos docs 0 até num_docs_iter-1
+
+            
+            double total_indexing_time_for_current_docs = 0.0;
+            long long total_indexing_comparisons_for_current_docs = 0;
+            // Acumula do histórico de inserção (que é por palavra) até o ponto atual
+            for(size_t j=0; j < last_word_index_processed; ++j) {
+                if (j < timeHistory.size()) {
+                    total_indexing_time_for_current_docs += timeHistory[j];
+                }
+                if (j < insertHistory.size()) {
+                    total_indexing_comparisons_for_current_docs += insertHistory[j].numComparisons;
+                }
+            }
+       
+            TreeStatistics stats = collectAllStats(tempTree->root); 
+            
+            double current_average_insertion_time = (stats.nodeCount > 0) ? total_indexing_time_for_current_docs / stats.nodeCount : 0.0;
+            double tree_density = (stats.height >= 0 && stats.nodeCount > 0) ? (double)stats.nodeCount / (pow(2, stats.height + 1) - 1) : 0.0; 
+            int longest_branch = stats.height;
+            int shortest_branch = stats.minDepth;
+
+            //   ESTATISTICAS DE BUSCA
+            double total_search_time_sample = 0.0; 
+            double max_search_time_sample = 0.0;   
+            long long total_search_comparisons_sample = 0;
+            int actual_searches_performed = 0;
+            
+            size_t current_tree_word_count = last_word_index_processed; 
+
+            if (current_tree_word_count > 0) {
+                std::uniform_int_distribution<size_t> dist(0, current_tree_word_count - 1);
+                int num_samples_to_take = std::min(MAX_SEARCH_SAMPLE_SIZE, (int)current_tree_word_count);
+
+                for (int k = 0; k < num_samples_to_take; ++k) {
+                    size_t random_index = dist(g);
+                    const string& word = allInsertedDocuments[random_index].word;
+
+                    SearchResult sr = searchFunc(tempTree, word); 
+                    total_search_time_sample += sr.executionTime;
+                    max_search_time_sample = std::max(max_search_time_sample, sr.executionTime); 
+                    total_search_comparisons_sample += sr.numComparisons;
+                    actual_searches_performed++;
+                }
+            }
+
+            double avg_search_time_per_word = (actual_searches_performed > 0) ? total_search_time_sample / actual_searches_performed : 0.0;
+            double avg_search_comparisons_per_word = (actual_searches_performed > 0) ? static_cast<double>(total_search_comparisons_sample) / actual_searches_performed : 0.0;
+
+
+            // Escrever linha no CSV
+            csvFile << num_docs_iter << ","
+                      << stats.height << ","
+                      << stats.nodeCount << ","
+                      << stats.averageDepth << ","
+                      << stats.minDepth << ","
+                      << stats.maxImbalance << ","
+                      << total_indexing_time_for_current_docs << "," 
+                      << current_average_insertion_time << ","    
+                      << tree_density << ","              
+                      << longest_branch << ","            
+                      << shortest_branch << ","           
+                      << total_indexing_comparisons_for_current_docs << "," 
+                      << max_search_time_sample << "," 
+                      << total_search_comparisons_sample << ","
+                      << avg_search_time_per_word << ","
+                      << avg_search_comparisons_per_word << ","
+                      << treeType << "\n";
+        }
+
+        destroyFunc(tempTree); // Destrói a árvore apenas no final
+        csvFile.close();
+        
+        std::cout << "Estatisticas exportadas para " << outputFilename << std::endl;
+    }
 
 
 }

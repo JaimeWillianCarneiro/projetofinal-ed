@@ -1,32 +1,34 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cmath>
 #include <chrono>
-#include "avl.h"
+#include <fstream>
+#include <cmath>
+#include "rbt.h"
 #include "tree_utils.h"
 #include "data.h"
-#include <fstream>
 
 using namespace std;
-using namespace TREE_UTILS;
-using namespace AVL;
-using namespace DATA;
 using namespace std::chrono;
-
+using namespace DATA;
+using namespace TREE_UTILS;
+using namespace RBT;
+// Prints usage instructions
 void printUsage() {
     cout << "Uso correto:" << endl;
-    cout << "./avl search <n_docs> <diretorio>" << endl;
-    cout << "./avl stats <n_docs> <diretorio>" << endl;
+    cout << "./rbt search <n_docs> <diretorio>" << endl;
+    cout << "./rbt stats <n_docs> <diretorio>" << endl;
 }
-//  print menu search options
-void printMenuSearch() {
+
+// Prints menu options
+void printMenu() {
     cout << "\nSelecione uma das opcoes (Insira apenas o numero):" << endl;
     cout << "1. Pesquisar uma palavra." << endl;
     cout << "2. Printar a arvore." << endl;
     cout << "3. Printar Indice Invertido." << endl;
     cout << "Ou digite '\\q' para sair. (ou ctrl + c)" << endl;
 }
+
 
 // Prints menu stats options
 void printMenuStats() {
@@ -64,23 +66,20 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Create an empty Binary Search Tree (AVL)
+    // Create an empty Binary Search Tree (RBT)
     BinaryTree* tree = create();
     InsertResult lastInsert = {0, 0.0};
-  
 
     auto start = chrono::high_resolution_clock::now();
-    
-    
-    readFilesFromDirectory(n_docs, directory, tree, lastInsert, AVL::insert); // OU BST::insert ou RBT::insert
+    // Read files from the specified directory and insert data into the RBT
+    readFilesFromDirectory(n_docs, directory, tree,  lastInsert, RBT::insert);
     auto end = chrono::high_resolution_clock::now();
     double totalTime = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-    
 
     // If command is "search", allow user to query words
   if (command == "search") {
         string input;
-        printMenuSearch();
+        printMenu();
         
         while (true) {
             cout << "\nOpcao: ";
@@ -106,7 +105,7 @@ int main(int argc, char* argv[]) {
                 cout << "Tempo (ms): " << result.executionTime << endl;
                 
             } else if (input == "2") {
-                printTree(tree);
+                RBT::printTree(tree);
                 
             } else if (input == "3") {
                 printIndex(tree);
@@ -118,25 +117,28 @@ int main(int argc, char* argv[]) {
                 cout << "Opcao invalida." << endl;
             }
             
-            printMenuSearch();
+            printMenu();
         }
-    } else  if (command == "stats"){
+    } 
+
+    else  if (command == "stats"){
         string input;
         printMenuStats();
         while (true) {
             cout << "\nOpcao: ";
             cin >> input;
-            TREE_UTILS::TreeStatistics stats = TREE_UTILS::collectAllStats(tree->root);
+            TreeStatistics stats = collectAllStats(tree->root);
+
             if (input == "1"){
                 cout << "Tempo de insercao: " << endl;
                 cout << " * Tempo medio: " << totalTime/stats.nodeCount <<  endl;
                 cout << " * Tempo total: " << totalTime << " ms" <<  endl;
             } 
-          
+       
             else if (input == "2") {
                 cout << "Altura da arvore: "  << stats.height << endl;
-                cout << "Densidade da arvore: " << (stats.nodeCount > 0 ? (double)stats.nodeCount / pow(2, stats.height + 1) : 0)  << endl;
-
+                double tree_density = (stats.height >= 0 && stats.nodeCount > 0) ? (double)stats.nodeCount / (pow(2, stats.height + 1) - 1) : 0.0;
+                cout << "Densidade da arvore: " << tree_density << endl;
             } else if (input == "3") {
                 cout << "Tamanho dos galhos: " <<  endl;
                 cout << " * Maior galho: " << stats.height<< endl;
@@ -150,18 +152,18 @@ int main(int argc, char* argv[]) {
     }
                 cout << "Profundidade media: "  << stats.averageDepth << endl;
             } else if (input == "4") {
-                 printSearchStatsSample(tree, n_docs, AVL::search);
-            
-                        } 
-                    else if (input =="5"){
+                printSearchStatsSample(tree, n_docs, RBT::search);
 
-                        printAllStats(tree, lastInsert, totalTime, n_docs, AVL::search);
-                    }
-            else if (input == "6"){
+                
+            } else if (input == "5"){
+               printAllStats(tree, lastInsert, totalTime, n_docs, RBT::search);
+
+               
+            }  else if (input == "6"){
           
 
                 cout << "Exportando estatisticas evolutivas (1-" << n_docs << " docs)" << endl;
-                TREE_UTILS::exportEvolutionStatsToCSV(n_docs, "docs", "AVL", AVL::search);
+                TREE_UTILS::exportEvolutionStatsToCSV(n_docs, "docs", "RBT", RBT::search);
             }
                         else if (input == "\\q") {
                 break;
@@ -175,7 +177,6 @@ int main(int argc, char* argv[]) {
         cout << "Comando invalido";
         printUsage();
     }
-
     destroy(tree);
     return 0;
 }
