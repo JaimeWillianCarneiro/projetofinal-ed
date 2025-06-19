@@ -466,7 +466,7 @@ void accumulateSearchStatsRecursive(Node* node, double& totalTime,
         } 
         
         // Configuração para amostragem de palavras para busca (otimizada)
-        const int MAX_SEARCH_SAMPLE_SIZE = 1000; // Limite de palavras para buscar em cada iteração no CSV
+        const int MAX_SEARCH_SAMPLE_SIZE = 2000; // Limite de palavras para buscar em cada iteração no CSV
         std::random_device rd;
         std::mt19937 g(rd());
 
