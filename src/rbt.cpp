@@ -246,7 +246,6 @@ namespace RBT {
             parent->left = newNode;
         }
         newNode->parent = parent;
-// ======================================= Tirei o balanceamento da AVL ==================================================
         fixInsert(tree, newNode, parent, parent->parent);
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start);

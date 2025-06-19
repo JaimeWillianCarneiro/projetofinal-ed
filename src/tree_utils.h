@@ -244,6 +244,7 @@ namespace TREE_UTILS {
 
     */void printAllStats(BinaryTree* tree, const InsertResult& lastInsert, double totalTime, int n_docs, SearchResult (*searchFunc)(BinaryTree*, const std::string&));
 
+<<<<<<< HEAD
 
 
     /**
@@ -265,7 +266,8 @@ namespace TREE_UTILS {
  * @note A amostra de palavras é retirada de `allInsertedDocuments` e pode ser embaralhada e redimensionada
  * para um tamanho máximo (`MAX_SEARCH_SAMPLE_SIZE_FOR_PRINT`) para otimizar o tempo de exibição no console.
  */
-    void printSearchStatsSample(BinaryTree* tree, int n_docs, SearchResult (*searchFunc)(BinaryTree*, const std::string&));
+
+ void printSearchStatsSample(BinaryTree* tree, int n_docs, SearchResult (*searchFunc)(BinaryTree*, const std::string&));
     /**
      * @brief Exporta as estatísticas atuais da árvore para um arquivo CSV.
      * @param tree Um ponteiro para a estrutura BinaryTree cujas estatísticas serão exportadas.
